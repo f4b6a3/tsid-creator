@@ -30,8 +30,8 @@ public class TsidUtilTest {
 		Instant middle = TsidUtil.extractInstant(tsid);
 		Instant end = Instant.now();
 
-		assertTrue(start.compareTo(middle) <= 0);
-		assertTrue(middle.compareTo(end) <= 0);
+		assertTrue(start.toEpochMilli() <= middle.toEpochMilli());
+		assertTrue(middle.toEpochMilli() <= end.toEpochMilli());
 	}
 
 	@Test

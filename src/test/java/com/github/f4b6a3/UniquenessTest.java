@@ -2,11 +2,11 @@ package com.github.f4b6a3;
 
 import java.util.HashSet;
 
+import com.github.f4b6a3.commons.util.Base32Util;
 import com.github.f4b6a3.tsid.TsidCreator;
 import com.github.f4b6a3.tsid.creator.TimeSortableIdCreator;
 import com.github.f4b6a3.tsid.exception.TsidCreatorException;
 import com.github.f4b6a3.tsid.timestamp.FixedTimestampStretegy;
-import com.github.f4b6a3.tsid.util.Base32Util;
 import com.github.f4b6a3.tsid.util.TsidTimeUtil;
 
 /**

@@ -26,6 +26,8 @@ package com.github.f4b6a3.tsid.util;
 
 import java.time.Instant;
 
+import com.github.f4b6a3.commons.util.Base32Util;
+
 public class TsidUtil {
 
 	protected static final long TIMESTAMP_LENGTH = 42;
