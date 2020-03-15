@@ -54,8 +54,7 @@ public class TsidUtil {
 	 * 
 	 * See {@link TsidUtil#validate(String, boolean)}.
 	 * 
-	 * @param tsid
-	 *            a TSID
+	 * @param tsid a TSID
 	 */
 	protected static void validate(String tsid) {
 		validate(tsid, false);
@@ -66,8 +65,7 @@ public class TsidUtil {
 	 * 
 	 * See {@link TsidUtil#validate(String, boolean)}.
 	 * 
-	 * @param tsid
-	 *            a TSID
+	 * @param tsid a TSID
 	 */
 	protected static void validate(String tsid, boolean strict) {
 		if (!isValid(tsid, strict)) {
@@ -99,10 +97,8 @@ public class TsidUtil {
 	 * - 0123456789ABC (13 alphanumeric, case insensitive, except uU)
 	 * </pre>
 	 * 
-	 * @param tsid
-	 *            a TSID
-	 * @param strict
-	 *            true for strict validation, false for loose validation
+	 * @param tsid   a TSID
+	 * @param strict true for strict validation, false for loose validation
 	 * @return boolean true if valid
 	 */
 	public static boolean isValid(String tsid, boolean strict) {
@@ -137,9 +133,20 @@ public class TsidUtil {
 		return TsidTimeUtil.toUnixMilliseconds(timestamp);
 	}
 
+	public static long extractUnixMilliseconds(String tsid, long customEpoch) {
+		validate(tsid);
+		final long timestamp = extractTimestamp(tsid);
+		return TsidTimeUtil.toUnixMilliseconds(timestamp, customEpoch);
+	}
+
 	public static long extractUnixMilliseconds(long tsid) {
 		final long timestamp = extractTimestamp(tsid);
 		return TsidTimeUtil.toUnixMilliseconds(timestamp);
+	}
+
+	public static long extractUnixMilliseconds(long tsid, long customEpoch) {
+		final long timestamp = extractTimestamp(tsid);
+		return TsidTimeUtil.toUnixMilliseconds(timestamp, customEpoch);
 	}
 
 	public static Instant extractInstant(String tsid) {
@@ -148,8 +155,19 @@ public class TsidUtil {
 		return Instant.ofEpochMilli(unixMilliseconds);
 	}
 
+	public static Instant extractInstant(String tsid, Instant customEpoch) {
+		validate(tsid);
+		final long unixMilliseconds = extractUnixMilliseconds(tsid, customEpoch.toEpochMilli());
+		return Instant.ofEpochMilli(unixMilliseconds);
+	}
+
 	public static Instant extractInstant(long tsid) {
 		final long unixMilliseconds = extractUnixMilliseconds(tsid);
+		return Instant.ofEpochMilli(unixMilliseconds);
+	}
+
+	public static Instant extractInstant(long tsid, Instant customEpoch) {
+		final long unixMilliseconds = extractUnixMilliseconds(tsid, customEpoch.toEpochMilli());
 		return Instant.ofEpochMilli(unixMilliseconds);
 	}
 
