@@ -26,5 +26,4 @@ package com.github.f4b6a3.tsid.timestamp;
 
 public interface TimestampStrategy {
 	long getTimestamp();
-	long getTimestamp(long customEpoch);
 }

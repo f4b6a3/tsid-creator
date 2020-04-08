@@ -45,8 +45,6 @@ public class TimeSortableIdCreator {
 	protected int counterMax = 0;
 	protected int counterTrunc = 0;
 
-	protected Instant customEpoch = null;
-
 	protected static final String OVERRUN_MESSAGE = "The system overran the generator by requesting too many TSIDs.";
 
 	protected TimestampStrategy timestampStrategy;
@@ -77,13 +75,7 @@ public class TimeSortableIdCreator {
 	 */
 	protected synchronized long getTimestamp() {
 
-		final long timestamp;
-
-		if (this.customEpoch == null) {
-			timestamp = this.timestampStrategy.getTimestamp();
-		} else {
-			timestamp = this.timestampStrategy.getTimestamp(customEpoch.toEpochMilli());
-		}
+		final long timestamp = this.timestampStrategy.getTimestamp();
 
 		if (timestamp == this.previousTimestamp) {
 			this.increment();
@@ -102,13 +94,12 @@ public class TimeSortableIdCreator {
 	 * 
 	 * The maximum increment operation depends on the counter bit length.
 	 * 
-	 * For example, if the counter bit length is 12, the maximum number of
-	 * increment operations 2^12 = 4096. It means an exception is thrown if the
+	 * For example, if the counter bit length is 12, the maximum number of increment
+	 * operations is 2^12 = 4096. It means that an exception is thrown if the
 	 * generator tries to generate more than 4096 TSIDs within the same
 	 * milliseconds.
 	 * 
-	 * @throws TsidCreatorException
-	 *             if an overrun happens.
+	 * @throws TsidCreatorException if an overrun happens.
 	 */
 	protected synchronized void increment() {
 		if (++this.counter == this.counterMax) {
@@ -128,8 +119,7 @@ public class TimeSortableIdCreator {
 	/**
 	 * Used for changing the timestamp strategy.
 	 * 
-	 * @param timestampStrategy
-	 *            a timestamp strategy
+	 * @param timestampStrategy a timestamp strategy
 	 * @return {@link TimeSortableIdCreator}
 	 */
 	@SuppressWarnings("unchecked")
@@ -143,11 +133,9 @@ public class TimeSortableIdCreator {
 	 * 
 	 * The value is truncated to fit the default bit length.
 	 * 
-	 * The default bit length is 10, so the maximum number of nodes is 2^10 =
-	 * 1,024.
+	 * The default bit length is 10, so the maximum number of nodes is 2^10 = 1,024.
 	 * 
-	 * @param value
-	 *            the fixed value
+	 * @param value the fixed value
 	 * @return {@link TimeSortableIdCreator}
 	 */
 	@SuppressWarnings("unchecked")
@@ -166,10 +154,8 @@ public class TimeSortableIdCreator {
 	 * 
 	 * If the desired bit length is invalid, the default value is assumed.
 	 * 
-	 * @param nodeId
-	 *            the node identifier
-	 * @param length
-	 *            the fixed bit length between 0 and 20 (inclusive)
+	 * @param nodeId the node identifier
+	 * @param length the fixed bit length between 0 and 20 (inclusive)
 	 * @return {@link TimeSortableIdCreator}
 	 */
 	@SuppressWarnings("unchecked")
@@ -179,16 +165,26 @@ public class TimeSortableIdCreator {
 	}
 
 	/**
+	 * Set a custom epoch instead of the default.
 	 * 
-	 * @param nodeId
-	 *            the node identifier
-	 * @param length
-	 *            the fixed bit length between 0 and 20 (inclusive)
+	 * @param customEpoch the custom epoch milliseconds
+	 * @return {@link TimeSortableIdCreator}
+	 */
+	@SuppressWarnings("unchecked")
+	public synchronized <T extends TimeSortableIdCreator> T withCustomEpoch(long customEpoch) {
+		this.timestampStrategy = new DefaultTimestampStrategy(customEpoch);
+		return (T) this;
+	}
+
+	/**
+	 * Set a custom epoch instead of the default.
+	 *
+	 * @param customEpoch the custom epoch instant
 	 * @return {@link TimeSortableIdCreator}
 	 */
 	@SuppressWarnings("unchecked")
 	public synchronized <T extends TimeSortableIdCreator> T withCustomEpoch(Instant customEpoch) {
-		this.customEpoch = customEpoch;
+		this.timestampStrategy = new DefaultTimestampStrategy(customEpoch.toEpochMilli());
 		return (T) this;
 	}
 

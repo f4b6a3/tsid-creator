@@ -28,19 +28,30 @@ import com.github.f4b6a3.tsid.util.TsidTimeUtil;
 
 public class DefaultTimestampStrategy implements TimestampStrategy {
 
-	/**
-	 * Returns the number of milliseconds since 2020-01-01 00:00:00Z (TSID
-	 * epoch).
-	 */
-	@Override
-	public long getTimestamp() {
-		return TsidTimeUtil.getCurrentTimestamp();
+	protected long customEpoch = 0;
+
+	public DefaultTimestampStrategy() {
 	}
 
 	/**
-	 * Returns the number of milliseconds since a custom epoch.
+	 * Use a custom epoch instead of the default.
+	 * 
+	 * @param customEpoch the custom epoch milliseconds
 	 */
-	public long getTimestamp(long customEpoch) {
-		return TsidTimeUtil.getCurrentTimestamp(customEpoch);
+	public DefaultTimestampStrategy(long customEpoch) {
+		this.customEpoch = customEpoch;
+	}
+
+	/**
+	 * Returns the number of milliseconds since 2020-01-01 00:00:00Z (TSID epoch) or
+	 * since a custom epoch.
+	 */
+	@Override
+	public long getTimestamp() {
+		if (this.customEpoch == 0) {
+			return TsidTimeUtil.getCurrentTimestamp();
+		} else {
+			return TsidTimeUtil.getCurrentTimestamp(this.customEpoch);
+		}
 	}
 }

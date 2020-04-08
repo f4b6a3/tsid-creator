@@ -36,9 +36,4 @@ public class FixedTimestampStretegy implements TimestampStrategy {
 	public long getTimestamp() {
 		return this.timestamp;
 	}
-	
-	@Override
-	public long getTimestamp(long customEpoch) {
-		return this.timestamp;
-	}
 }
