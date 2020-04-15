@@ -169,7 +169,7 @@ public class TsidUtil {
 	 * @return the node identifier
 	 * @throws IllegalArgumentException if the bit length is out of range [0, 20]
 	 */
-	private static int extractNodeIdentifier(long tsid, int nodeidLength) {
+	public static int extractNodeIdentifier(long tsid, int nodeidLength) {
 
 		// Check if the node identifier bit length between 0 and 20 (inclusive)
 		if (nodeidLength < 0 || nodeidLength > 20) {

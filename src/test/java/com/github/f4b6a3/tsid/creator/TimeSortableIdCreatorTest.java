@@ -1,22 +1,32 @@
 package com.github.f4b6a3.tsid.creator;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.HashSet;
 
 import org.junit.Test;
 
+import com.github.f4b6a3.commons.random.XorshiftRandom;
 import com.github.f4b6a3.tsid.TsidCreator;
+import com.github.f4b6a3.tsid.exception.TsidCreatorException;
+import com.github.f4b6a3.tsid.strategy.TimestampStrategy;
+import com.github.f4b6a3.tsid.strategy.timestamp.FixedTimestampStretegy;
+import com.github.f4b6a3.tsid.util.TsidTimeUtil;
 import com.github.f4b6a3.tsid.util.TsidUtil;
 import com.github.f4b6a3.tsid.util.TsidValidator;
 
 public class TimeSortableIdCreatorTest {
 
-	private static final int DEFAULT_LOOP_MAX = 100_000;
-
 	private static final int TSID_LENGTH = 13;
 
+	public static final int TIMESTAMP_LENGTH = 42;
+	public static final int RANDOMNESS_LENGTH = 22;
+	public static final int IMPLICIT_NODEID_LENGTH = 10;
+
+	private static final int DEFAULT_LOOP_MAX = 100_000;
+	
 	@Test
 	public void testGetTsid() {
 		long[] list = new long[DEFAULT_LOOP_MAX];
@@ -32,6 +42,30 @@ public class TimeSortableIdCreatorTest {
 		checkNullOrInvalid(list);
 		checkUniqueness(list);
 		checkOrdering(list);
+		checkCreationTime(list, startTime, endTime);
+	}
+
+	@Test
+	public void testGetTsidWithNode() {
+
+		final int nodeidLength = IMPLICIT_NODEID_LENGTH;
+		final int counterLength = RANDOMNESS_LENGTH - nodeidLength;
+		final int counterMax = (int) Math.pow(2, counterLength);
+
+		long[] list = new long[counterMax];
+
+		int nodeid = (new XorshiftRandom()).nextInt();
+
+		long startTime = System.currentTimeMillis();
+
+		for (int i = 0; i < counterMax; i++) {
+			list[i] = TsidCreator.getTsid(nodeid);
+		}
+
+		long endTime = System.currentTimeMillis();
+
+		checkNullOrInvalid(list);
+		checkUniqueness(list);
 		checkCreationTime(list, startTime, endTime);
 	}
 
@@ -53,9 +87,106 @@ public class TimeSortableIdCreatorTest {
 		checkCreationTime(list, startTime, endTime);
 	}
 
+	@Test
+	public void testGetTsidStringWithNode() {
+
+		final int nodeidLength = IMPLICIT_NODEID_LENGTH;
+		final int counterLength = RANDOMNESS_LENGTH - nodeidLength;
+		final int counterMax = (int) Math.pow(2, counterLength);
+
+		String[] list = new String[counterMax];
+
+		int nodeid = (new XorshiftRandom()).nextInt();
+
+		long startTime = System.currentTimeMillis();
+
+		for (int i = 0; i < counterMax; i++) {
+			list[i] = TsidCreator.getTsidString(nodeid);
+		}
+
+		long endTime = System.currentTimeMillis();
+
+		checkNullOrInvalid(list);
+		checkUniqueness(list);
+		checkCreationTime(list, startTime, endTime);
+	}
+
 	private void checkNullOrInvalid(long[] list) {
 		for (long tsid : list) {
 			assertTrue("TSID is zero", tsid != 0);
+		}
+	}
+
+	@Test
+	public void testOverrunException() {
+
+		final int nodeidLength = 0; // default bit length (node id disabled)
+		final int counterLength = RANDOMNESS_LENGTH - nodeidLength;
+		final int counterMax = (int) Math.pow(2, counterLength);
+
+		long timestamp = TsidTimeUtil.getCurrentTimestamp();
+		TimestampStrategy strategy = new FixedTimestampStretegy(timestamp);
+		TimeSortableIdCreator creator = TsidCreator.getTimeSortableIdCreator().withTimestampStrategy(strategy);
+
+		for (int i = 0; i < counterMax; i++) {
+			creator.create();
+		}
+
+		try {
+			creator.create();
+			fail();
+		} catch (TsidCreatorException e) {
+			// success
+		}
+	}
+
+	@Test
+	public void testOverrunExceptionImplicitBitLength() {
+
+		final int nodeidLength = IMPLICIT_NODEID_LENGTH;
+		final int counterLength = RANDOMNESS_LENGTH - nodeidLength;
+		final int counterMax = (int) Math.pow(2, counterLength);
+
+		int nodeid = (new XorshiftRandom()).nextInt();
+		long timestamp = TsidTimeUtil.getCurrentTimestamp();
+		TimestampStrategy strategy = new FixedTimestampStretegy(timestamp);
+		TimeSortableIdCreator creator = TsidCreator.getTimeSortableIdCreator().withTimestampStrategy(strategy)
+				.withNodeIdentifier(nodeid);
+
+		for (int i = 0; i < counterMax; i++) {
+			creator.create();
+		}
+
+		try {
+			creator.create();
+			fail();
+		} catch (TsidCreatorException e) {
+			// success
+		}
+	}
+
+	@Test
+	public void testOverrunExceptionCustomBitLength() {
+
+		final int nodeidLength = 16; // custom bit length
+		final int counterLength = RANDOMNESS_LENGTH - nodeidLength;
+		final int counterMax = (int) Math.pow(2, counterLength);
+
+		int nodeid = (new XorshiftRandom()).nextInt();
+		long timestamp = TsidTimeUtil.getCurrentTimestamp();
+		TimestampStrategy strategy = new FixedTimestampStretegy(timestamp);
+		TimeSortableIdCreator creator = TsidCreator.getTimeSortableIdCreator().withTimestampStrategy(strategy)
+				.withNodeIdentifier(nodeid, nodeidLength);
+
+		for (int i = 0; i < counterMax; i++) {
+			creator.create();
+		}
+
+		try {
+			creator.create();
+			fail();
+		} catch (TsidCreatorException e) {
+			// success
 		}
 	}
 

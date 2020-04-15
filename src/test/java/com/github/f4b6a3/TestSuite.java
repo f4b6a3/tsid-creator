@@ -14,10 +14,10 @@ import com.github.f4b6a3.tsid.util.TsidConverterTest;
 @Suite.SuiteClasses({
 	TimeSortableIdCreatorTest.class,
 	DefaultTimestampStrategyTest.class,
+	TsidConverterTest.class,
 	TsidTimeUtilTest.class,
 	TsidUtilTest.class,
 	TsidValidatorTest.class,
-	TsidConverterTest.class,
 })
 
 /**

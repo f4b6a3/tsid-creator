@@ -4,7 +4,33 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import com.github.f4b6a3.tsid.exception.InvalidTsidException;
+
 public class TsidValidatorTest {
+
+	@Test
+	public void testIsValidBytes() {
+
+		byte[] tsid = null;
+		assertFalse("Null UUID byte array should be invalid.", TsidValidator.isValid(tsid));
+
+		tsid = new byte[0];
+		assertFalse("Empty UUID byte array should be invalid .", TsidValidator.isValid(tsid));
+
+		tsid = new byte[12];
+		assertFalse("UUID byte array with length lower than 13 should be invalid .", TsidValidator.isValid(tsid));
+
+		tsid = new byte[14];
+		assertFalse("UUID byte array with length greater than 13 should be invalid .", TsidValidator.isValid(tsid));
+
+		try {
+			tsid = null;
+			TsidValidator.validate(tsid);
+			fail();
+		} catch (InvalidTsidException e) {
+			// Success
+		}
+	}
 
 	@Test
 	public void testIsValid() {
@@ -38,5 +64,13 @@ public class TsidValidatorTest {
 
 		tsid = "01234-56789-ABC"; // Hiphens
 		assertTrue("tsid with hiphens should be valid.", TsidValidator.isValid(tsid));
+
+		try {
+			tsid = null;
+			TsidValidator.validate(tsid);
+			fail();
+		} catch (InvalidTsidException e) {
+			// Success
+		}
 	}
 }

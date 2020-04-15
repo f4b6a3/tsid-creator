@@ -42,6 +42,19 @@ public class TsidCreator {
 	}
 
 	/**
+	 * Returns a TSID with node identifier.
+	 * 
+	 * The implicit node identifier bit length is 10.
+	 * 
+	 * The maximum node identifiers is 2^10 = 1024.
+	 * 
+	 * @return a TSID
+	 */
+	public static long getTsid(int node) {
+		return TimeSortableIdWithNodeCreatorHolder.INSTANCE.create(node);
+	}
+
+	/**
 	 * Returns a TSID as string.
 	 * 
 	 * The returning string is encoded to Crockford's base 32.
@@ -50,6 +63,21 @@ public class TsidCreator {
 	 */
 	public static String getTsidString() {
 		return TsidConverter.toString(getTsid());
+	}
+
+	/**
+	 * Returns a TSID with node identifier.
+	 * 
+	 * The implicit node identifier bit length is 10.
+	 * 
+	 * The maximum node identifiers is 2^10 = 1024.
+	 * 
+	 * The returning string is encoded to Crockford's base 32.
+	 * 
+	 * @return a TSID
+	 */
+	public static String getTsidString(int node) {
+		return TsidConverter.toString(getTsid(node));
 	}
 
 	/**
@@ -63,5 +91,9 @@ public class TsidCreator {
 
 	private static class TimeSortableIdCreatorHolder {
 		static final TimeSortableIdCreator INSTANCE = getTimeSortableIdCreator();
+	}
+
+	private static class TimeSortableIdWithNodeCreatorHolder {
+		static final TimeSortableIdCreator INSTANCE = getTimeSortableIdCreator().withNodeIdentifier(0);
 	}
 }

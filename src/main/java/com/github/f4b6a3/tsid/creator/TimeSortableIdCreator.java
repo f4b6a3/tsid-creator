@@ -111,9 +111,22 @@ public class TimeSortableIdCreator {
 	 * @return a TSID.
 	 */
 	public synchronized long create() {
-
 		final long time = getTimestamp() << RANDOMNESS_LENGTH;
 		final long node = this.nodeid << this.counterLength;
+		final long count = this.counter & this.counterTrunc;
+
+		return time | node | count;
+	}
+
+	/**
+	 * Returns a TSID.
+	 * 
+	 * @return a TSID.
+	 */
+	public synchronized long create(int nodeid) {
+
+		final long time = getTimestamp() << RANDOMNESS_LENGTH;
+		final long node = (nodeid << this.counterLength) & RANDOMNESS_MASK;
 		final long count = this.counter & this.counterTrunc;
 
 		return time | node | count;
