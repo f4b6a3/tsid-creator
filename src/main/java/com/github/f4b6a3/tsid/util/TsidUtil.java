@@ -26,156 +26,156 @@ package com.github.f4b6a3.tsid.util;
 
 import java.time.Instant;
 
-import com.github.f4b6a3.commons.util.Base32Util;
-
+/**
+ * Utility that provides methods for for extracting creation time and node
+ * identifier from TSIDs.
+ */
 public class TsidUtil {
 
 	protected static final long TIMESTAMP_LENGTH = 42;
 	protected static final long RANDOMNESS_LENGTH = 22;
+	public static final int IMPLICIT_NODEID_LENGTH = 10;
 
-	protected static final String TSID_PATTERN_STRICT = "^[0-9a-hjkmnp-tv-zA-HJKMNP-TV-Z]{13}$";
-	protected static final String TSID_PATTERN_LOOSE = "^[0-9a-tv-zA-TV-Z]{13}$";
+	protected static final int RANDOMNESS_MASK = 0x003fffff;
 
 	private TsidUtil() {
 	}
 
-	public static String toTsidString(long tsid) {
-		return leftPad(Base32Util.toBase32Crockford(tsid));
-	}
-
-	private static String leftPad(String unpadded) {
-		return "0000000000000".substring(unpadded.length()) + unpadded;
-	}
-
 	/**
-	 * Checks if the TSID string is a valid.
-	 * 
-	 * The validation mode is not strict.
-	 * 
-	 * See {@link TsidUtil#validate(String, boolean)}.
+	 * Returns the Unix milliseconds from a TSID.
 	 * 
 	 * @param tsid a TSID
+	 * @return the Unix milliseconds
 	 */
-	protected static void validate(String tsid) {
-		validate(tsid, false);
-	}
-
-	/**
-	 * Checks if the TSID string is a valid.
-	 * 
-	 * See {@link TsidUtil#validate(String, boolean)}.
-	 * 
-	 * @param tsid a TSID
-	 */
-	protected static void validate(String tsid, boolean strict) {
-		if (!isValid(tsid, strict)) {
-			throw new TsidUtilException(String.format("Invalid TSID: %s.", tsid));
-		}
-	}
-
-	/**
-	 * Checks if the string is a valid TSID.
-	 * 
-	 * The validation mode is not strict.
-	 * 
-	 * See {@link TsidUtil#validate(String, boolean)}.
-	 */
-	public static boolean isValid(String tsid) {
-		return isValid(tsid, false);
-	}
-
-	/**
-	 * Checks if the string is a valid TSID.
-	 * 
-	 * <pre>
-	 * Strict validation: checks if the string is in the TSID format:
-	 * 
-	 * - 0123456789ABC (13 alphanumeric, case insensitive, except iI, lL, oO and uU)
-	 * 
-	 * Loose validation: checks if the string is in one of these formats:
-	 *
-	 * - 0123456789ABC (13 alphanumeric, case insensitive, except uU)
-	 * </pre>
-	 * 
-	 * @param tsid   a TSID
-	 * @param strict true for strict validation, false for loose validation
-	 * @return boolean true if valid
-	 */
-	public static boolean isValid(String tsid, boolean strict) {
-
-		if (tsid == null || tsid.isEmpty()) {
-			return false;
-		}
-
-		boolean matches = false;
-
-		if (strict) {
-			matches = tsid.matches(TSID_PATTERN_STRICT);
-		} else {
-			String u = tsid.replaceAll("-", "");
-			matches = u.matches(TSID_PATTERN_LOOSE);
-		}
-
-		return matches;
-	}
-
-	protected static long extractTimestamp(long tsid) {
-		return tsid >>> RANDOMNESS_LENGTH;
-	}
-
-	protected static long extractTimestamp(String tsid) {
-		return extractTimestamp(Base32Util.fromBase32CrockfordAsLong(tsid));
-	}
-
 	public static long extractUnixMilliseconds(String tsid) {
-		validate(tsid);
-		final long timestamp = extractTimestamp(tsid);
-		return TsidTimeUtil.toUnixMilliseconds(timestamp);
+		return extractUnixMilliseconds(TsidConverter.fromString(tsid));
 	}
 
-	public static long extractUnixMilliseconds(String tsid, long customEpoch) {
-		validate(tsid);
-		final long timestamp = extractTimestamp(tsid);
-		return TsidTimeUtil.toUnixMilliseconds(timestamp, customEpoch);
-	}
-
+	/**
+	 * Returns the Unix milliseconds from a TSID.
+	 * 
+	 * @param tsid a TSID
+	 * @return the Unix milliseconds
+	 */
 	public static long extractUnixMilliseconds(long tsid) {
 		final long timestamp = extractTimestamp(tsid);
 		return TsidTimeUtil.toUnixMilliseconds(timestamp);
 	}
 
+	/**
+	 * Returns the Unix milliseconds from a TSID, using a custom epoch.
+	 * 
+	 * The default epoch is 2020-01-01 00:00:00Z (TSID epoch).
+	 * 
+	 * @param tsid        a TSID
+	 * @param customEpoch a custom epoch
+	 * @return the Unix milliseconds
+	 */
+	public static long extractUnixMilliseconds(String tsid, long customEpoch) {
+		return extractUnixMilliseconds(TsidConverter.fromString(tsid), customEpoch);
+	}
+
+	/**
+	 * Returns the Unix milliseconds from a TSID, using a custom epoch.
+	 * 
+	 * The default epoch is 2020-01-01 00:00:00Z (TSID epoch).
+	 * 
+	 * @param tsid        a TSID
+	 * @param customEpoch a custom epoch
+	 * @return the Unix milliseconds
+	 */
 	public static long extractUnixMilliseconds(long tsid, long customEpoch) {
 		final long timestamp = extractTimestamp(tsid);
 		return TsidTimeUtil.toUnixMilliseconds(timestamp, customEpoch);
 	}
 
+	/**
+	 * Returns the {@link Instant} from a TSID.
+	 * 
+	 * @param tsid a TSID
+	 * @return the {@link Instant}.
+	 */
 	public static Instant extractInstant(String tsid) {
-		validate(tsid);
-		final long unixMilliseconds = extractUnixMilliseconds(tsid);
-		return Instant.ofEpochMilli(unixMilliseconds);
+		return extractInstant(TsidConverter.fromString(tsid));
 	}
 
-	public static Instant extractInstant(String tsid, Instant customEpoch) {
-		validate(tsid);
-		final long unixMilliseconds = extractUnixMilliseconds(tsid, customEpoch.toEpochMilli());
-		return Instant.ofEpochMilli(unixMilliseconds);
-	}
-
+	/**
+	 * Returns the {@link Instant} from a TSID.
+	 * 
+	 * @param tsid a TSID
+	 * @return the {@link Instant}.
+	 */
 	public static Instant extractInstant(long tsid) {
 		final long unixMilliseconds = extractUnixMilliseconds(tsid);
 		return Instant.ofEpochMilli(unixMilliseconds);
 	}
 
+	/**
+	 * Returns the {@link Instant} from a TSID, using a custom epoch.
+	 * 
+	 * The default epoch is 2020-01-01 00:00:00Z (TSID epoch).
+	 * 
+	 * @param tsid        a TSID
+	 * @param customEpoch a custom epoch
+	 * @return the {@link Instant}
+	 */
+	public static Instant extractInstant(String tsid, Instant customEpoch) {
+		return extractInstant(TsidConverter.fromString(tsid), customEpoch);
+	}
+
+	/**
+	 * Returns the {@link Instant} from a TSID, using a custom epoch.
+	 * 
+	 * The default epoch is 2020-01-01 00:00:00Z (TSID epoch).
+	 * 
+	 * @param tsid        a TSID
+	 * @param customEpoch a custom epoch
+	 * @return the {@link Instant}
+	 */
 	public static Instant extractInstant(long tsid, Instant customEpoch) {
 		final long unixMilliseconds = extractUnixMilliseconds(tsid, customEpoch.toEpochMilli());
 		return Instant.ofEpochMilli(unixMilliseconds);
 	}
 
-	public static class TsidUtilException extends RuntimeException {
-		private static final long serialVersionUID = 1L;
+	private static long extractTimestamp(long tsid) {
+		return tsid >>> RANDOMNESS_LENGTH;
+	}
 
-		public TsidUtilException(String message) {
-			super(message);
+	/**
+	 * Returns the node identifier.
+	 * 
+	 * The IMPLICIT bit length for node identifiers is 10. The maximum number of
+	 * nodes using this implicit bit length is 2^10 = 1,024.
+	 * 
+	 * This method shouldn't be used for TSIDs created with different node
+	 * identifier bit lengths.
+	 * 
+	 * @param tsid the TSID
+	 * @return the node identifier
+	 */
+	public static int extractNodeIdentifier(long tsid) {
+		return (int) extractNodeIdentifier(tsid, IMPLICIT_NODEID_LENGTH);
+	}
+
+	/**
+	 * Returns the node identifier.
+	 * 
+	 * A bit length for node identifiers is needed.
+	 * 
+	 * The bit length must be in the range [0, 20].
+	 * 
+	 * @param tsid         the TSID
+	 * @param nodeidLength the node identifier bit length
+	 * @return the node identifier
+	 * @throws IllegalArgumentException if the bit length is out of range [0, 20]
+	 */
+	private static int extractNodeIdentifier(long tsid, int nodeidLength) {
+
+		// Check if the node identifier bit length between 0 and 20 (inclusive)
+		if (nodeidLength < 0 || nodeidLength > 20) {
+			throw new IllegalArgumentException("The node identifier bit length is out of the permited range: [0, 20]");
 		}
+
+		return (int) (tsid & RANDOMNESS_MASK) >>> (RANDOMNESS_LENGTH - nodeidLength);
 	}
 }

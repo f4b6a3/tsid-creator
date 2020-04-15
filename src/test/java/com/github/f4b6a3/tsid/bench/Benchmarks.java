@@ -1,4 +1,4 @@
-package com.github.f4b6a3;
+package com.github.f4b6a3.tsid.bench;
 
 // Add theese dependencies to pom.xml:
 //

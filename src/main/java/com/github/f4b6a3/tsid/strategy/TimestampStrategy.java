@@ -22,46 +22,11 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.tsid;
+package com.github.f4b6a3.tsid.strategy;
 
-import com.github.f4b6a3.tsid.creator.TimeSortableIdCreator;
-import com.github.f4b6a3.tsid.util.TsidConverter;
-
-public class TsidCreator {
-
-	private TsidCreator() {
-	}
-
-	/**
-	 * Returns a TSID.
-	 * 
-	 * @return a TSID
-	 */
-	public static long getTsid() {
-		return TimeSortableIdCreatorHolder.INSTANCE.create();
-	}
-
-	/**
-	 * Returns a TSID as string.
-	 * 
-	 * The returning string is encoded to Crockford's base 32.
-	 * 
-	 * @return a TSID
-	 */
-	public static String getTsidString() {
-		return TsidConverter.toString(getTsid());
-	}
-
-	/**
-	 * Returns a {@link TimeSortableIdCreator}.
-	 * 
-	 * @return a {@link TimeSortableIdCreator}
-	 */
-	public static TimeSortableIdCreator getTimeSortableIdCreator() {
-		return new TimeSortableIdCreator();
-	}
-
-	private static class TimeSortableIdCreatorHolder {
-		static final TimeSortableIdCreator INSTANCE = getTimeSortableIdCreator();
-	}
+/**
+ * Strategy that provides timestamps for TSIDs.
+ */
+public interface TimestampStrategy {
+	long getTimestamp();
 }

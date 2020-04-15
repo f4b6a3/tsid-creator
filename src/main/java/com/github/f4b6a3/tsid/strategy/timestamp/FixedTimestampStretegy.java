@@ -22,8 +22,25 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.tsid.timestamp;
+package com.github.f4b6a3.tsid.strategy.timestamp;
 
-public interface TimestampStrategy {
-	long getTimestamp();
+import com.github.f4b6a3.tsid.strategy.TimestampStrategy;
+
+/**
+ * Strategy that always provides the same timestamp.
+ * 
+ * This strategy is useful for tests only.
+ */
+public class FixedTimestampStretegy implements TimestampStrategy {
+
+	protected long timestamp = 0;
+
+	public FixedTimestampStretegy(long timestamp) {
+		this.timestamp = timestamp;
+	}
+
+	@Override
+	public long getTimestamp() {
+		return this.timestamp;
+	}
 }

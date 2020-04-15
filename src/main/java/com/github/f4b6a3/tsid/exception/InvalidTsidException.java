@@ -22,18 +22,13 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.tsid.timestamp;
+package com.github.f4b6a3.tsid.exception;
 
-public class FixedTimestampStretegy implements TimestampStrategy {
+public class InvalidTsidException extends RuntimeException {
 
-	protected long timestamp = 0;
-
-	public FixedTimestampStretegy(long timestamp) {
-		this.timestamp = timestamp;
-	}
-
-	@Override
-	public long getTimestamp() {
-		return this.timestamp;
+	private static final long serialVersionUID = 1L;
+	
+	public InvalidTsidException(String message) {
+		super(message);
 	}
 }

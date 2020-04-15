@@ -1,4 +1,4 @@
-package com.github.f4b6a3.demo;
+package com.github.f4b6a3.tsid.demo;
 
 import com.github.f4b6a3.tsid.TsidCreator;
 
@@ -18,7 +18,7 @@ public class DemoTest {
 		}
 
 		System.out.println(HORIZONTAL_LINE);
-		System.out.println("### TSID as string");
+		System.out.println("### TSID string");
 		System.out.println(HORIZONTAL_LINE);
 
 		for (int i = 0; i < max; i++) {

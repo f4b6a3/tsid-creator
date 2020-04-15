@@ -6,7 +6,8 @@ import com.github.f4b6a3.commons.util.Base32Util;
 import com.github.f4b6a3.tsid.TsidCreator;
 import com.github.f4b6a3.tsid.creator.TimeSortableIdCreator;
 import com.github.f4b6a3.tsid.exception.TsidCreatorException;
-import com.github.f4b6a3.tsid.timestamp.FixedTimestampStretegy;
+import com.github.f4b6a3.tsid.strategy.timestamp.FixedTimestampStretegy;
+import com.github.f4b6a3.tsid.util.TsidConverter;
 import com.github.f4b6a3.tsid.util.TsidTimeUtil;
 
 /**
@@ -105,15 +106,16 @@ public class UniquenessTest {
 					// Calculate and show progress
 					progress = (int) ((i * 1.0 / max) * 100);
 					if ((progress) % 10 == 0) {
-						String str = Base32Util.toBase32Crockford(tsid);
+						String str = TsidConverter.toString(tsid);
 						System.out.println(String.format("[Thread %06d] %s %s %s%%", id, str, i, (int) progress));
 					}
 				}
 				synchronized (hashSet) {
 					// Insert the value in cache, if it does not exist in it.
 					if (!hashSet.add(tsid)) {
-						String str = Base32Util.toBase32Crockford(tsid);
-						System.err.println(String.format("[Thread %06d] %s %s %s%% [DUPLICATE]", id, str, i, (int) progress));
+						String str = TsidConverter.toString(tsid);
+						System.err.println(
+								String.format("[Thread %06d] %s %s %s%% [DUPLICATE]", id, str, i, (int) progress));
 					}
 				}
 			}

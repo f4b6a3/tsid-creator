@@ -45,8 +45,7 @@ public class TsidTimeUtil {
 	/**
 	 * Get the number of milliseconds since a custom epoch.
 	 * 
-	 * @param customEpoch
-	 *            the custom epoch milliseconds
+	 * @param customEpoch the custom epoch milliseconds
 	 * @return the current timestamp
 	 */
 	public static long getCurrentTimestamp(final long customEpoch) {
@@ -59,12 +58,24 @@ public class TsidTimeUtil {
 	 * The value returned by this method is the number of milliseconds since
 	 * 2020-01-01 00:00:00Z (TSID epoch).
 	 * 
-	 * @param unixMilliseconds
-	 *            the Unix Epoch milliseconds
+	 * @param unixMilliseconds the Unix Epoch milliseconds
 	 * @return the timestamp
 	 */
 	public static long toTimestamp(final long unixMilliseconds) {
 		return unixMilliseconds - TSID_EPOCH_MILLISECONDS;
+	}
+
+	/**
+	 * Get the timestamp of a given instant with milliseconds precision.
+	 *
+	 * The value returned by this method is the number of milliseconds since
+	 * 1920-01-01 00:00:00Z (TSID epoch).
+	 * 
+	 * @param instant an instant
+	 * @return the timestamp
+	 */
+	public static long toTimestamp(final Instant instant) {
+		return toTimestamp(instant.toEpochMilli());
 	}
 
 	/**
@@ -73,14 +84,26 @@ public class TsidTimeUtil {
 	 * The value returned by this method is the number of milliseconds since a
 	 * custom epoch.
 	 * 
-	 * @param unixMilliseconds
-	 *            the Unix Epoch milliseconds
-	 * @param customEpoch
-	 *            the custom epoch milliseconds
+	 * @param unixMilliseconds the Unix Epoch milliseconds
+	 * @param customEpoch      the custom epoch milliseconds
 	 * @return
 	 */
 	public static long toTimestamp(final long unixMilliseconds, final long customEpoch) {
 		return unixMilliseconds - customEpoch;
+	}
+
+	/**
+	 * Get the timestamp of a given instant with milliseconds precision.
+	 *
+	 * The value returned by this method is the number of milliseconds since
+	 * 1920-01-01 00:00:00Z (TSID epoch).
+	 * 
+	 * @param instant     an instant
+	 * @param customEpoch the custom epoch instant
+	 * @return the timestamp
+	 */
+	public static long toTimestamp(final Instant instant, final Instant customEpoch) {
+		return toTimestamp(instant.toEpochMilli(), customEpoch.toEpochMilli());
 	}
 
 	/**
@@ -89,8 +112,7 @@ public class TsidTimeUtil {
 	 * The value returned by this method is the number of milliseconds since
 	 * 1970-01-01 00:00:00Z (Unix epoch).
 	 * 
-	 * @param timestamp
-	 *            a timestamp
+	 * @param timestamp a timestamp
 	 * @return the Unix milliseconds
 	 */
 	public static long toUnixMilliseconds(final long timestamp) {
@@ -103,10 +125,8 @@ public class TsidTimeUtil {
 	 * The value returned by this method is the number of milliseconds since a
 	 * custom epoch.
 	 * 
-	 * @param timestamp
-	 *            a timestamp
-	 * @param customEpoch
-	 *            the custom epoch milliseconds
+	 * @param timestamp   a timestamp
+	 * @param customEpoch the custom epoch milliseconds
 	 * @return
 	 */
 	public static long toUnixMilliseconds(final long timestamp, final long customEpoch) {
@@ -114,40 +134,9 @@ public class TsidTimeUtil {
 	}
 
 	/**
-	 * Get the timestamp of a given instant with milliseconds precision.
-	 *
-	 * The value returned by this method is the number of milliseconds since
-	 * 1920-01-01 00:00:00Z (TSID epoch).
-	 * 
-	 * @param instant
-	 *            an instant
-	 * @return the timestamp
-	 */
-	public static long toTimestamp(final Instant instant) {
-		return toTimestamp(instant.toEpochMilli());
-	}
-
-	/**
-	 * Get the timestamp of a given instant with milliseconds precision.
-	 *
-	 * The value returned by this method is the number of milliseconds since
-	 * 1920-01-01 00:00:00Z (TSID epoch).
-	 * 
-	 * @param instant
-	 *            an instant
-	 * @param customEpoch
-	 *            the custom epoch instant
-	 * @return the timestamp
-	 */
-	public static long toTimestamp(final Instant instant, final Instant customEpoch) {
-		return toTimestamp(instant.toEpochMilli(), customEpoch.toEpochMilli());
-	}
-
-	/**
 	 * Get the instant of the given timestamp with milliseconds precision.
 	 *
-	 * @param timestamp
-	 *            a timestamp
+	 * @param timestamp a timestamp
 	 * @return the instant
 	 */
 	public static Instant toInstant(final long timestamp) {
@@ -157,13 +146,11 @@ public class TsidTimeUtil {
 	/**
 	 * Get the instant of the given timestamp with milliseconds precision.
 	 *
-	 * @param timestamp
-	 *            a timestamp
-	 * @param customEpoch
-	 *            the custom epoch milliseconds
+	 * @param timestamp   a timestamp
+	 * @param customEpoch the custom epoch instant
 	 * @return the instant
 	 */
-	public static Instant toInstant(final long timestamp, final long customEpoch) {
-		return Instant.ofEpochMilli(toUnixMilliseconds(timestamp, customEpoch));
+	public static Instant toInstant(final long timestamp, final Instant customEpoch) {
+		return Instant.ofEpochMilli(toUnixMilliseconds(timestamp, customEpoch.toEpochMilli()));
 	}
 }
