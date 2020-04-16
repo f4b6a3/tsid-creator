@@ -30,6 +30,7 @@ import com.github.f4b6a3.commons.util.RandomUtil;
 import com.github.f4b6a3.tsid.exception.TsidCreatorException;
 import com.github.f4b6a3.tsid.strategy.TimestampStrategy;
 import com.github.f4b6a3.tsid.strategy.timestamp.DefaultTimestampStrategy;
+import com.github.f4b6a3.tsid.util.TsidConverter;
 
 /**
  * Factory that creates time sortable IDs (TSIDs).
@@ -119,7 +120,7 @@ public class TimeSortableIdCreator {
 	}
 
 	/**
-	 * Returns a TSID.
+	 * Returns a TSID with a node number.
 	 * 
 	 * @return a TSID.
 	 */
@@ -130,6 +131,28 @@ public class TimeSortableIdCreator {
 		final long count = this.counter & this.counterTrunc;
 
 		return time | node | count;
+	}
+
+	/**
+	 * Returns a TSID string.
+	 * 
+	 * The returning string is encoded to Crockford's base32.
+	 * 
+	 * @return a TSID.
+	 */
+	public synchronized String createString() {
+		return TsidConverter.toString(create());
+	}
+
+	/**
+	 * Returns a TSID string with a node number.
+	 * 
+	 * The returning string is encoded to Crockford's base32.
+	 * 
+	 * @return a TSID.
+	 */
+	public synchronized String createString(int nodeid) {
+		return TsidConverter.toString(create(nodeid));
 	}
 
 	/**

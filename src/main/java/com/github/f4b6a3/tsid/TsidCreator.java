@@ -25,7 +25,6 @@
 package com.github.f4b6a3.tsid;
 
 import com.github.f4b6a3.tsid.creator.TimeSortableIdCreator;
-import com.github.f4b6a3.tsid.util.TsidConverter;
 
 public class TsidCreator {
 
@@ -57,12 +56,12 @@ public class TsidCreator {
 	/**
 	 * Returns a TSID as string.
 	 * 
-	 * The returning string is encoded to Crockford's base 32.
+	 * The returning string is encoded to Crockford's base32.
 	 * 
 	 * @return a TSID
 	 */
 	public static String getTsidString() {
-		return TsidConverter.toString(getTsid());
+		return TimeSortableIdCreatorHolder.INSTANCE.createString();
 	}
 
 	/**
@@ -72,12 +71,12 @@ public class TsidCreator {
 	 * 
 	 * The maximum node identifiers is 2^10 = 1024.
 	 * 
-	 * The returning string is encoded to Crockford's base 32.
+	 * The returning string is encoded to Crockford's base32.
 	 * 
 	 * @return a TSID
 	 */
 	public static String getTsidString(int node) {
-		return TsidConverter.toString(getTsid(node));
+		return TimeSortableIdWithNodeCreatorHolder.INSTANCE.createString(node);
 	}
 
 	/**

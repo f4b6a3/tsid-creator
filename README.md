@@ -167,26 +167,26 @@ These are some examples of using the `TimeSortableIdCreator` to create TSIDs:
 
 // with a custom timestamp strategy
 TimestampStrategy customStrategy = new CustomTimestampStrategy();
-long tsid = TsidCreator.getTsidCreator()
+long tsid = TsidCreator.getTimeSortableIdCreator()
 	.withTimestampStrategy(customStrategy)
 	.createTsid();
 	
 // with a custom epoch (fall of the Berlin Wall)
 Instant customEpoch = Instant.parse("1989-11-09T00:00:00Z");
-long tsid = TsidCreator.getTsidCreator()
+long tsid = TsidCreator.getTimeSortableIdCreator()
 	.withCustomEpoch(customEpoch)
 	.createTsid();
 
 // with a fixed node number and an IMPLICIT node bit length of 10.
 int node = 256; // 0 to 2^10
-long tsid = TsidCreator.getTsidCreator()
+long tsid = TsidCreator.getTimeSortableIdCreator()
 	.withNodeIdentifier(node)
 	.createTsid();
 	
 // with a fixed node number and a CUSTOM node bit length.
 int length = 16;   // 0 to 20
 int node = 32768;  // 0 to 2^16
-long tsid = TsidCreator.getTsidCreator()
+long tsid = TsidCreator.getTimeSortableIdCreator()
 	.withNodeIdentifier(node, length)
 	.createTsid();
 
