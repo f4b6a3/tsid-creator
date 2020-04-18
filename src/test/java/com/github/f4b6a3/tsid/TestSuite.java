@@ -1,4 +1,4 @@
-package com.github.f4b6a3;
+package com.github.f4b6a3.tsid;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

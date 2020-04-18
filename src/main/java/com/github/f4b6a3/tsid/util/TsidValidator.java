@@ -77,7 +77,6 @@ public class TsidValidator {
 	 * </pre>
 	 * 
 	 * @param tsid   a TSID
-	 * @param strict true for strict validation, false for loose validation
 	 * @return boolean true if valid
 	 */
 	public static boolean isValid(String tsid) {
