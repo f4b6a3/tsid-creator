@@ -31,7 +31,7 @@ Add these lines to your `pom.xml`:
   <version>1.0.0</version>
 </dependency>
 ```
-See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator) and [mvnrepository.com](https://mvnrepository.com/artifact/com.github.f4b6a3/uuid-creator).
+See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator) and [mvnrepository.com](https://mvnrepository.com/artifact/com.github.f4b6a3/tsid-creator).
 
 Implementation
 ------------------------------------------------------
