@@ -19,6 +19,20 @@ int node = 255;
 long tsid = TsidCreator.getTsid(node);
 ```
 
+### Maven dependency
+
+Add these lines to your `pom.xml`:
+
+```xml
+<!-- https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator -->
+<dependency>
+  <groupId>com.github.f4b6a3</groupId>
+  <artifactId>tsid-creator</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
+See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator) and [mvnrepository.com](https://mvnrepository.com/artifact/com.github.f4b6a3/uuid-creator).
+
 Implementation
 ------------------------------------------------------
 
