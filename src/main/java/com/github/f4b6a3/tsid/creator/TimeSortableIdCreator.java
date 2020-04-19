@@ -26,11 +26,11 @@ package com.github.f4b6a3.tsid.creator;
 
 import java.time.Instant;
 
-import com.github.f4b6a3.commons.util.RandomUtil;
 import com.github.f4b6a3.tsid.exception.TsidCreatorException;
 import com.github.f4b6a3.tsid.strategy.TimestampStrategy;
 import com.github.f4b6a3.tsid.strategy.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.tsid.util.TsidConverter;
+import com.github.f4b6a3.util.RandomUtil;
 
 /**
  * Factory that creates time sortable IDs (TSIDs).

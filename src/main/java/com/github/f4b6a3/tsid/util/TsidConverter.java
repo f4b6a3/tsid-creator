@@ -24,8 +24,8 @@
 
 package com.github.f4b6a3.tsid.util;
 
-import com.github.f4b6a3.commons.util.Base32Util;
-import com.github.f4b6a3.commons.util.ByteUtil;
+import com.github.f4b6a3.util.Base32Util;
+import com.github.f4b6a3.util.ByteUtil;
 
 /**
  * Utility that converts TSIDs to and from strings and byte arrays.

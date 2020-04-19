@@ -8,7 +8,7 @@ import java.util.HashSet;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.commons.random.XorshiftRandom;
+import com.github.f4b6a3.util.random.XorshiftRandom;
 import com.github.f4b6a3.tsid.TsidCreator;
 import com.github.f4b6a3.tsid.exception.TsidCreatorException;
 import com.github.f4b6a3.tsid.strategy.TimestampStrategy;
