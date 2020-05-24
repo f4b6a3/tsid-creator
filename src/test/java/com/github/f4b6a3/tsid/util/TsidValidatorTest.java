@@ -56,14 +56,20 @@ public class TsidValidatorTest {
 		tsid = "0123456789ABCC"; // length: 14
 		assertFalse("tsid length greater than 13 should be invalid.", TsidValidator.isValid(tsid));
 
+		tsid = "i123456789ABC"; // Letter u
+		assertFalse("tsid with 'i' or 'I' should be invalid.", TsidValidator.isValid(tsid));
+		
+		tsid = "l123456789ABC"; // Letter u
+		assertFalse("tsid with 'i' or 'L' should be invalid.", TsidValidator.isValid(tsid));
+		
+		tsid = "o123456789ABC"; // Letter u
+		assertFalse("tsid with 'o' or 'O' should be invalid.", TsidValidator.isValid(tsid));
+		
 		tsid = "u123456789ABC"; // Letter u
 		assertFalse("tsid with 'u' or 'U' should be invalid.", TsidValidator.isValid(tsid));
 
 		tsid = "#123456789ABC"; // Special char
 		assertFalse("tsid with special chars should be invalid.", TsidValidator.isValid(tsid));
-
-		tsid = "01234-56789-ABC"; // Hiphens
-		assertTrue("tsid with hiphens should be valid.", TsidValidator.isValid(tsid));
 
 		try {
 			tsid = null;

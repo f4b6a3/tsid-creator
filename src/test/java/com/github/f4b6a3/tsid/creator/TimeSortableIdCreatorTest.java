@@ -5,10 +5,10 @@ import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Random;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.util.random.XorshiftRandom;
 import com.github.f4b6a3.tsid.TsidCreator;
 import com.github.f4b6a3.tsid.exception.TsidCreatorException;
 import com.github.f4b6a3.tsid.strategy.TimestampStrategy;
@@ -26,6 +26,8 @@ public class TimeSortableIdCreatorTest {
 	public static final int IMPLICIT_NODEID_LENGTH = 10;
 
 	private static final int DEFAULT_LOOP_MAX = 100_000;
+	
+	private static Random random = new Random();
 	
 	@Test
 	public void testGetTsid() {
@@ -54,7 +56,7 @@ public class TimeSortableIdCreatorTest {
 
 		long[] list = new long[counterMax];
 
-		int nodeid = (new XorshiftRandom()).nextInt();
+		int nodeid = random.nextInt();
 
 		long startTime = System.currentTimeMillis();
 
@@ -96,7 +98,7 @@ public class TimeSortableIdCreatorTest {
 
 		String[] list = new String[counterMax];
 
-		int nodeid = (new XorshiftRandom()).nextInt();
+		int nodeid = random.nextInt();
 
 		long startTime = System.currentTimeMillis();
 
@@ -147,7 +149,7 @@ public class TimeSortableIdCreatorTest {
 		final int counterLength = RANDOMNESS_LENGTH - nodeidLength;
 		final int counterMax = (int) Math.pow(2, counterLength);
 
-		int nodeid = (new XorshiftRandom()).nextInt();
+		int nodeid = random.nextInt();
 		long timestamp = TsidTimeUtil.getCurrentTimestamp();
 		TimestampStrategy strategy = new FixedTimestampStretegy(timestamp);
 		TimeSortableIdCreator creator = TsidCreator.getTimeSortableIdCreator().withTimestampStrategy(strategy)
@@ -172,7 +174,7 @@ public class TimeSortableIdCreatorTest {
 		final int counterLength = RANDOMNESS_LENGTH - nodeidLength;
 		final int counterMax = (int) Math.pow(2, counterLength);
 
-		int nodeid = (new XorshiftRandom()).nextInt();
+		int nodeid = random.nextInt();
 		long timestamp = TsidTimeUtil.getCurrentTimestamp();
 		TimestampStrategy strategy = new FixedTimestampStretegy(timestamp);
 		TimeSortableIdCreator creator = TsidCreator.getTimeSortableIdCreator().withTimestampStrategy(strategy)

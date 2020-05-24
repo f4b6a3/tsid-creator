@@ -24,8 +24,7 @@
 
 package com.github.f4b6a3.tsid.util;
 
-import com.github.f4b6a3.util.Base32Util;
-import com.github.f4b6a3.util.ByteUtil;
+import java.nio.ByteBuffer;
 
 /**
  * Utility that converts TSIDs to and from strings and byte arrays.
@@ -34,6 +33,11 @@ public class TsidConverter {
 
 	protected static final long TIMESTAMP_LENGTH = 42;
 	protected static final long RANDOMNESS_LENGTH = 22;
+
+	protected static final int BASE_32 = 32;
+
+	protected static final char[] ALPHABET_DEFAULT = "0123456789abcdefghijklmnopqrstuv".toCharArray();
+	protected static final char[] ALPHABET_CROCKFORD = "0123456789ABCDEFGHJKMNPQRSTVWXYZ".toCharArray();
 
 	private TsidConverter() {
 	}
@@ -46,7 +50,8 @@ public class TsidConverter {
 	 */
 	public static long fromString(String tsid) {
 		TsidValidator.validate(tsid);
-		return Base32Util.fromBase32CrockfordAsLong(tsid);
+		String string = transliterate(tsid.toUpperCase(), ALPHABET_CROCKFORD, ALPHABET_DEFAULT);
+		return Long.parseLong(string, BASE_32);
 	}
 
 	/**
@@ -56,7 +61,8 @@ public class TsidConverter {
 	 * @return a TSID string
 	 */
 	public static String toString(long tsid) {
-		return leftPad(Base32Util.toBase32Crockford(tsid));
+		String string = Long.toString(tsid, BASE_32);
+		return leftPad(transliterate(string, ALPHABET_DEFAULT, ALPHABET_CROCKFORD));
 	}
 
 	/**
@@ -66,7 +72,7 @@ public class TsidConverter {
 	 * @return a TSID number
 	 */
 	public static long fromBytes(byte[] tsid) {
-		return ByteUtil.toNumber(tsid);
+		return ByteBuffer.wrap(tsid).getLong();
 	}
 
 	/**
@@ -76,10 +82,22 @@ public class TsidConverter {
 	 * @return a TSID byte array
 	 */
 	public static byte[] toBytes(long tsid) {
-		return ByteUtil.toBytes(tsid);
+		return ByteBuffer.allocate(8).putLong(tsid).array();
 	}
 
 	private static String leftPad(String unpadded) {
 		return "0000000000000".substring(unpadded.length()) + unpadded;
+	}
+
+	private static String transliterate(String string, char[] alphabet1, char[] alphabet2) {
+		char[] chars = string.toCharArray();
+		for (int i = 0; i < chars.length; i++) {
+			for (int j = 0; j < alphabet1.length; j++) {
+				if (chars[i] == alphabet1[j]) {
+					chars[i] = alphabet2[j];
+				}
+			}
+		}
+		return new String(chars);
 	}
 }

@@ -24,11 +24,14 @@
 
 package com.github.f4b6a3.tsid.util;
 
+import java.util.regex.Pattern;
+
 import com.github.f4b6a3.tsid.exception.InvalidTsidException;
 
 public class TsidValidator {
 
-	protected static final String TSID_PATTERN = "^[0-9a-tv-zA-TV-Z]{13}$";
+	// 13 alphanumeric, case insensitive, except iI, lL, oO and uU
+	protected static final Pattern TSID_PATTERN = Pattern.compile("^[0-9a-hjkmnp-tv-zA-HJKMNP-TV-Z]{13}$");
 
 	private TsidValidator() {
 	}
@@ -65,18 +68,14 @@ public class TsidValidator {
 	 * A valid TSID string is a sequence of 13 characters from Crockford's base 32
 	 * alphabet.
 	 * 
-	 * Dashes are ignored by this validator.
-	 * 
 	 * <pre>
 	 * Examples of valid TSID strings:
 	 * 
-	 * - 0123456789ABC (13 alphanumeric, case insensitive, except iI, lL, oO and uU)
-	 * - 0123456789ABC (13 alphanumeric, case insensitive, except uU)
-	 * - 012-34567-89ABC (with dashes, 13 alphanumeric, case insensitive, except iI, lL, oO and uU)
-	 * - 01234-56789-ABC (with dashes, 13 alphanumeric, case insensitive, except uU)
+	 * - 0123456789ABC (13 alphanumeric, upper case, except I, L, O and U)
+	 * - 0123456789abc (13 alphanumeric, lower case, except i, l, o and u)
 	 * </pre>
 	 * 
-	 * @param tsid   a TSID
+	 * @param tsid a TSID
 	 * @return boolean true if valid
 	 */
 	public static boolean isValid(String tsid) {
@@ -85,8 +84,7 @@ public class TsidValidator {
 			return false;
 		}
 
-		String u = tsid.replace("-", "");
-		return u.matches(TSID_PATTERN);
+		return TSID_PATTERN.matcher(tsid).matches();
 	}
 
 	/**

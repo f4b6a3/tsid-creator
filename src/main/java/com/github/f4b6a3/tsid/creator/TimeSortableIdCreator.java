@@ -24,13 +24,14 @@
 
 package com.github.f4b6a3.tsid.creator;
 
+import java.security.SecureRandom;
 import java.time.Instant;
+import java.util.Random;
 
 import com.github.f4b6a3.tsid.exception.TsidCreatorException;
 import com.github.f4b6a3.tsid.strategy.TimestampStrategy;
 import com.github.f4b6a3.tsid.strategy.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.tsid.util.TsidConverter;
-import com.github.f4b6a3.util.RandomUtil;
 
 /**
  * Factory that creates time sortable IDs (TSIDs).
@@ -85,6 +86,8 @@ public class TimeSortableIdCreator {
 	protected static final int RANDOMNESS_MASK = 0x003fffff;
 
 	protected static final String OVERRUN_MESSAGE = "The system overran the generator by requesting too many TSIDs.";
+	
+	protected static final ThreadLocal<Random> THREAD_LOCAL_RANDOM = ThreadLocal.withInitial(SecureRandom::new);
 
 	/**
 	 * Construct a {@link TimeSortableIdCreator}.
@@ -205,7 +208,7 @@ public class TimeSortableIdCreator {
 	protected synchronized void reset() {
 
 		// Update the counter with a random value
-		this.counter = RandomUtil.get().nextInt() & this.counterTrunc;
+		this.counter = THREAD_LOCAL_RANDOM.get().nextInt() & this.counterTrunc;
 
 		// Update the maximum incrementing value
 		this.incrementLimit = this.counter | (0x00000001 << this.counterLength);
