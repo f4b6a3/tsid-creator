@@ -12,7 +12,7 @@ Create a TSID:
 long tsid = TsidCreator.getTsid();
 ```
 
-Create a TSID with node number:
+Create a TSID with node identifier:
 
 ```java
 int node = 255;
@@ -28,10 +28,10 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>tsid-creator</artifactId>
-  <version>1.0.2</version>
+  <version>2.0.0</version>
 </dependency>
 ```
-See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator) and [mvnrepository.com](https://mvnrepository.com/artifact/com.github.f4b6a3/tsid-creator).
+See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator).
 
 Implementation
 ------------------------------------------------------
@@ -50,15 +50,15 @@ The time component is the number of milliseconds since 2020-01-01 00:00:00 UTC.
 The random component may have 2 sub-parts:
 
 - Node ID (0 to 20 bits)
-- Counter (2 to 22 bits) 
-
-By default the node identifier bit length is 0 and the counter bit length is 22. So the node ID is disabled by default. All the bits of the random component are dedicated to a counter that is started with a random value. The maximum counter value is 2^22 = 4,194,304. So the maximum number of TSIDs that can be generated within the same millisecond is about 4 million.
+- Counter (2 to 22 bits)
 
 The counter bit length depends on the node identifier bit length. If the node identifier bit length is 10, the counter bit length is limited to 12. In this example, the maximum node identifier value is 2^10 = 1024 and the maximum counter value is 2^12 = 4096. So the maximum TSIDs that can be generated per millisecond is about 4 thousand.
 
-##### TSID structure (default)
+When the node ID is not used, all the 22 bits of the random component are dedicated to a counter that is started with a random value. In this case maximum counter value is 2^22 = 4,194,304. So the maximum number of TSIDs that can be generated within the same millisecond is about 4 million.
 
-This is the default structure:
+##### TSID default WITHOUT node identifier
+
+This is the structure without node identifier:
 
 ```
 |------------------------------------------|----------------------|
@@ -69,9 +69,9 @@ This is the default structure:
 - counter: 2^22 = 4,194,304 (initially random)
 ```
 
-The node identifier is disabled. All bits from the random component are dedicated to the counter.
+The node identifier not used. All bits from the random component are dedicated to the counter.
 
-##### TSID structure WITH node ID
+##### TSID structure WITH node identifier
 
 This is the structure with node identifier:
 
@@ -91,7 +91,7 @@ The node Id is adjustable from 0 to 20 bits.
 The node id bit length affects the counter bit length.
 ```
 
-The node identifier uses 10 bits of the random component. It's possible to adjust the node bit length to a value between 0 and 20. The counter bit length is affected by the node bit length.
+The node identifier uses 10 bits of the random component by default. It's possible to adjust the node bit length to a value between 0 and 20. The counter bit length is affected by the node bit length.
 
 ##### Examples
 
@@ -101,7 +101,7 @@ long tsid = TsidCreator.getTsid();
 ```
 
 ```java
-// Create a TSID with node number
+// Create a TSID with node identifier
 int node = 42;
 long tsid = TsidCreator.getTsid(node);
 ```
@@ -143,7 +143,7 @@ long tsid = TsidCreator.getTsidString();
 ```
 
 ```java
-// Create a TSID string with node number
+// Create a TSID string with node identifier
 int node = 753;
 long tsid = TsidCreator.getTsidString(node);
 ```
@@ -173,36 +173,34 @@ Examples of TSID strings:
    time random
 ```
 
-#### How use the `TimeSortableIdCreator` directly
+#### How use the `TimeIdCreator` directly
 
-These are some examples of using the `TimeSortableIdCreator` to create TSIDs:
+These are some examples of using the `TimeIdCreator` to create TSIDs:
 
 ```java
 
-// with a custom timestamp strategy
+// with a CUSTOM timestamp strategy
 TimestampStrategy customStrategy = new CustomTimestampStrategy();
-long tsid = TsidCreator.getTimeSortableIdCreator()
+long tsid = TsidCreator.getTimeIdCreator()
 	.withTimestampStrategy(customStrategy)
-	.createTsid();
+	.create();
 	
-// with a custom epoch (fall of the Berlin Wall)
+// with a CUSTOM epoch (fall of the Berlin Wall)
 Instant customEpoch = Instant.parse("1989-11-09T00:00:00Z");
-long tsid = TsidCreator.getTimeSortableIdCreator()
+long tsid = TsidCreator.getTimeIdCreator()
 	.withCustomEpoch(customEpoch)
-	.createTsid();
+	.create();
 
-// with a fixed node number and an IMPLICIT node bit length of 10.
-int node = 256; // 0 to 2^10
-long tsid = TsidCreator.getTimeSortableIdCreator()
-	.withNodeIdentifier(node)
-	.createTsid();
+// with a FIXED node identifier
+int node = 256; // max: 2^10
+long tsid = TsidCreator.getTimeIdCreator(node)
+	.create();
 	
-// with a fixed node number and a CUSTOM node bit length.
-int length = 16;   // 0 to 20
-int node = 32768;  // 0 to 2^16
-long tsid = TsidCreator.getTimeSortableIdCreator()
-	.withNodeIdentifier(node, length)
-	.createTsid();
+// with a FIXED node identifier and a CUSTOM node bit length.
+int length = 16;   // max: 20
+int node = 32768;  // max: 2^length
+long tsid = TsidCreator.getTimeIdCreator(node, length)
+	.create();
 
 ```
 

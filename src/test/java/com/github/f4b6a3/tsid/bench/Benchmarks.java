@@ -1,6 +1,6 @@
 package com.github.f4b6a3.tsid.bench;
 
-// Add theese dependencies to pom.xml:
+// Add these dependencies to pom.xml:
 //
 //		<dependency>
 //			<groupId>org.openjdk.jmh</groupId>
@@ -35,7 +35,7 @@ import com.github.f4b6a3.tsid.TsidCreator;
 
 @Threads(1)
 @State(Scope.Thread)
-@Warmup(iterations = 1)
+@Warmup(iterations = 3)
 @Measurement(iterations = 5)
 public class Benchmarks {
 
@@ -46,12 +46,12 @@ public class Benchmarks {
 		return TsidCreator.getTsid();
 	}
 
-	@Benchmark
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	public long getTsidAverage() {
-		return TsidCreator.getTsid();
-	}
+//	@Benchmark
+//	@BenchmarkMode(Mode.AverageTime)
+//	@OutputTimeUnit(TimeUnit.NANOSECONDS)
+//	public long getTsidAverage() {
+//		return TsidCreator.getTsid();
+//	}
 
 	@Benchmark
 	@BenchmarkMode(Mode.Throughput)
@@ -60,12 +60,12 @@ public class Benchmarks {
 		return TsidCreator.getTsidString();
 	}
 
-	@Benchmark
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	public String getTsidStringAverage() {
-		return TsidCreator.getTsidString();
-	}
+//	@Benchmark
+//	@BenchmarkMode(Mode.AverageTime)
+//	@OutputTimeUnit(TimeUnit.NANOSECONDS)
+//	public String getTsidStringAverage() {
+//		return TsidCreator.getTsidString();
+//	}
 
 	@Benchmark
 	@BenchmarkMode(Mode.Throughput)
@@ -74,12 +74,12 @@ public class Benchmarks {
 		return UUID.randomUUID();
 	}
 
-	@Benchmark
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	public UUID getRandomUUIDAverage() {
-		return UUID.randomUUID();
-	}
+//	@Benchmark
+//	@BenchmarkMode(Mode.AverageTime)
+//	@OutputTimeUnit(TimeUnit.NANOSECONDS)
+//	public UUID getRandomUUIDAverage() {
+//		return UUID.randomUUID();
+//	}
 
 	public static void main(String[] args) throws RunnerException {
 		Options opt = new OptionsBuilder().include(Benchmarks.class.getSimpleName()).forks(1).build();
@@ -88,3 +88,5 @@ public class Benchmarks {
 }
 
 */
+
+

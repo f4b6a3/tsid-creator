@@ -22,47 +22,44 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.tsid.strategy.timestamp;
+package com.github.f4b6a3.tsid.creator.impl;
 
-import java.time.Instant;
-
-import com.github.f4b6a3.tsid.strategy.TimestampStrategy;
-import com.github.f4b6a3.tsid.util.TsidTimeUtil;
+import com.github.f4b6a3.tsid.creator.AbstractTimeIdCreator;
 
 /**
- * Strategy that provides the current timestamp.
+ * Factory that creates time sortable IDs (TSIDs).
  * 
- * The default epoch is 2020-01-01 00:00:00Z (TSID epoch).
+ * All 22 bits from the random component are dedicated for the counter sub-part.
  * 
- * One can use a custom epoch if the default is not desired.
+ * The node identifier sub-part is disabled, i.e., it's bit length is ZERO.
  * 
+ * The maximum TSIDs that can be generated per millisecond is about 4 million.
+ * 
+ * These are the random component settings:
+ * 
+ * - Node identifier bit length: N/A;
+ * 
+ * - Maximum node value: N/A;
+ * 
+ * - Counter bit length: 22;
+ * 
+ * - Maximum counter value: 2^22 = 4,194,304.
  */
-public class DefaultTimestampStrategy implements TimestampStrategy {
+public class DefaultTimeIdCreator extends AbstractTimeIdCreator {
 
-	protected Long customEpoch;
-
-	public DefaultTimestampStrategy() {
-	}
-
-	/**
-	 * Use a custom epoch instead of the default.
-	 * 
-	 * @param customEpoch the custom epoch milliseconds
-	 */
-	public DefaultTimestampStrategy(Instant customEpoch) {
-		this.customEpoch = customEpoch.toEpochMilli();
-	}
-
-	/**
-	 * Returns the number of milliseconds since 2020-01-01 00:00:00Z (TSID epoch) or
-	 * since a custom epoch.
-	 */
 	@Override
-	public long getTimestamp() {
-		if (this.customEpoch == null) {
-			return TsidTimeUtil.getCurrentTimestamp();
-		} else {
-			return TsidTimeUtil.getCurrentTimestamp(this.customEpoch);
-		}
+	public synchronized long create() {
+		final long time = getTimestamp() << RANDOMNESS_LENGTH;
+		return time | this.counter;
+	}
+
+	@Override
+	protected synchronized void reset() {
+
+		// Update the counter with a random value
+		this.counter = THREAD_LOCAL_RANDOM.get().nextInt() & RANDOMNESS_TRUNC;
+
+		// Update the maximum incrementing value
+		this.incrementLimit = this.counter | (0x00000001 << RANDOMNESS_LENGTH);
 	}
 }

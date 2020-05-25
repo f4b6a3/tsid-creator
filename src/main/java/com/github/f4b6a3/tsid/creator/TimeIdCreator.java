@@ -22,47 +22,19 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.tsid.strategy.timestamp;
+package com.github.f4b6a3.tsid.creator;
 
 import java.time.Instant;
 
 import com.github.f4b6a3.tsid.strategy.TimestampStrategy;
-import com.github.f4b6a3.tsid.util.TsidTimeUtil;
 
-/**
- * Strategy that provides the current timestamp.
- * 
- * The default epoch is 2020-01-01 00:00:00Z (TSID epoch).
- * 
- * One can use a custom epoch if the default is not desired.
- * 
- */
-public class DefaultTimestampStrategy implements TimestampStrategy {
+public interface TimeIdCreator {
 
-	protected Long customEpoch;
+	public long create();
 
-	public DefaultTimestampStrategy() {
-	}
+	public String createString();
 
-	/**
-	 * Use a custom epoch instead of the default.
-	 * 
-	 * @param customEpoch the custom epoch milliseconds
-	 */
-	public DefaultTimestampStrategy(Instant customEpoch) {
-		this.customEpoch = customEpoch.toEpochMilli();
-	}
+	public <T extends TimeIdCreator> T withCustomEpoch(Instant customEpoch);
 
-	/**
-	 * Returns the number of milliseconds since 2020-01-01 00:00:00Z (TSID epoch) or
-	 * since a custom epoch.
-	 */
-	@Override
-	public long getTimestamp() {
-		if (this.customEpoch == null) {
-			return TsidTimeUtil.getCurrentTimestamp();
-		} else {
-			return TsidTimeUtil.getCurrentTimestamp(this.customEpoch);
-		}
-	}
+	public <T extends TimeIdCreator> T withTimestampStrategy(TimestampStrategy timestampStrategy);
 }

@@ -7,7 +7,7 @@ import java.time.Instant;
 import org.junit.Test;
 
 import com.github.f4b6a3.tsid.TsidCreator;
-import com.github.f4b6a3.tsid.creator.TimeSortableIdCreator;
+import com.github.f4b6a3.tsid.creator.TimeIdCreator;
 import com.github.f4b6a3.tsid.strategy.TimestampStrategy;
 import com.github.f4b6a3.tsid.strategy.timestamp.FixedTimestampStretegy;
 
@@ -31,7 +31,7 @@ public class TsidUtilTest {
 		Instant customEpoch = Instant.parse("1984-01-01T00:00:00Z");
 
 		long start = System.currentTimeMillis();
-		long tsid = TsidCreator.getTimeSortableIdCreator().withCustomEpoch(customEpoch.toEpochMilli()).create();
+		long tsid = TsidCreator.getTimeIdCreator().withCustomEpoch(customEpoch).create();
 		long middle = TsidUtil.extractUnixMilliseconds(tsid, customEpoch.toEpochMilli());
 		long end = System.currentTimeMillis();
 
@@ -57,7 +57,7 @@ public class TsidUtilTest {
 		Instant customEpoch = Instant.parse("2015-10-23T00:00:00Z");
 
 		Instant start = Instant.now();
-		long tsid = TsidCreator.getTimeSortableIdCreator().withCustomEpoch(customEpoch).create();
+		long tsid = TsidCreator.getTimeIdCreator().withCustomEpoch(customEpoch).create();
 		Instant middle = TsidUtil.extractInstant(tsid, customEpoch);
 		Instant end = Instant.now();
 
@@ -66,18 +66,17 @@ public class TsidUtilTest {
 	}
 
 	@Test
-	public void testExtractNodeIdentifierImplicitBitLength() {
+	public void testExtractNodeIdentifierDefaultBitLength() {
 
-		final int nodeidLength = 10; // implicit bit length
+		final int nodeidLength = 10; // default bit length
 		final int nodeidMax = (int) Math.pow(2, nodeidLength);
 
 		long timestamp = TsidTimeUtil.getCurrentTimestamp();
 		TimestampStrategy strategy = new FixedTimestampStretegy(timestamp);
 
-		// The implicit node identifier bit length is 10 (2^10 = 1024)
+		// The default node identifier bit length is 10 (2^10 = 1024)
 		for (int nodeid = 0; nodeid < nodeidMax; nodeid++) {
-			TimeSortableIdCreator creator = TsidCreator.getTimeSortableIdCreator().withTimestampStrategy(strategy)
-					.withNodeIdentifier(nodeid);
+			TimeIdCreator creator = TsidCreator.getTimeIdCreator(nodeid).withTimestampStrategy(strategy);
 			long tsid = creator.create();
 			int result = TsidUtil.extractNodeIdentifier(tsid);
 			assertEquals(nodeid, result);
@@ -94,8 +93,7 @@ public class TsidUtilTest {
 		TimestampStrategy strategy = new FixedTimestampStretegy(timestamp);
 
 		for (int nodeid = 0; nodeid < nodeidMax; nodeid++) {
-			TimeSortableIdCreator creator = TsidCreator.getTimeSortableIdCreator().withTimestampStrategy(strategy)
-					.withNodeIdentifier(nodeid, nodeidLength);
+			TimeIdCreator creator = TsidCreator.getTimeIdCreator(nodeid, nodeidLength).withTimestampStrategy(strategy);
 			long tsid = creator.create();
 
 			int result = TsidUtil.extractNodeIdentifier(tsid, nodeidLength);

@@ -17,18 +17,18 @@ import com.github.f4b6a3.tsid.util.TsidTimeUtil;
 import com.github.f4b6a3.tsid.util.TsidUtil;
 import com.github.f4b6a3.tsid.util.TsidValidator;
 
-public class TimeSortableIdCreatorTest {
+public class TimeIdCreatorTest {
 
 	private static final int TSID_LENGTH = 13;
 
 	public static final int TIMESTAMP_LENGTH = 42;
 	public static final int RANDOMNESS_LENGTH = 22;
-	public static final int IMPLICIT_NODEID_LENGTH = 10;
+	public static final int DEFAULT_NODEID_LENGTH = 10;
 
 	private static final int DEFAULT_LOOP_MAX = 100_000;
-	
+
 	private static Random random = new Random();
-	
+
 	@Test
 	public void testGetTsid() {
 		long[] list = new long[DEFAULT_LOOP_MAX];
@@ -50,7 +50,7 @@ public class TimeSortableIdCreatorTest {
 	@Test
 	public void testGetTsidWithNode() {
 
-		final int nodeidLength = IMPLICIT_NODEID_LENGTH;
+		final int nodeidLength = DEFAULT_NODEID_LENGTH;
 		final int counterLength = RANDOMNESS_LENGTH - nodeidLength;
 		final int counterMax = (int) Math.pow(2, counterLength);
 
@@ -92,7 +92,7 @@ public class TimeSortableIdCreatorTest {
 	@Test
 	public void testGetTsidStringWithNode() {
 
-		final int nodeidLength = IMPLICIT_NODEID_LENGTH;
+		final int nodeidLength = DEFAULT_NODEID_LENGTH;
 		final int counterLength = RANDOMNESS_LENGTH - nodeidLength;
 		final int counterMax = (int) Math.pow(2, counterLength);
 
@@ -128,7 +128,7 @@ public class TimeSortableIdCreatorTest {
 
 		long timestamp = TsidTimeUtil.getCurrentTimestamp();
 		TimestampStrategy strategy = new FixedTimestampStretegy(timestamp);
-		TimeSortableIdCreator creator = TsidCreator.getTimeSortableIdCreator().withTimestampStrategy(strategy);
+		TimeIdCreator creator = TsidCreator.getTimeIdCreator().withTimestampStrategy(strategy);
 
 		for (int i = 0; i < counterMax; i++) {
 			creator.create();
@@ -143,17 +143,16 @@ public class TimeSortableIdCreatorTest {
 	}
 
 	@Test
-	public void testOverrunExceptionImplicitBitLength() {
+	public void testOverrunExceptionDefaultBitLength() {
 
-		final int nodeidLength = IMPLICIT_NODEID_LENGTH;
+		final int nodeidLength = DEFAULT_NODEID_LENGTH;
 		final int counterLength = RANDOMNESS_LENGTH - nodeidLength;
 		final int counterMax = (int) Math.pow(2, counterLength);
 
 		int nodeid = random.nextInt();
 		long timestamp = TsidTimeUtil.getCurrentTimestamp();
 		TimestampStrategy strategy = new FixedTimestampStretegy(timestamp);
-		TimeSortableIdCreator creator = TsidCreator.getTimeSortableIdCreator().withTimestampStrategy(strategy)
-				.withNodeIdentifier(nodeid);
+		TimeIdCreator creator = TsidCreator.getTimeIdCreator(nodeid).withTimestampStrategy(strategy);
 
 		for (int i = 0; i < counterMax; i++) {
 			creator.create();
@@ -177,8 +176,7 @@ public class TimeSortableIdCreatorTest {
 		int nodeid = random.nextInt();
 		long timestamp = TsidTimeUtil.getCurrentTimestamp();
 		TimestampStrategy strategy = new FixedTimestampStretegy(timestamp);
-		TimeSortableIdCreator creator = TsidCreator.getTimeSortableIdCreator().withTimestampStrategy(strategy)
-				.withNodeIdentifier(nodeid, nodeidLength);
+		TimeIdCreator creator = TsidCreator.getTimeIdCreator(nodeid, nodeidLength).withTimestampStrategy(strategy);
 
 		for (int i = 0; i < counterMax; i++) {
 			creator.create();
@@ -250,7 +248,6 @@ public class TimeSortableIdCreatorTest {
 		long[] other = Arrays.copyOf(list, list.length);
 		Arrays.sort(other);
 
-		// FIXME: some times this test fails using mvn 'test'
 		for (int i = 0; i < list.length; i++) {
 			assertTrue("The TSID list is not ordered", list[i] == other[i]);
 		}

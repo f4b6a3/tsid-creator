@@ -3,7 +3,7 @@ package com.github.f4b6a3.tsid;
 import java.util.HashSet;
 
 import com.github.f4b6a3.tsid.TsidCreator;
-import com.github.f4b6a3.tsid.creator.TimeSortableIdCreator;
+import com.github.f4b6a3.tsid.creator.TimeIdCreator;
 import com.github.f4b6a3.tsid.exception.TsidCreatorException;
 import com.github.f4b6a3.tsid.strategy.timestamp.FixedTimestampStretegy;
 import com.github.f4b6a3.tsid.util.TsidConverter;
@@ -27,7 +27,7 @@ public class UniquenessTest {
 
 	private boolean verbose; // Show progress or not
 
-	private TimeSortableIdCreator creator;
+	private TimeIdCreator creator;
 
 	/**
 	 * Initialize the test.
@@ -36,7 +36,7 @@ public class UniquenessTest {
 	 * @param requestCount
 	 * @param creator
 	 */
-	public UniquenessTest(int threadCount, int requestCount, TimeSortableIdCreator creator, boolean progress) {
+	public UniquenessTest(int threadCount, int requestCount, TimeIdCreator creator, boolean progress) {
 		this.threadCount = threadCount;
 		this.requestCount = requestCount;
 		this.creator = creator;
@@ -127,7 +127,7 @@ public class UniquenessTest {
 	}
 
 	public static void execute(boolean verbose, int threadCount, int requestCount) {
-		TimeSortableIdCreator creator = TsidCreator.getTimeSortableIdCreator()
+		TimeIdCreator creator = TsidCreator.getTimeIdCreator()
 				.withTimestampStrategy(new FixedTimestampStretegy(TsidTimeUtil.getCurrentTimestamp()));
 
 		UniquenessTest test = new UniquenessTest(threadCount, requestCount, creator, verbose);

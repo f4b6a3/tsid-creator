@@ -34,7 +34,7 @@ public class TsidUtil {
 
 	protected static final long TIMESTAMP_LENGTH = 42;
 	protected static final long RANDOMNESS_LENGTH = 22;
-	public static final int IMPLICIT_NODEID_LENGTH = 10;
+	public static final int DEFAULT_NODEID_LENGTH = 10;
 
 	protected static final int RANDOMNESS_MASK = 0x003fffff;
 
@@ -144,8 +144,8 @@ public class TsidUtil {
 	/**
 	 * Returns the node identifier.
 	 * 
-	 * The IMPLICIT bit length for node identifiers is 10. The maximum number of
-	 * nodes using this implicit bit length is 2^10 = 1,024.
+	 * The DEFAULT bit length for node identifiers is 10. The maximum number of
+	 * nodes using this default bit length is 2^10 = 1,024.
 	 * 
 	 * This method shouldn't be used for TSIDs created with different node
 	 * identifier bit lengths.
@@ -154,7 +154,7 @@ public class TsidUtil {
 	 * @return the node identifier
 	 */
 	public static int extractNodeIdentifier(long tsid) {
-		return (int) extractNodeIdentifier(tsid, IMPLICIT_NODEID_LENGTH);
+		return (int) extractNodeIdentifier(tsid, DEFAULT_NODEID_LENGTH);
 	}
 
 	/**
