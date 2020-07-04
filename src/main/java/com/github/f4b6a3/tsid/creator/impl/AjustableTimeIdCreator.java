@@ -25,7 +25,6 @@
 package com.github.f4b6a3.tsid.creator.impl;
 
 import com.github.f4b6a3.tsid.creator.AbstractTimeIdCreator;
-import com.github.f4b6a3.tsid.strategy.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.tsid.util.TsidConverter;
 
 /**
@@ -40,36 +39,35 @@ import com.github.f4b6a3.tsid.util.TsidConverter;
  * can be generated per millisecond is about 4 thousand.
  * 
  */
-public class AdjustableNodeTimeIdCreator extends AbstractTimeIdCreator {
+public final class AjustableTimeIdCreator extends AbstractTimeIdCreator {
 
-	protected int nodeidLength = 0;
-	protected int counterLength = 0;
+	private int nodeidLength = 0;
+	private int counterLength = 0;
 
-	protected int nodeidTrunc = 0x00000000;
-	protected int counterTrunc = 0x00000000;
+	private int nodeidTrunc = 0x00000000;
+	private int counterTrunc = 0x00000000;
 
 	/**
-	 * Construct an instance of {@link AdjustableNodeTimeIdCreator}.
+	 * Construct an instance of {@link AjustableTimeIdCreator}.
 	 * 
 	 * Many other fields are setup according to these two arguments.
 	 * 
 	 * @param nodeid       the node identifier
 	 * @param nodeidLength the node bit length
 	 */
-	public AdjustableNodeTimeIdCreator(int nodeid, int nodeidLength) {
-		this.timestampStrategy = new DefaultTimestampStrategy();
+	public AjustableTimeIdCreator(int nodeid, int nodeidLength) {
+		super();
 		this.setupRandomComponent(nodeid, nodeidLength);
-		this.reset();
 	}
 
 	/**
-	 * Construct an instance of {@link AdjustableNodeTimeIdCreator}.
+	 * Construct an instance of {@link AjustableTimeIdCreator}.
 	 * 
 	 * The default node identifier is random.
 	 * 
 	 * The default node identifier bit length is 10.
 	 */
-	public AdjustableNodeTimeIdCreator() {
+	public AjustableTimeIdCreator() {
 		this(THREAD_LOCAL_RANDOM.get().nextInt(), DEFAULT_NODEID_LENGTH);
 	}
 
@@ -77,9 +75,9 @@ public class AdjustableNodeTimeIdCreator extends AbstractTimeIdCreator {
 	public synchronized long create() {
 		return this.create(this.nodeid);
 	}
-	
+
 	public synchronized long create(int nodeid) {
-		return create(nodeid & this.nodeidTrunc, this.counter, this.counterLength);
+		return create(nodeid & this.nodeidTrunc, this.counterLength);
 	}
 
 	public synchronized String createString(int nodeid) {
@@ -88,12 +86,7 @@ public class AdjustableNodeTimeIdCreator extends AbstractTimeIdCreator {
 
 	@Override
 	protected synchronized void reset() {
-
-		// Update the counter with a random value
-		this.counter = THREAD_LOCAL_RANDOM.get().nextInt() & this.counterTrunc;
-
-		// Update the maximum incrementing value
-		this.incrementLimit = this.counter | (0x00000001 << this.counterLength);
+		this.reset(this.counterTrunc, this.counterLength);
 	}
 
 	/**
@@ -117,7 +110,7 @@ public class AdjustableNodeTimeIdCreator extends AbstractTimeIdCreator {
 	 * @param nodeidLength the node identifier bit length
 	 * @throws IllegalArgumentException if the bit length is out of range [0, 20]
 	 */
-	protected synchronized void setupRandomComponent(final int nodeid, final int nodeidLength) {
+	private synchronized void setupRandomComponent(final int nodeid, final int nodeidLength) {
 
 		// Check if the node identifier bit length between 0 and 20 (inclusive)
 		if (nodeidLength < 0 || nodeidLength > 20) {

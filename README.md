@@ -28,7 +28,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>tsid-creator</artifactId>
-  <version>2.0.0</version>
+  <version>2.1.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator).
@@ -36,7 +36,7 @@ See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b
 Implementation
 ------------------------------------------------------
 
-### TSID number
+### TSID as number
 
 The term TSID stands for (rougthly) Time Sortable ID. A TSID is a number that is formed by a creation time followed by random bits.
 
@@ -56,7 +56,7 @@ The counter bit length depends on the node identifier bit length. If the node id
 
 When the node ID is not used, all the 22 bits of the random component are dedicated to a counter that is started with a random value. In this case maximum counter value is 2^22 = 4,194,304. So the maximum number of TSIDs that can be generated within the same millisecond is about 4 million.
 
-##### TSID default WITHOUT node identifier
+##### TSID structure WITHOUT node identifier
 
 This is the structure without node identifier:
 
@@ -131,7 +131,7 @@ Examples of TSIDs:
    time   random
 ```
 
-### TSID string
+### TSID as string
 
 The TSID string is a TSID number encoded to Crockford's base 32. It is a sequence of 13 characters.
 
@@ -204,3 +204,41 @@ long tsid = TsidCreator.getTimeIdCreator(node, length)
 
 ```
 
+Benchmark
+------------------------------------------------------
+
+This section shows benchmarks comparing `TsidCreator` to `java.util.UUID`.
+
+```
+---------------------------------------------------------------------------
+THROUGHPUT                         Mode  Cnt      Score     Error   Units
+---------------------------------------------------------------------------
+Throughput.Java_RandomBased        thrpt    5   2234,199 ±   2,844  ops/ms
+Throughput.TsidCreator_Tsid        thrpt    5  32864,576 ± 129,848  ops/ms
+Throughput.TsidCreator_TsidString  thrpt    5  11543,968 ± 103,472  ops/ms
+---------------------------------------------------------------------------
+Total time: 00:06:41
+---------------------------------------------------------------------------
+```
+
+```
+----------------------------------------------------------------------
+AVERAGE TIME                        Mode  Cnt    Score   Error  Units
+----------------------------------------------------------------------
+AverageTime.Java_RandomBased        avgt    5  449,641 ± 0,994  ns/op
+AverageTime.TsidCreator_Tsid        avgt    5   30,478 ± 0,260  ns/op
+AverageTime.TsidCreator_TsidString  avgt    5   85,799 ± 0,289  ns/op
+----------------------------------------------------------------------
+Total time: 00:06:41
+----------------------------------------------------------------------
+```
+
+System: CPU i5-3330, 8G RAM, Ubuntu 20.04.
+
+See: [uuid-creator-benchmark](https://github.com/fabiolimace/uuid-creator-benchmark)
+
+Links for generators
+-------------------------------------------
+* [UUID Creator](https://github.com/f4b6a3/uuid-creator)
+* [ULID Creator](https://github.com/f4b6a3/ulid-creator)
+* [TSID Creator](https://github.com/f4b6a3/tsid-creator)

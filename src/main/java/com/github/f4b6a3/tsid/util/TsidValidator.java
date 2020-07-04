@@ -24,42 +24,13 @@
 
 package com.github.f4b6a3.tsid.util;
 
-import java.util.regex.Pattern;
-
 import com.github.f4b6a3.tsid.exception.InvalidTsidException;
 
-public class TsidValidator {
+import static com.github.f4b6a3.tsid.util.TsidUtil.*;
 
-	// 13 alphanumeric, case insensitive, except iI, lL, oO and uU
-	protected static final Pattern TSID_PATTERN = Pattern.compile("^[0-9a-hjkmnp-tv-zA-HJKMNP-TV-Z]{13}$");
+public final class TsidValidator {
 
 	private TsidValidator() {
-	}
-
-	/**
-	 * Checks if the UUID byte array is valid.
-	 * 
-	 * A valid TSID byte array is a not null sequence of 8 bytes.
-	 * 
-	 * @param tsid a UUID byte array
-	 * @return true if valid, false if invalid
-	 */
-	protected static boolean isValid(byte[] tsid) {
-		return tsid != null && tsid.length == 8;
-	}
-
-	/**
-	 * Checks if the TSID byte array is valid.
-	 * 
-	 * See {@link TsidValidator#isValid(byte[])}
-	 * 
-	 * @param tsid a TSID
-	 * @throws InvalidTsidException if invalid
-	 */
-	public static void validate(byte[] tsid) {
-		if (!isValid(tsid)) {
-			throw new InvalidTsidException("Invalid TSID byte array.");
-		}
 	}
 
 	/**
@@ -71,8 +42,10 @@ public class TsidValidator {
 	 * <pre>
 	 * Examples of valid TSID strings:
 	 * 
-	 * - 0123456789ABC (13 alphanumeric, upper case, except I, L, O and U)
-	 * - 0123456789abc (13 alphanumeric, lower case, except i, l, o and u)
+	 * - 0123456789ABC (13 alphanumeric, case insensitive, except U)
+	 * - 0123456789OIL (13 alphanumeric, case insensitive, including OIL, except U)
+	 * - 0123-4567-89ABC (13 alphanumeric, case insensitive, except U, with hyphens)
+	 * - 0123-4567-89OIL (13 alphanumeric, case insensitive, including OIL, except U, with hyphens)
 	 * </pre>
 	 * 
 	 * @param tsid a TSID
@@ -80,11 +53,12 @@ public class TsidValidator {
 	 */
 	public static boolean isValid(String tsid) {
 
-		if (tsid == null || tsid.isEmpty()) {
+		if (tsid == null) {
 			return false;
 		}
 
-		return TSID_PATTERN.matcher(tsid).matches();
+		char[] chars = removeHyphens(tsid.toCharArray());
+		return (chars.length == TSID_CHAR_LENGTH && isCrockfordBase32(chars));
 	}
 
 	/**

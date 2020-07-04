@@ -1,11 +1,15 @@
 package com.github.f4b6a3.tsid.creator;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -17,7 +21,7 @@ import com.github.f4b6a3.tsid.util.TsidTimeUtil;
 import com.github.f4b6a3.tsid.util.TsidUtil;
 import com.github.f4b6a3.tsid.util.TsidValidator;
 
-public class TimeIdCreatorTest {
+public class AbstractTimeIdCreatorTest {
 
 	private static final int TSID_LENGTH = 13;
 
@@ -28,6 +32,18 @@ public class TimeIdCreatorTest {
 	private static final int DEFAULT_LOOP_MAX = 100_000;
 
 	private static Random random = new Random();
+	
+	protected static final String DUPLICATE_UUID_MSG = "A duplicate TSID was created";
+	
+	protected static final int THREAD_TOTAL = availableProcessors();
+
+	private static int availableProcessors() {
+		int processors = Runtime.getRuntime().availableProcessors();
+		if (processors < 4) {
+			processors = 4;
+		}
+		return processors;
+	}
 
 	@Test
 	public void testGetTsid() {
@@ -115,7 +131,7 @@ public class TimeIdCreatorTest {
 
 	private void checkNullOrInvalid(long[] list) {
 		for (long tsid : list) {
-			assertTrue("TSID is zero", tsid != 0);
+			assertNotEquals("TSID is zero", tsid, 0);
 		}
 	}
 
@@ -192,10 +208,10 @@ public class TimeIdCreatorTest {
 
 	private void checkNullOrInvalid(String[] list) {
 		for (String tsid : list) {
-			assertTrue("TSID is null", tsid != null);
+			assertNotNull("TSID is null", tsid);
 			assertTrue("TSID is empty", !tsid.isEmpty());
 			assertTrue("TSID is blank", !tsid.replace(" ", "").isEmpty());
-			assertTrue("TSID length is wrong " + tsid.length(), tsid.length() == TSID_LENGTH);
+			assertEquals("TSID length is wrong " + tsid.length(), TSID_LENGTH, tsid.length());
 			assertTrue("TSID is not valid", TsidValidator.isValid(tsid));
 		}
 	}
@@ -208,7 +224,7 @@ public class TimeIdCreatorTest {
 			assertTrue(String.format("TSID is duplicated %s", tsid), set.add(tsid));
 		}
 
-		assertTrue("There are duplicated TSIDs", set.size() == list.length);
+		assertEquals("There are duplicated TSIDs", set.size(), list.length);
 	}
 
 	private void checkUniqueness(String[] list) {
@@ -219,7 +235,7 @@ public class TimeIdCreatorTest {
 			assertTrue(String.format("TSID is duplicated %s", tsid), set.add(tsid));
 		}
 
-		assertTrue("There are duplicated TSIDs", set.size() == list.length);
+		assertEquals("There are duplicated TSIDs", set.size(), list.length);
 	}
 
 	private void checkCreationTime(long[] list, long startTime, long endTime) {
@@ -249,7 +265,7 @@ public class TimeIdCreatorTest {
 		Arrays.sort(other);
 
 		for (int i = 0; i < list.length; i++) {
-			assertTrue("The TSID list is not ordered", list[i] == other[i]);
+			assertEquals("The TSID list is not ordered", list[i], other[i]);
 		}
 	}
 
@@ -258,7 +274,58 @@ public class TimeIdCreatorTest {
 		Arrays.sort(other);
 
 		for (int i = 0; i < list.length; i++) {
-			assertTrue("The TSID list is not ordered", list[i].equals(other[i]));
+			assertEquals("The TSID list is not ordered", list[i], other[i]);
+		}
+	}
+	
+	@Test
+	public void testGetTsidParallelGeneratorsShouldCreateUniqueTsids() throws InterruptedException {
+
+		Thread[] threads = new Thread[THREAD_TOTAL];
+		TestThread.clearHashSet();
+
+		TimeIdCreator sharedCreator = TsidCreator.getTimeIdCreator();
+		
+		// Instantiate and start many threads
+		for (int i = 0; i < THREAD_TOTAL; i++) {
+			threads[i] = new TestThread(sharedCreator, DEFAULT_LOOP_MAX);
+			threads[i].start();
+		}
+
+		// Wait all the threads to finish
+		for (Thread thread : threads) {
+			thread.join();
+		}
+		
+		// Check if the quantity of unique UUIDs is correct
+		assertEquals(DUPLICATE_UUID_MSG, (DEFAULT_LOOP_MAX * THREAD_TOTAL), TestThread.hashSet.size());
+		
+		// FIXME: java.lang.AssertionError: A duplicate TSID was created expected:<400000> but was:<399705>
+
+	}
+	
+	public static class TestThread extends Thread {
+
+		public static Set<Long> hashSet = new HashSet<>();
+		private TimeIdCreator creator;
+		private int loopLimit;
+
+		public TestThread(TimeIdCreator creator, int loopLimit) {
+			this.creator = creator;
+			this.loopLimit = loopLimit;
+		}
+
+		public static void clearHashSet() {
+			hashSet = new HashSet<>();
+		}
+
+		@Override
+		public void run() {
+			for (int i = 0; i < loopLimit; i++) {
+				synchronized (hashSet) {
+					hashSet.add(creator.create());
+				}
+			}
 		}
 	}
 }

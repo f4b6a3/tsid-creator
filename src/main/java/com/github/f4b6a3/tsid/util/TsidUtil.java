@@ -30,13 +30,19 @@ import java.time.Instant;
  * Utility that provides methods for for extracting creation time and node
  * identifier from TSIDs.
  */
-public class TsidUtil {
+public final class TsidUtil {
 
-	protected static final long TIMESTAMP_LENGTH = 42;
-	protected static final long RANDOMNESS_LENGTH = 22;
-	public static final int DEFAULT_NODEID_LENGTH = 10;
+	private static final long RANDOMNESS_LENGTH = 22;
+	private static final int DEFAULT_NODEID_LENGTH = 10;
 
-	protected static final int RANDOMNESS_MASK = 0x003fffff;
+	private static final int RANDOMNESS_MASK = 0x003fffff;
+
+	protected static final int BASE_32 = 32;
+
+	protected static final int TSID_CHAR_LENGTH = 13;
+
+	// Include 'O'->ZERO, 'I'->ONE and 'L'->ONE
+	protected static final char[] ALPHABET_CROCKFORD = "0123456789ABCDEFGHJKMNPQRSTVWXYZOIL".toCharArray();
 
 	private TsidUtil() {
 	}
@@ -154,7 +160,7 @@ public class TsidUtil {
 	 * @return the node identifier
 	 */
 	public static int extractNodeIdentifier(long tsid) {
-		return (int) extractNodeIdentifier(tsid, DEFAULT_NODEID_LENGTH);
+		return extractNodeIdentifier(tsid, DEFAULT_NODEID_LENGTH);
 	}
 
 	/**
@@ -177,5 +183,161 @@ public class TsidUtil {
 		}
 
 		return (int) (tsid & RANDOMNESS_MASK) >>> (RANDOMNESS_LENGTH - nodeidLength);
+	}
+
+	protected static char[] removeHyphens(final char[] input) {
+
+		int count = 0;
+		char[] buffer = new char[input.length];
+
+		for (int i = 0; i < input.length; i++) {
+			if ((input[i] != '-')) {
+				buffer[count++] = input[i];
+			}
+		}
+
+		char[] output = new char[count];
+		System.arraycopy(buffer, 0, output, 0, count);
+
+		return output;
+	}
+
+	protected static boolean isCrockfordBase32(final char[] chars) {
+		char[] input = toUpperCase(chars);
+		for (int i = 0; i < input.length; i++) {
+			if (!isCrockfordBase32(input[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	protected static boolean isCrockfordBase32(char c) {
+		for (int j = 0; j < ALPHABET_CROCKFORD.length; j++) {
+			if (c == ALPHABET_CROCKFORD[j]) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static char[] toBase32Crockford(long number) {
+		return encode(number, TsidUtil.ALPHABET_CROCKFORD);
+	}
+
+	public static long fromBase32Crockford(char[] chars) {
+		return decode(chars, TsidUtil.ALPHABET_CROCKFORD);
+	}
+
+	protected static char[] zerofill(char[] chars, int length) {
+		return lpad(chars, length, '0');
+	}
+
+	protected static char[] lpad(char[] chars, int length, char fill) {
+
+		int delta = 0;
+		int limit = 0;
+
+		if (length > chars.length) {
+			delta = length - chars.length;
+			limit = length;
+		} else {
+			delta = 0;
+			limit = chars.length;
+		}
+
+		char[] output = new char[chars.length + delta];
+		for (int i = 0; i < limit; i++) {
+			if (i < delta) {
+				output[i] = fill;
+			} else {
+				output[i] = chars[i - delta];
+			}
+		}
+		return output;
+	}
+
+	protected static char[] transliterate(char[] chars, char[] alphabet1, char[] alphabet2) {
+		char[] output = chars.clone();
+		for (int i = 0; i < output.length; i++) {
+			for (int j = 0; j < alphabet1.length; j++) {
+				if (output[i] == alphabet1[j]) {
+					output[i] = alphabet2[j];
+					break;
+				}
+			}
+		}
+		return output;
+	}
+
+	protected static char[] toUpperCase(final char[] chars) {
+		char[] output = new char[chars.length];
+		for (int i = 0; i < output.length; i++) {
+			if (chars[i] >= 0x61 && chars[i] <= 0x7a) {
+				output[i] = (char) ((int) chars[i] & 0xffffffdf);
+			} else {
+				output[i] = chars[i];
+			}
+		}
+		return output;
+	}
+
+	/**
+	 * Encode a long number to base 32 char array.
+	 * 
+	 * @param number   a long number
+	 * @param alphabet an alphabet
+	 * @return a base32 encoded char array
+	 */
+	protected static char[] encode(long number, char[] alphabet) {
+
+		final int CHARS_MAX = 13; // 13 * 5 = 65
+
+		if (number < 0) {
+			throw new IllegalArgumentException(String.format("Number '%d' is not a positive integer.", number));
+		}
+
+		long n = number;
+		char[] buffer = new char[CHARS_MAX];
+		char[] output;
+
+		int count = CHARS_MAX;
+		while (n > 0) {
+			buffer[--count] = alphabet[(int) (n % BASE_32)];
+			n = n / BASE_32;
+		}
+
+		output = new char[buffer.length - count];
+		System.arraycopy(buffer, count, output, 0, output.length);
+
+		return output;
+	}
+
+	/**
+	 * Decode a base 32 char array to a long number.
+	 * 
+	 * @param chars   a base 32 encoded char array
+	 * @param alphabet an alphabet
+	 * @return a long number
+	 */
+	protected static long decode(char[] chars, char[] alphabet) {
+
+		long n = 0;
+
+		for (int i = 0; i < chars.length; i++) {
+			int d = chr(chars[i], alphabet);
+			n = BASE_32 * n + d;
+		}
+
+		return n;
+	}
+
+	private static int chr(char c, char[] alphabet) {
+		for (int i = 0; i < alphabet.length; i++) {
+			if (alphabet[i] == c) {
+				return (byte) i;
+			}
+		}
+		return (byte) '0';
 	}
 }

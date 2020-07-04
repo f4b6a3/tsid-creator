@@ -7,7 +7,7 @@
 	<packaging>jar</packaging>
 
 	<name>tsid-creator</name>
-	<url>http://github.com/f4b6a3</url>
+	<url>http://github.com/f4b6a3/tsid-creator</url>
 	<description>A Java library for generating time sortable IDs.</description>
 
 
@@ -41,10 +41,10 @@
 	</dependencies>
 
 	<scm>
-		<connection>scm:git:git://github.com/dexecutor/dependent-tasks-executor.git</connection>
-		<developerConnection>scm:git:git@github.com:dexecutor/dexecutor.git</developerConnection>
-		<url>https://github.com/dexecutor/dependent-tasks-executor</url>
-		<tag>tsid-creator-1.0.0</tag>
+		<url>https://github.com/f4b6a3/tsid-creator</url>
+		<connection>scm:git:ssh://git@github.com/f4b6a3/tsid-creator.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/f4b6a3/tsid-creator.git</developerConnection>
+		<tag>HEAD</tag>
 	</scm>
 
 	<distributionManagement>

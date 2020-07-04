@@ -67,7 +67,7 @@ public abstract class AbstractTimeIdCreator implements TimeIdCreator {
 	protected int nodeid = 0;
 	protected int counter = 0;
 	protected int incrementLimit = 0;
-	
+
 	protected long previousTimestamp;
 
 	protected TimestampStrategy timestampStrategy;
@@ -84,26 +84,16 @@ public abstract class AbstractTimeIdCreator implements TimeIdCreator {
 	protected static final int DEFAULT_NODEID_TRUNC = 0x000003ff;
 	protected static final int DEFAULT_COUNTER_TRUNC = 0x00000fff;
 
-	protected static final ThreadLocal<Random> THREAD_LOCAL_RANDOM = ThreadLocal.withInitial(SecureRandom::new);
-
 	protected static final String OVERRUN_MESSAGE = "The system overran the generator by requesting too many TSIDs.";
+
+	protected static final ThreadLocal<Random> THREAD_LOCAL_RANDOM = ThreadLocal.withInitial(SecureRandom::new);
 
 	/**
 	 * Construct a {@link AbstractTimeIdCreator}.
 	 */
 	public AbstractTimeIdCreator() {
 		this.timestampStrategy = new DefaultTimestampStrategy();
-		this.reset();
 	}
-
-	/**
-	 * Returns a TSID.
-	 * 
-	 * All subclasses must implement this method.
-	 * 
-	 * @return a TSID.
-	 */
-	public abstract long create();
 
 	/**
 	 * Returns a TSID string.
@@ -112,26 +102,27 @@ public abstract class AbstractTimeIdCreator implements TimeIdCreator {
 	 * 
 	 * @return a TSID.
 	 */
+	@Override
 	public synchronized String createString() {
 		return TsidConverter.toString(create());
 	}
-	
+
 	/**
 	 * Returns a TSID.
 	 * 
 	 * This method can be used by subclasses.
 	 * 
-	 * @param nodeid the node identifier
-	 * @param counter the current counter value
+	 * @param nodeid        the node identifier
+	 * @param counter       the current counter value
 	 * @param counterLength the counter bit length
 	 * @return a TSID
 	 */
-	protected synchronized long create(int nodeid, int counter, int counterLength) {
+	protected synchronized long create(int nodeid, int counterLength) {
 
 		final long time = getTimestamp() << RANDOMNESS_LENGTH;
 		final long node = nodeid << counterLength;
 
-		return time | node | this.counter;
+		return (time | node | this.counter);
 	}
 
 	/**
@@ -211,5 +202,31 @@ public abstract class AbstractTimeIdCreator implements TimeIdCreator {
 	public synchronized <T extends TimeIdCreator> T withTimestampStrategy(TimestampStrategy timestampStrategy) {
 		this.timestampStrategy = timestampStrategy;
 		return (T) this;
+	}
+
+	/**
+	 * Returns a random number from 0 to 0x3fffff (2^22 = 4,194,304).
+	 * 
+	 * @return a number
+	 */
+	protected int getRandomComponent() {
+		byte[] bytes = new byte[3];
+		THREAD_LOCAL_RANDOM.get().nextBytes(bytes);
+		return ((bytes[0] & 0x0000003f) << 16) | ((bytes[1] & 0x000000ff) << 8) | (bytes[2] & 0x000000ff);
+	}
+
+	/**
+	 * Resets the random component a new random value
+	 * 
+	 * @param counterTrunc  counter bit mask
+	 * @param counterLength counter bit length
+	 */
+	protected synchronized void reset(int counterTrunc, int counterLength) {
+
+		// Update the counter with a random value
+		this.counter = this.getRandomComponent() & counterTrunc;
+
+		// Update the maximum incrementing value
+		this.incrementLimit = this.counter | (0x00000001 << counterLength);
 	}
 }

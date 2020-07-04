@@ -37,9 +37,9 @@ import com.github.f4b6a3.tsid.util.TsidTimeUtil;
  * One can use a custom epoch if the default is not desired.
  * 
  */
-public class DefaultTimestampStrategy implements TimestampStrategy {
+public final class DefaultTimestampStrategy implements TimestampStrategy {
 
-	protected Long customEpoch;
+	protected Long customEpoch = null;
 
 	public DefaultTimestampStrategy() {
 	}

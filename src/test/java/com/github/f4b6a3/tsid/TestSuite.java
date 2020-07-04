@@ -3,7 +3,7 @@ package com.github.f4b6a3.tsid;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-import com.github.f4b6a3.tsid.creator.TimeIdCreatorTest;
+import com.github.f4b6a3.tsid.creator.AbstractTimeIdCreatorTest;
 import com.github.f4b6a3.tsid.strategy.timestamp.DefaultTimestampStrategyTest;
 import com.github.f4b6a3.tsid.util.TsidTimeUtilTest;
 import com.github.f4b6a3.tsid.util.TsidUtilTest;
@@ -12,7 +12,7 @@ import com.github.f4b6a3.tsid.util.TsidConverterTest;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	TimeIdCreatorTest.class,
+	AbstractTimeIdCreatorTest.class,
 	DefaultTimestampStrategyTest.class,
 	TsidConverterTest.class,
 	TsidTimeUtilTest.class,

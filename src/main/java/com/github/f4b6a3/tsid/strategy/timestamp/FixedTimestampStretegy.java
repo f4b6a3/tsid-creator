@@ -31,7 +31,7 @@ import com.github.f4b6a3.tsid.strategy.TimestampStrategy;
  * 
  * This strategy is useful for tests only.
  */
-public class FixedTimestampStretegy implements TimestampStrategy {
+public final class FixedTimestampStretegy implements TimestampStrategy {
 
 	protected long timestamp = 0;
 

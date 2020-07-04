@@ -25,7 +25,6 @@
 package com.github.f4b6a3.tsid.creator.impl;
 
 import com.github.f4b6a3.tsid.creator.AbstractTimeIdCreator;
-import com.github.f4b6a3.tsid.strategy.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.tsid.util.TsidConverter;
 
 /**
@@ -45,7 +44,7 @@ import com.github.f4b6a3.tsid.util.TsidConverter;
  * 
  * - Maximum counter value: 2^12 = 4096.
  */
-public class NodeTimeIdCreator extends AbstractTimeIdCreator {
+public final class NodeTimeIdCreator extends AbstractTimeIdCreator {
 
 	/**
 	 * Construct an instance of {@link NodeTimeIdCreator}.
@@ -55,9 +54,8 @@ public class NodeTimeIdCreator extends AbstractTimeIdCreator {
 	 * @param nodeid the node identifier
 	 */
 	public NodeTimeIdCreator(int nodeid) {
-		this.timestampStrategy = new DefaultTimestampStrategy();
+		super();
 		this.nodeid = nodeid & DEFAULT_NODEID_TRUNC;
-		this.reset();
 	}
 
 	/**
@@ -77,20 +75,15 @@ public class NodeTimeIdCreator extends AbstractTimeIdCreator {
 	}
 
 	public synchronized long create(int nodeid) {
-		return create(nodeid & DEFAULT_NODEID_TRUNC, this.counter, DEFAULT_COUNTER_LENGTH);
+		return create(nodeid & DEFAULT_NODEID_TRUNC, DEFAULT_COUNTER_LENGTH);
 	}
 
 	public synchronized String createString(int nodeid) {
 		return TsidConverter.toString(create(nodeid));
 	}
-	
+
 	@Override
 	protected synchronized void reset() {
-
-		// Update the counter with a random value
-		this.counter = THREAD_LOCAL_RANDOM.get().nextInt() & DEFAULT_COUNTER_TRUNC;
-
-		// Update the maximum incrementing value
-		this.incrementLimit = this.counter | (0x00000001 << DEFAULT_COUNTER_LENGTH);
+		this.reset(DEFAULT_COUNTER_TRUNC, DEFAULT_COUNTER_LENGTH);
 	}
 }

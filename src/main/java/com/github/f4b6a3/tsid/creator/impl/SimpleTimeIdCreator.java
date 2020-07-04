@@ -45,21 +45,14 @@ import com.github.f4b6a3.tsid.creator.AbstractTimeIdCreator;
  * 
  * - Maximum counter value: 2^22 = 4,194,304.
  */
-public class DefaultTimeIdCreator extends AbstractTimeIdCreator {
-
-	@Override
+public final class SimpleTimeIdCreator extends AbstractTimeIdCreator {
+	
 	public synchronized long create() {
-		final long time = getTimestamp() << RANDOMNESS_LENGTH;
-		return time | this.counter;
+		return create(0, 0);
 	}
 
 	@Override
 	protected synchronized void reset() {
-
-		// Update the counter with a random value
-		this.counter = THREAD_LOCAL_RANDOM.get().nextInt() & RANDOMNESS_TRUNC;
-
-		// Update the maximum incrementing value
-		this.incrementLimit = this.counter | (0x00000001 << RANDOMNESS_LENGTH);
+		this.reset(RANDOMNESS_TRUNC, RANDOMNESS_LENGTH);
 	}
 }

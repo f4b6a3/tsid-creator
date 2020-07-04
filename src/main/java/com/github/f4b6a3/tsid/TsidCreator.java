@@ -25,9 +25,10 @@
 package com.github.f4b6a3.tsid;
 
 import com.github.f4b6a3.tsid.creator.TimeIdCreator;
-import com.github.f4b6a3.tsid.creator.impl.AdjustableNodeTimeIdCreator;
+import com.github.f4b6a3.tsid.creator.impl.AjustableTimeIdCreator;
 import com.github.f4b6a3.tsid.creator.impl.NodeTimeIdCreator;
-import com.github.f4b6a3.tsid.creator.impl.DefaultTimeIdCreator;
+import com.github.f4b6a3.tsid.creator.impl.SimpleTimeIdCreator;
+import com.github.f4b6a3.tsid.util.TsidConverter;
 
 /**
  * A utility class that creates time sortable IDs (TSIDs).
@@ -40,6 +41,16 @@ public class TsidCreator {
 	}
 
 	/**
+	 * Returns a TSID from a string.
+	 * 
+	 * @param ulid a TSID string
+	 * @return a TSID
+	 */
+	public static long fromString(String ulid) {
+		return TsidConverter.fromString(ulid);
+	}
+
+	/**
 	 * Returns a TSID.
 	 * 
 	 * The default counter bit length is 22.
@@ -49,7 +60,7 @@ public class TsidCreator {
 	 * @return a TSID
 	 */
 	public static long getTsid() {
-		return DefaultTimeIdCreatorHolder.INSTANCE.create();
+		return SimpleTimeIdCreatorHolder.INSTANCE.create();
 	}
 
 	/**
@@ -82,7 +93,7 @@ public class TsidCreator {
 	 * @return a TSID
 	 */
 	public static String getTsidString() {
-		return DefaultTimeIdCreatorHolder.INSTANCE.createString();
+		return SimpleTimeIdCreatorHolder.INSTANCE.createString();
 	}
 
 	/**
@@ -115,7 +126,7 @@ public class TsidCreator {
 	 * @return a {@link TimeIdCreator}
 	 */
 	public static TimeIdCreator getTimeIdCreator() {
-		return new DefaultTimeIdCreator();
+		return new SimpleTimeIdCreator();
 	}
 
 	/**
@@ -152,11 +163,11 @@ public class TsidCreator {
 	 * @return a {@link TimeIdCreator}
 	 */
 	public static TimeIdCreator getTimeIdCreator(int node, int nodeLength) {
-		return new AdjustableNodeTimeIdCreator(node, nodeLength);
+		return new AjustableTimeIdCreator(node, nodeLength);
 	}
 
-	private static class DefaultTimeIdCreatorHolder {
-		static final DefaultTimeIdCreator INSTANCE = new DefaultTimeIdCreator();
+	private static class SimpleTimeIdCreatorHolder {
+		static final SimpleTimeIdCreator INSTANCE = new SimpleTimeIdCreator();
 	}
 
 	private static class NodeTimeIdCreatorHolder {
