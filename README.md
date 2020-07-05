@@ -183,13 +183,13 @@ TimestampStrategy customStrategy = new CustomTimestampStrategy();
 long tsid = TsidCreator.getTimeIdCreator()
 	.withTimestampStrategy(customStrategy)
 	.create();
-	
+```
+```java
 // with a CUSTOM epoch (fall of the Berlin Wall)
 Instant customEpoch = Instant.parse("1989-11-09T00:00:00Z");
 long tsid = TsidCreator.getTimeIdCreator()
 	.withCustomEpoch(customEpoch)
 	.create();
-
 ```
 ```java
 // with a FIXED node identifier
