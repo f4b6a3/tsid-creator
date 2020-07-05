@@ -178,7 +178,6 @@ Examples of TSID strings:
 These are some examples of using the `TimeIdCreator` to create TSIDs:
 
 ```java
-
 // with a CUSTOM timestamp strategy
 TimestampStrategy customStrategy = new CustomTimestampStrategy();
 long tsid = TsidCreator.getTimeIdCreator()
@@ -191,17 +190,19 @@ long tsid = TsidCreator.getTimeIdCreator()
 	.withCustomEpoch(customEpoch)
 	.create();
 
+```
+```java
 // with a FIXED node identifier
 int node = 256; // max: 2^10
 long tsid = TsidCreator.getTimeIdCreator(node)
 	.create();
-	
+```
+```java
 // with a FIXED node identifier and a CUSTOM node bit length.
 int length = 16;   // max: 20
 int node = 32768;  // max: 2^length
 long tsid = TsidCreator.getTimeIdCreator(node, length)
 	.create();
-
 ```
 
 Benchmark
