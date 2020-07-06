@@ -43,11 +43,11 @@ public class TsidCreator {
 	/**
 	 * Returns a TSID from a string.
 	 * 
-	 * @param ulid a TSID string
+	 * @param tsid a TSID string
 	 * @return a TSID
 	 */
-	public static long fromString(String ulid) {
-		return TsidConverter.fromString(ulid);
+	public static long fromString(String tsid) {
+		return TsidConverter.fromString(tsid);
 	}
 
 	/**

@@ -161,7 +161,7 @@ public abstract class AbstractTimeIdCreator implements TimeIdCreator {
 	 * @throws TsidCreatorException if an overrun happens.
 	 */
 	protected synchronized void increment() {
-		if (++this.counter == this.incrementLimit) {
+		if (++this.counter >= this.incrementLimit) {
 			this.reset();
 			throw new TsidCreatorException(OVERRUN_MESSAGE);
 		}
