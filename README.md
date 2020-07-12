@@ -3,7 +3,7 @@
 
 A Java library for generating time sortable IDs.
 
-It brings together ideas from [Twitter Snowflake](https://github.com/twitter-archive/snowflake) and [ULID Spec](https://github.com/ulid/spec).
+It brings together some ideas from [Twitter's Snowflake](https://github.com/twitter-archive/snowflake) and [ULID Spec](https://github.com/ulid/spec).
 
 How to Use
 ------------------------------------------------------
