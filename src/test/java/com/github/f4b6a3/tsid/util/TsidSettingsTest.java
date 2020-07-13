@@ -48,26 +48,26 @@ public class TsidSettingsTest {
 		String string = "0xx112233445566"; // typo
 		TsidSettings.setProperty(TsidSettings.PROPERTY_NODE, string);
 		long result = TsidSettings.getNodeIdentifier();
-		assertEquals(0, result);
+		assertEquals(-1, result);
 
 		string = " 0x112233445566"; // space
 		TsidSettings.setProperty(TsidSettings.PROPERTY_NODE, string);
 		result = TsidSettings.getNodeIdentifier();
-		assertEquals(0, result);
+		assertEquals(-1, result);
 
 		string = " 0x1122334455zz"; // non hexadecimal
 		TsidSettings.setProperty(TsidSettings.PROPERTY_NODE, string);
 		result = TsidSettings.getNodeIdentifier();
-		assertEquals(0, result);
+		assertEquals(-1, result);
 
 		string = ""; // empty
 		TsidSettings.setProperty(TsidSettings.PROPERTY_NODE, string);
 		result = TsidSettings.getNodeIdentifier();
-		assertEquals(0, result);
+		assertEquals(-1, result);
 
 		string = " "; // blank
 		TsidSettings.setProperty(TsidSettings.PROPERTY_NODE, string);
 		result = TsidSettings.getNodeIdentifier();
-		assertEquals(0, result);
+		assertEquals(-1, result);
 	}
 }

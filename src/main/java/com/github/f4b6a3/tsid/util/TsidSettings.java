@@ -32,17 +32,24 @@ public final class TsidSettings {
 	protected TsidSettings() {
 	}
 
+	/**
+	 * Returns the node ID.
+	 * 
+	 * Returns -1 if not found, empty or invalid.
+	 * 
+	 * @return a node id
+	 */
 	public static int getNodeIdentifier() {
 		String value = getProperty(PROPERTY_NODE);
 
-		if (value == null) {
-			return 0;
+		if (value == null || value.isEmpty()) {
+			return -1;
 		}
 
 		try {
 			return Integer.decode(value);
 		} catch (NumberFormatException e) {
-			return 0;
+			return -1;
 		}
 	}
 
