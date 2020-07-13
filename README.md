@@ -11,13 +11,13 @@ How to Use
 Create a TSID:
 
 ```java
-long tsid = TsidCreator.getTsid();
+long tsid = TsidCreator.getTsid1024();
 ```
 
 Create a TSID string:
 
 ```java
-long tsid = TsidCreator.getTsidString();
+long tsid = TsidCreator.getTsidString1024();
 ```
 
 ### Maven dependency
@@ -29,7 +29,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>tsid-creator</artifactId>
-  <version>2.2.0</version>
+  <version>2.2.1</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator).
@@ -81,7 +81,7 @@ The node identifier is a random number from 0 to 1023 (default). It can be repla
 
 ```java
 int node = 842;
-long tsid = TsdiCreator.getTimeIdCreator(node).create();
+long tsid = TsdiCreator.getTimeIdCreator1024(node).create();
 ```
 
 Another way to replace the random value is using a system property `tsidcreator.node` or a environment variable `TSIDCREATOR_NODE`.
@@ -89,13 +89,13 @@ Another way to replace the random value is using a system property `tsidcreator.
 ##### Examples
 
 ```java
-// Create a TSID (up to 1024 nodes)
-long tsid = TsidCreator.getTsid();
+// Create a TSID (up to 256 nodes)
+long tsid = TsidCreator.getTsid256();
 ```
 
 ```java
-// Create a TSID (up to 256 nodes)
-long tsid = TsidCreator.getTsid256();
+// Create a TSID (up to 1024 nodes)
+long tsid = TsidCreator.getTsid1024();
 ```
 
 ```java
@@ -135,17 +135,17 @@ The TSID string is a number encoded to [Crockford's base 32](https://www.crockfo
 ##### Examples
 
 ```java
-// Create a TSID string (up to 1024 nodes)
-long tsid = TsidCreator.getTsidString();
-```
-
-```java
-// Create a TSID (up to 256 nodes)
+// Create a TSID string (up to 256 nodes)
 long tsid = TsidCreator.getTsidString256();
 ```
 
 ```java
-// Create a TSID (up to 4096 nodes)
+// Create a TSID string (up to 1024 nodes)
+long tsid = TsidCreator.getTsidString1024();
+```
+
+```java
+// Create a TSID string (up to 4096 nodes)
 long tsid = TsidCreator.getTsidString4096();
 ```
 
@@ -203,21 +203,21 @@ These are some examples of using the `TimeIdCreator` to create TSIDs:
 ```java
 // with a CUSTOM timestamp strategy
 TimestampStrategy customStrategy = new CustomTimestampStrategy();
-long tsid = TsidCreator.getTimeIdCreator()
+long tsid = TsidCreator.getTimeIdCreator1024()
 	.withTimestampStrategy(customStrategy)
 	.create();
 ```
 ```java
 // with a CUSTOM epoch (fall of the Berlin Wall)
 Instant customEpoch = Instant.parse("1989-11-09T00:00:00Z");
-long tsid = TsidCreator.getTimeIdCreator()
+long tsid = TsidCreator.getTimeIdCreator1024()
 	.withCustomEpoch(customEpoch)
 	.create();
 ```
 ```java
 // with a FIXED node identifier
 int node = 256; // max: 2^10
-long tsid = TsidCreator.getTimeIdCreator(node)
+long tsid = TsidCreator.getTimeIdCreator1024(node)
 	.create();
 ```
 ```java

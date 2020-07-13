@@ -41,7 +41,7 @@ public class TsidUtilTest {
 	public void testExtractUnixMilliseconds() {
 
 		long start = System.currentTimeMillis();
-		long tsid = TsidCreator.getTsid();
+		long tsid = TsidCreator.getTsid1024();
 		long middle = TsidUtil.extractUnixMilliseconds(tsid);
 		long end = System.currentTimeMillis();
 
@@ -55,7 +55,7 @@ public class TsidUtilTest {
 		Instant customEpoch = Instant.parse("1984-01-01T00:00:00Z");
 
 		long start = System.currentTimeMillis();
-		long tsid = TsidCreator.getTimeIdCreator().withCustomEpoch(customEpoch).create();
+		long tsid = TsidCreator.getTimeIdCreator1024().withCustomEpoch(customEpoch).create();
 		long middle = TsidUtil.extractUnixMilliseconds(tsid, customEpoch.toEpochMilli());
 		long end = System.currentTimeMillis();
 
@@ -67,7 +67,7 @@ public class TsidUtilTest {
 	public void testExtractInstant() {
 
 		Instant start = Instant.now();
-		long tsid = TsidCreator.getTsid();
+		long tsid = TsidCreator.getTsid1024();
 		Instant middle = TsidUtil.extractInstant(tsid);
 		Instant end = Instant.now();
 
@@ -81,7 +81,7 @@ public class TsidUtilTest {
 		Instant customEpoch = Instant.parse("2015-10-23T00:00:00Z");
 
 		Instant start = Instant.now();
-		long tsid = TsidCreator.getTimeIdCreator().withCustomEpoch(customEpoch).create();
+		long tsid = TsidCreator.getTimeIdCreator1024().withCustomEpoch(customEpoch).create();
 		Instant middle = TsidUtil.extractInstant(tsid, customEpoch);
 		Instant end = Instant.now();
 
@@ -100,7 +100,7 @@ public class TsidUtilTest {
 
 		// The default node identifier bit length is 10 (2^10 = 1024)
 		for (int nodeid = 0; nodeid < nodeidMax; nodeid++) {
-			TimeIdCreator creator = TsidCreator.getTimeIdCreator(nodeid).withTimestampStrategy(strategy);
+			TimeIdCreator creator = TsidCreator.getTimeIdCreator1024(nodeid).withTimestampStrategy(strategy);
 			long tsid = creator.create();
 			int result = TsidUtil.extractNodeIdentifier(tsid);
 			assertEquals(nodeid, result);

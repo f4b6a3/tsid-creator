@@ -11,7 +11,7 @@ public class TsidConverterTest {
 
 	@Test
 	public void testToStringIsValid() {
-		long tsid = TsidCreator.getTsid();
+		long tsid = TsidCreator.getTsid1024();
 		String string = TsidConverter.toString(tsid);
 		assertTrue("TSID string is invalid", TsidValidator.isValid(string));
 	}

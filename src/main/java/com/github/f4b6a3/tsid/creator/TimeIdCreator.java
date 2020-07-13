@@ -56,12 +56,6 @@ import com.github.f4b6a3.tsid.util.TsidConverter;
  * example, the maximum node identifier value is 2^10 = 1024 and the maximum
  * counter value is 2^12 = 4096. So the maximum TSIDs that can be generated per
  * millisecond is about 4 thousand.
- * 
- * All subclasses must implement these abstract methods:
- * 
- * - {@link @link AbstractTimeIdCreator#create()};
- * 
- * - {@link @link AbstractTimeIdCreator#reset()};
  */
 public final class TimeIdCreator {
 
@@ -100,7 +94,6 @@ public final class TimeIdCreator {
 	 * 
 	 * - Maximum counter value: 2^12 = 4096.
 	 * 
-	 * @param node the node identifier
 	 */
 	public TimeIdCreator() {
 		this(null, null);

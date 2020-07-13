@@ -36,7 +36,7 @@ public class TsidTimeTest {
 	public void testCurrentTimestamp() {
 
 		long start = System.currentTimeMillis();
-		long tsid = TsidCreator.getTsid();
+		long tsid = TsidCreator.getTsid1024();
 		long middle = TsidUtil.extractUnixMilliseconds(tsid);
 		long end = System.currentTimeMillis();
 

@@ -50,7 +50,7 @@ public class TimeIdCreatorTest {
 
 		long startTime = System.currentTimeMillis();
 
-		TimeIdCreator creator = TsidCreator.getTimeIdCreator();
+		TimeIdCreator creator = TsidCreator.getTimeIdCreator1024();
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			list[i] = creator.create();
@@ -76,7 +76,7 @@ public class TimeIdCreatorTest {
 
 		long startTime = System.currentTimeMillis();
 
-		TimeIdCreator creator = TsidCreator.getTimeIdCreator(nodeid);
+		TimeIdCreator creator = TsidCreator.getTimeIdCreator1024(nodeid);
 
 		for (int i = 0; i < counterMax; i++) {
 			list[i] = creator.create();
@@ -96,7 +96,7 @@ public class TimeIdCreatorTest {
 		long startTime = System.currentTimeMillis();
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			list[i] = TsidCreator.getTsidString();
+			list[i] = TsidCreator.getTsidString1024();
 		}
 
 		long endTime = System.currentTimeMillis();
@@ -119,7 +119,7 @@ public class TimeIdCreatorTest {
 
 		long startTime = System.currentTimeMillis();
 
-		TimeIdCreator creator = TsidCreator.getTimeIdCreator(nodeid);
+		TimeIdCreator creator = TsidCreator.getTimeIdCreator1024(nodeid);
 
 		for (int i = 0; i < counterMax; i++) {
 			list[i] = creator.createString();
@@ -172,7 +172,7 @@ public class TimeIdCreatorTest {
 		int nodeid = random.nextInt();
 		long timestamp = TsidTime.getCurrentTimestamp();
 		TimestampStrategy strategy = new FixedTimestampStretegy(timestamp);
-		TimeIdCreator creator = TsidCreator.getTimeIdCreator(nodeid).withTimestampStrategy(strategy);
+		TimeIdCreator creator = TsidCreator.getTimeIdCreator1024(nodeid).withTimestampStrategy(strategy);
 
 		for (int i = 0; i < counterMax; i++) {
 			creator.create();
@@ -275,7 +275,7 @@ public class TimeIdCreatorTest {
 
 		// Instantiate and start many threads
 		for (int i = 0; i < THREAD_TOTAL; i++) {
-			TimeIdCreator parallelCreator = TsidCreator.getTimeIdCreator(i).withTimestampStrategy(strategy);
+			TimeIdCreator parallelCreator = TsidCreator.getTimeIdCreator1024(i).withTimestampStrategy(strategy);
 			threads[i] = new TestThread(parallelCreator, DEFAULT_LOOP_MAX);
 			threads[i].start();
 		}

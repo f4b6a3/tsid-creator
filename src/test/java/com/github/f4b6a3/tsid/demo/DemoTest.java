@@ -14,7 +14,7 @@ public class DemoTest {
 		System.out.println(HORIZONTAL_LINE);
 
 		for (int i = 0; i < max; i++) {
-			System.out.println(TsidCreator.getTsid());
+			System.out.println(TsidCreator.getTsid1024());
 		}
 
 		System.out.println(HORIZONTAL_LINE);
@@ -22,7 +22,7 @@ public class DemoTest {
 		System.out.println(HORIZONTAL_LINE);
 
 		for (int i = 0; i < max; i++) {
-			System.out.println(TsidCreator.getTsidString());
+			System.out.println(TsidCreator.getTsidString1024());
 		}
 	}
 

@@ -69,7 +69,7 @@ public class UniquenessTest {
 		public UniquenessTestThread(int id, boolean verbose) {
 			this.id = id;
 			this.verbose = verbose;
-			this.creator = TsidCreator.getTimeIdCreator(id).withTimestampStrategy(new FixedTimestampStretegy(now));
+			this.creator = TsidCreator.getTimeIdCreator1024(id).withTimestampStrategy(new FixedTimestampStretegy(now));
 		}
 
 		/**
