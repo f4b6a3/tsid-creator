@@ -1,7 +1,7 @@
 
 # TSID Creator
 
-A Java library for generating time sortable IDs.
+A Java library for generating Time Sortable IDs.
 
 It brings together some ideas from [Twitter's Snowflake](https://github.com/twitter-archive/snowflake) and [ULID Spec](https://github.com/ulid/spec).
 
@@ -14,11 +14,10 @@ Create a TSID:
 long tsid = TsidCreator.getTsid();
 ```
 
-Create a TSID with node identifier:
+Create a TSID string:
 
 ```java
-int node = 255;
-long tsid = TsidCreator.getTsid(node);
+long tsid = TsidCreator.getTsidString();
 ```
 
 ### Maven dependency
@@ -30,7 +29,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>tsid-creator</artifactId>
-  <version>2.1.1</version>
+  <version>2.2.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator).
@@ -40,7 +39,7 @@ Implementation
 
 ### TSID as number
 
-The term TSID stands for (rougthly) Time Sortable ID. A TSID is a number that is formed by a creation time followed by random bits.
+The term TSID stands for (roughly) Time Sortable ID. A TSID is a number that is formed by the creation time followed by random bits.
 
 The TSID has 2 components:
 
@@ -49,33 +48,18 @@ The TSID has 2 components:
 
 The time component is the number of milliseconds since 2020-01-01 00:00:00 UTC.
 
-The random component may have 2 sub-parts:
+The random component has 2 sub-parts:
 
 - Node ID (0 to 20 bits)
 - Counter (2 to 22 bits)
 
-The counter bit length depends on the node identifier bit length. If the node identifier bit length is 10, the counter bit length is limited to 12. In this example, the maximum node identifier value is 2^10 = 1024 and the maximum counter value is 2^12 = 4096. So the maximum TSIDs that can be generated per millisecond is about 4 thousand.
+The counter bit length depends on the node identifier bit length. If the node identifier bit length is 10, the counter bit length is limited to 12. In this example, the maximum node identifier value is 2^10 = 1024 and the maximum counter value is 2^12 = 4096. So the maximum TSIDs that can be generated per millisecond is about 4 thousand. This is the default.
 
-When the node ID is not used, all the 22 bits of the random component are dedicated to a counter that is started with a random value. In this case maximum counter value is 2^22 = 4,194,304. So the maximum number of TSIDs that can be generated within the same millisecond is about 4 million.
+The node identifier uses 10 bits of the random component by default. It's possible to adjust the node bit length to a value between 0 and 20. The counter bit length is affected by the node bit length.
 
-##### TSID structure WITHOUT node identifier
+##### TSID structure
 
-This is the structure without node identifier:
-
-```
-|------------------------------------------|----------------------|
-        millisecs since 2020-01-01                  counter
-                42 bits                             22 bits
-
-- timestamp: 2^42 = ~69 years (with adjustable epoch)
-- counter: 2^22 = 4,194,304 (initially random)
-```
-
-The node identifier not used. All bits from the random component are dedicated to the counter.
-
-##### TSID structure WITH node identifier
-
-This is the structure with node identifier:
+This is the default TSID structure:
 
 ```
                                             adjustable
@@ -89,26 +73,37 @@ This is the structure with node identifier:
 - counter: 2^12 = 4,096 (initially random)
 
 Note:
-The node Id is adjustable from 0 to 20 bits. 
+The node id is adjustable from 0 to 20 bits.
 The node id bit length affects the counter bit length.
 ```
 
-The node identifier uses 10 bits of the random component by default. It's possible to adjust the node bit length to a value between 0 and 20. The counter bit length is affected by the node bit length.
+The node identifier is a random number from 0 to 1023 (default). It can be replaced by a value passed to the `TimeIdCreator` constructor or method factory. Example:
+
+```java
+int node = 842;
+long tsid = TsdiCreator.getTimeIdCreator(node).create();
+```
+
+Another way to replace the random value is using a system property `tsidcreator.node` or a environment variable `TSIDCREATOR_NODE`.
 
 ##### Examples
 
 ```java
-// Create a TSID
+// Create a TSID (up to 1024 nodes)
 long tsid = TsidCreator.getTsid();
 ```
 
 ```java
-// Create a TSID with node identifier
-int node = 42;
-long tsid = TsidCreator.getTsid(node);
+// Create a TSID (up to 256 nodes)
+long tsid = TsidCreator.getTsid256();
 ```
 
-Examples of TSIDs:
+```java
+// Create a TSID (up to 4096 nodes)
+long tsid = TsidCreator.getTsid4096();
+```
+
+Sequence of TSIDs:
 
 ```text
 38352658567418867
@@ -135,22 +130,26 @@ Examples of TSIDs:
 
 ### TSID as string
 
-The TSID string is a TSID number encoded to Crockford's base 32. It is a sequence of 13 characters.
+The TSID string is a number encoded to [Crockford's base 32](https://www.crockford.com/base32.html). It is a string of 13 characters.
 
 ##### Examples
 
 ```java
-// Create a TSID string
+// Create a TSID string (up to 1024 nodes)
 long tsid = TsidCreator.getTsidString();
 ```
 
 ```java
-// Create a TSID string with node identifier
-int node = 753;
-long tsid = TsidCreator.getTsidString(node);
+// Create a TSID (up to 256 nodes)
+long tsid = TsidCreator.getTsidString256();
 ```
 
-Examples of TSID strings:
+```java
+// Create a TSID (up to 4096 nodes)
+long tsid = TsidCreator.getTsidString4096();
+```
+
+Sequence of TSID strings:
 
 ```text
 01226N0640J7K
@@ -175,7 +174,29 @@ Examples of TSID strings:
    time random
 ```
 
-#### How use the `TimeIdCreator` directly
+### System properties and environment variables
+
+##### Node identifier
+
+The `tsidcreator.node` property is used by the `TimeIdCreator`. If this property or variable exists, its value is returned. Otherwise, a random value is returned. It may be useful if you want to identify each single machine by yourself, instead of allowing the PRNG do it for you.
+
+The simplest way to avoid collisions is to ensure that each generator has its own node identifier.
+
+* Using system property:
+
+```bash
+// append to VM arguments
+-Dtsidcreator.node="755"
+```
+
+* Using environment variable:
+
+```bash
+// append to /etc/environment or ~/.profile
+export TSIDCREATOR_NODE="492"
+```
+
+### How use the `TimeIdCreator` directly
 
 These are some examples of using the `TimeIdCreator` to create TSIDs:
 
@@ -214,13 +235,13 @@ This section shows benchmarks comparing `TsidCreator` to `java.util.UUID`.
 
 ```
 ---------------------------------------------------------------------------
-THROUGHPUT                         Mode  Cnt      Score     Error   Units
+THROUGHPUT                          Mode  Cnt      Score    Error   Units
 ---------------------------------------------------------------------------
-Throughput.Java_RandomBased        thrpt    5   2234,199 ±   2,844  ops/ms
-Throughput.TsidCreator_Tsid        thrpt    5  32864,576 ± 129,848  ops/ms
-Throughput.TsidCreator_TsidString  thrpt    5  11543,968 ± 103,472  ops/ms
+Throughput.Java_RandomBased        thrpt    5   2232,765 ±  7,125  ops/ms
+Throughput.TsidCreator_Tsid        thrpt    5  20782,016 ± 15,113  ops/ms
+Throughput.TsidCreator_TsidString  thrpt    5   9769,603 ± 35,345  ops/ms
 ---------------------------------------------------------------------------
-Total time: 00:06:41
+Total time: 00:04:01
 ---------------------------------------------------------------------------
 ```
 
@@ -228,11 +249,11 @@ Total time: 00:06:41
 ----------------------------------------------------------------------
 AVERAGE TIME                        Mode  Cnt    Score   Error  Units
 ----------------------------------------------------------------------
-AverageTime.Java_RandomBased        avgt    5  449,641 ± 0,994  ns/op
-AverageTime.TsidCreator_Tsid        avgt    5   30,478 ± 0,260  ns/op
-AverageTime.TsidCreator_TsidString  avgt    5   85,799 ± 0,289  ns/op
+AverageTime.Java_RandomBased        avgt    5  446,341 ± 3,033  ns/op
+AverageTime.TsidCreator_Tsid        avgt    5   49,830 ± 1,104  ns/op
+AverageTime.TsidCreator_TsidString  avgt    5  104,378 ± 1,922  ns/op
 ----------------------------------------------------------------------
-Total time: 00:06:41
+Total time: 00:04:01
 ----------------------------------------------------------------------
 ```
 

@@ -27,7 +27,7 @@ package com.github.f4b6a3.tsid.strategy.timestamp;
 import java.time.Instant;
 
 import com.github.f4b6a3.tsid.strategy.TimestampStrategy;
-import com.github.f4b6a3.tsid.util.TsidTimeUtil;
+import com.github.f4b6a3.tsid.util.TsidTime;
 
 /**
  * Strategy that provides the current timestamp.
@@ -60,9 +60,9 @@ public final class DefaultTimestampStrategy implements TimestampStrategy {
 	@Override
 	public long getTimestamp() {
 		if (this.customEpoch == null) {
-			return TsidTimeUtil.getCurrentTimestamp();
+			return TsidTime.getCurrentTimestamp();
 		} else {
-			return TsidTimeUtil.getCurrentTimestamp(this.customEpoch);
+			return TsidTime.getCurrentTimestamp(this.customEpoch);
 		}
 	}
 }

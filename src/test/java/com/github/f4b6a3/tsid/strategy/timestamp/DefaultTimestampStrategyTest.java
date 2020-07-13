@@ -7,7 +7,7 @@ import java.time.Instant;
 import org.junit.Test;
 
 import com.github.f4b6a3.tsid.strategy.timestamp.DefaultTimestampStrategy;
-import com.github.f4b6a3.tsid.util.TsidTimeUtil;
+import com.github.f4b6a3.tsid.util.TsidTime;
 
 public class DefaultTimestampStrategyTest {
 
@@ -17,7 +17,7 @@ public class DefaultTimestampStrategyTest {
 
 		long start = System.currentTimeMillis();
 		long timestamp = strategy.getTimestamp();
-		long middle = TsidTimeUtil.toUnixMilliseconds(timestamp);
+		long middle = TsidTime.toUnixMilliseconds(timestamp);
 		long end = System.currentTimeMillis();
 
 		assertTrue(start <= middle);
@@ -32,7 +32,7 @@ public class DefaultTimestampStrategyTest {
 
 		long start = System.currentTimeMillis();
 		long timestamp = strategy.getTimestamp();
-		long middle = TsidTimeUtil.toUnixMilliseconds(timestamp, customEpoch.toEpochMilli());
+		long middle = TsidTime.toUnixMilliseconds(timestamp, customEpoch.toEpochMilli());
 		long end = System.currentTimeMillis();
 
 		assertTrue(start <= middle);

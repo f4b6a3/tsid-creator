@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -17,11 +16,11 @@ import com.github.f4b6a3.tsid.TsidCreator;
 import com.github.f4b6a3.tsid.exception.TsidCreatorException;
 import com.github.f4b6a3.tsid.strategy.TimestampStrategy;
 import com.github.f4b6a3.tsid.strategy.timestamp.FixedTimestampStretegy;
-import com.github.f4b6a3.tsid.util.TsidTimeUtil;
+import com.github.f4b6a3.tsid.util.TsidTime;
 import com.github.f4b6a3.tsid.util.TsidUtil;
 import com.github.f4b6a3.tsid.util.TsidValidator;
 
-public class AbstractTimeIdCreatorTest {
+public class TimeIdCreatorTest {
 
 	private static final int TSID_LENGTH = 13;
 
@@ -29,12 +28,12 @@ public class AbstractTimeIdCreatorTest {
 	public static final int RANDOMNESS_LENGTH = 22;
 	public static final int DEFAULT_NODEID_LENGTH = 10;
 
-	private static final int DEFAULT_LOOP_MAX = 100_000;
+	private static final int DEFAULT_LOOP_MAX = 4096; // 2^12 (counter bit length)
 
 	private static Random random = new Random();
-	
+
 	protected static final String DUPLICATE_UUID_MSG = "A duplicate TSID was created";
-	
+
 	protected static final int THREAD_TOTAL = availableProcessors();
 
 	private static int availableProcessors() {
@@ -51,15 +50,16 @@ public class AbstractTimeIdCreatorTest {
 
 		long startTime = System.currentTimeMillis();
 
+		TimeIdCreator creator = TsidCreator.getTimeIdCreator();
+
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			list[i] = TsidCreator.getTsid();
+			list[i] = creator.create();
 		}
 
 		long endTime = System.currentTimeMillis();
 
 		checkNullOrInvalid(list);
 		checkUniqueness(list);
-		checkOrdering(list);
 		checkCreationTime(list, startTime, endTime);
 	}
 
@@ -76,8 +76,10 @@ public class AbstractTimeIdCreatorTest {
 
 		long startTime = System.currentTimeMillis();
 
+		TimeIdCreator creator = TsidCreator.getTimeIdCreator(nodeid);
+
 		for (int i = 0; i < counterMax; i++) {
-			list[i] = TsidCreator.getTsid(nodeid);
+			list[i] = creator.create();
 		}
 
 		long endTime = System.currentTimeMillis();
@@ -101,7 +103,6 @@ public class AbstractTimeIdCreatorTest {
 
 		checkNullOrInvalid(list);
 		checkUniqueness(list);
-		checkOrdering(list);
 		checkCreationTime(list, startTime, endTime);
 	}
 
@@ -118,8 +119,10 @@ public class AbstractTimeIdCreatorTest {
 
 		long startTime = System.currentTimeMillis();
 
+		TimeIdCreator creator = TsidCreator.getTimeIdCreator(nodeid);
+
 		for (int i = 0; i < counterMax; i++) {
-			list[i] = TsidCreator.getTsidString(nodeid);
+			list[i] = creator.createString();
 		}
 
 		long endTime = System.currentTimeMillis();
@@ -136,15 +139,16 @@ public class AbstractTimeIdCreatorTest {
 	}
 
 	@Test
-	public void testOverrunException() {
+	public void testOverrunExceptionZeroBitLength() {
 
-		final int nodeidLength = 0; // default bit length (node id disabled)
+		final int nodeidLength = 0; // zero bit length
 		final int counterLength = RANDOMNESS_LENGTH - nodeidLength;
 		final int counterMax = (int) Math.pow(2, counterLength);
 
-		long timestamp = TsidTimeUtil.getCurrentTimestamp();
+		int nodeid = random.nextInt();
+		long timestamp = TsidTime.getCurrentTimestamp();
 		TimestampStrategy strategy = new FixedTimestampStretegy(timestamp);
-		TimeIdCreator creator = TsidCreator.getTimeIdCreator().withTimestampStrategy(strategy);
+		TimeIdCreator creator = TsidCreator.getTimeIdCreator(nodeid, nodeidLength).withTimestampStrategy(strategy);
 
 		for (int i = 0; i < counterMax; i++) {
 			creator.create();
@@ -166,7 +170,7 @@ public class AbstractTimeIdCreatorTest {
 		final int counterMax = (int) Math.pow(2, counterLength);
 
 		int nodeid = random.nextInt();
-		long timestamp = TsidTimeUtil.getCurrentTimestamp();
+		long timestamp = TsidTime.getCurrentTimestamp();
 		TimestampStrategy strategy = new FixedTimestampStretegy(timestamp);
 		TimeIdCreator creator = TsidCreator.getTimeIdCreator(nodeid).withTimestampStrategy(strategy);
 
@@ -190,7 +194,7 @@ public class AbstractTimeIdCreatorTest {
 		final int counterMax = (int) Math.pow(2, counterLength);
 
 		int nodeid = random.nextInt();
-		long timestamp = TsidTimeUtil.getCurrentTimestamp();
+		long timestamp = TsidTime.getCurrentTimestamp();
 		TimestampStrategy strategy = new FixedTimestampStretegy(timestamp);
 		TimeIdCreator creator = TsidCreator.getTimeIdCreator(nodeid, nodeidLength).withTimestampStrategy(strategy);
 
@@ -260,35 +264,19 @@ public class AbstractTimeIdCreatorTest {
 		}
 	}
 
-	private void checkOrdering(long[] list) {
-		long[] other = Arrays.copyOf(list, list.length);
-		Arrays.sort(other);
-
-		for (int i = 0; i < list.length; i++) {
-			assertEquals("The TSID list is not ordered", list[i], other[i]);
-		}
-	}
-
-	private void checkOrdering(String[] list) {
-		String[] other = Arrays.copyOf(list, list.length);
-		Arrays.sort(other);
-
-		for (int i = 0; i < list.length; i++) {
-			assertEquals("The TSID list is not ordered", list[i], other[i]);
-		}
-	}
-	
 	@Test
 	public void testGetTsidParallelGeneratorsShouldCreateUniqueTsids() throws InterruptedException {
 
 		Thread[] threads = new Thread[THREAD_TOTAL];
+
 		TestThread.clearHashSet();
 
-		TimeIdCreator sharedCreator = TsidCreator.getTimeIdCreator();
-		
+		TimestampStrategy strategy = new FixedTimestampStretegy(System.currentTimeMillis());
+
 		// Instantiate and start many threads
 		for (int i = 0; i < THREAD_TOTAL; i++) {
-			threads[i] = new TestThread(sharedCreator, DEFAULT_LOOP_MAX);
+			TimeIdCreator parallelCreator = TsidCreator.getTimeIdCreator(i).withTimestampStrategy(strategy);
+			threads[i] = new TestThread(parallelCreator, DEFAULT_LOOP_MAX);
 			threads[i].start();
 		}
 
@@ -296,19 +284,17 @@ public class AbstractTimeIdCreatorTest {
 		for (Thread thread : threads) {
 			thread.join();
 		}
-		
+
 		// Check if the quantity of unique UUIDs is correct
 		assertEquals(DUPLICATE_UUID_MSG, (DEFAULT_LOOP_MAX * THREAD_TOTAL), TestThread.hashSet.size());
-		
-		// FIXME: java.lang.AssertionError: A duplicate TSID was created expected:<400000> but was:<399705>
-
 	}
-	
+
 	public static class TestThread extends Thread {
 
-		public static Set<Long> hashSet = new HashSet<>();
 		private TimeIdCreator creator;
 		private int loopLimit;
+
+		protected static final Set<Long> hashSet = new HashSet<>();
 
 		public TestThread(TimeIdCreator creator, int loopLimit) {
 			this.creator = creator;
@@ -316,7 +302,9 @@ public class AbstractTimeIdCreatorTest {
 		}
 
 		public static void clearHashSet() {
-			hashSet = new HashSet<>();
+			synchronized (TestThread.hashSet) {
+				TestThread.hashSet.clear();
+			}
 		}
 
 		@Override

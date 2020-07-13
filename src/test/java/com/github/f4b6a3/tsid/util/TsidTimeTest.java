@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import com.github.f4b6a3.tsid.TsidCreator;
 
-public class TsidTimeUtilTest {
+public class TsidTimeTest {
 
 	private Instant unixEpoch = Instant.parse("1970-01-01T00:00:00.000Z");
 	private Instant custEpoch = Instant.parse("2020-01-01T00:00:00.000Z");
@@ -20,15 +20,15 @@ public class TsidTimeUtilTest {
 
 	@Test
 	public void testUnixEpoch() {
-		long timestamp = TsidTimeUtil.toTimestamp(unixMilli);
-		long milliseconds = TsidTimeUtil.toUnixMilliseconds(timestamp);
+		long timestamp = TsidTime.toTimestamp(unixMilli);
+		long milliseconds = TsidTime.toUnixMilliseconds(timestamp);
 		assertEquals(unixMilli, milliseconds);
 	}
 
 	@Test
 	public void testCustomEpoch() {
-		long timestamp = TsidTimeUtil.toTimestamp(custMilli);
-		long milliseconds = TsidTimeUtil.toUnixMilliseconds(timestamp);
+		long timestamp = TsidTime.toTimestamp(custMilli);
+		long milliseconds = TsidTime.toUnixMilliseconds(timestamp);
 		assertEquals(custMilli, milliseconds);
 	}
 
@@ -48,32 +48,32 @@ public class TsidTimeUtilTest {
 	public void testToInstantFromInstant() {
 		Clock test = Clock.tickSeconds(ZoneId.of("UTC"));
 		Instant instant1 = Instant.now(test);
-		long timestamp1 = TsidTimeUtil.toTimestamp(instant1);
-		Instant instant2 = TsidTimeUtil.toInstant(timestamp1);
+		long timestamp1 = TsidTime.toTimestamp(instant1);
+		Instant instant2 = TsidTime.toInstant(timestamp1);
 		assertEquals(instant1, instant2);
 	}
 
 	@Test
 	public void testFromUnixMillisecondsToTimestamp() {
 		long milliseconds = System.currentTimeMillis();
-		long timestamp = TsidTimeUtil.toTimestamp(milliseconds);
-		Instant instant = TsidTimeUtil.toInstant(timestamp);
+		long timestamp = TsidTime.toTimestamp(milliseconds);
+		Instant instant = TsidTime.toInstant(timestamp);
 		assertEquals(milliseconds, instant.toEpochMilli());
 	}
 
 	@Test
 	public void testFromCurrentTimestampToUnixMilliseconds() {
-		long timestamp = TsidTimeUtil.getCurrentTimestamp();
-		long milliseconds = TsidTimeUtil.toUnixMilliseconds(timestamp);
-		Instant instant = TsidTimeUtil.toInstant(timestamp);
+		long timestamp = TsidTime.getCurrentTimestamp();
+		long milliseconds = TsidTime.toUnixMilliseconds(timestamp);
+		Instant instant = TsidTime.toInstant(timestamp);
 		assertEquals(milliseconds, instant.toEpochMilli());
 	}
 
 	@Test
 	public void testFromTimestampToUnixMilliseconds() {
 		long milliseconds1 = System.currentTimeMillis();
-		long timestamp = TsidTimeUtil.toTimestamp(milliseconds1);
-		long milliseconds2 = TsidTimeUtil.toUnixMilliseconds(timestamp);
+		long timestamp = TsidTime.toTimestamp(milliseconds1);
+		long milliseconds2 = TsidTime.toUnixMilliseconds(timestamp);
 		assertEquals(milliseconds1, milliseconds2);
 	}
 }

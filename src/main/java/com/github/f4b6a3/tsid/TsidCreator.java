@@ -25,17 +25,22 @@
 package com.github.f4b6a3.tsid;
 
 import com.github.f4b6a3.tsid.creator.TimeIdCreator;
-import com.github.f4b6a3.tsid.creator.impl.AjustableTimeIdCreator;
-import com.github.f4b6a3.tsid.creator.impl.NodeTimeIdCreator;
-import com.github.f4b6a3.tsid.creator.impl.SimpleTimeIdCreator;
+import com.github.f4b6a3.tsid.exception.TsidCreatorException;
 import com.github.f4b6a3.tsid.util.TsidConverter;
 
 /**
- * A utility class that creates time sortable IDs (TSIDs).
+ * A facade that generates time sortable IDs (TSIDs).
  * 
- * A TSID is a number that is formed by a creation time followed by random bits.
+ * The term TSID stands for (roughly) Time Sortable ID. A TSID is a number that
+ * is formed by the creation time followed by random bits.
  */
-public class TsidCreator {
+public final class TsidCreator {
+
+	public static final int NODE_LENGTH_64 = 6; // XS
+	public static final int NODE_LENGTH_256 = 8; // S
+	public static final int NODE_LENGTH_1024 = 10; // M
+	public static final int NODE_LENGTH_4096 = 12; // L
+	public static final int NODE_LENGTH_16384 = 14; // XL
 
 	private TsidCreator() {
 	}
@@ -53,102 +58,360 @@ public class TsidCreator {
 	/**
 	 * Returns a TSID.
 	 * 
-	 * The default counter bit length is 22.
+	 * The node identifier is RANDOM.
 	 * 
-	 * The maximum counter value is 2^22 = 4,194,304.
+	 * It supports up to 1,024 nodes.
+	 * 
+	 * It can generate up to 4,096 TSIDs per millisecond per node.
+	 * 
+	 * The system property `tsidcreator.node` and environment variable
+	 * `TSIDCREATOR_NODE` can be used to replace the random node identifier.
+	 * 
+	 * ## Random component settings:
+	 * 
+	 * - Node bit length: 10
+	 * 
+	 * - Counter bit length: 12
+	 * 
+	 * - Maximum node: 1,024 (2^10)
+	 * 
+	 * - Maximum counter: 4,096 (2^12)
 	 * 
 	 * @return a TSID
+	 * 
+	 * @throws TsidCreatorException an overrun exception too many TSIDs are
+	 *                              requested within the same millisecond.
 	 */
 	public static long getTsid() {
-		return SimpleTimeIdCreatorHolder.INSTANCE.create();
+		return TimeIdCreatorHolder.INSTANCE.create();
 	}
 
 	/**
-	 * Returns a TSID with node identifier.
+	 * Returns a TSID.
 	 * 
-	 * The default node identifier bit length is 10.
+	 * The node identifier is RANDOM.
 	 * 
-	 * The default counter bit length is 12.
+	 * It supports up to 256 nodes.
 	 * 
-	 * The maximum node identifier is 2^10 = 1,024.
+	 * It can generate up to 16,384 TSIDs per millisecond per node.
 	 * 
-	 * The maximum counter value is 2^12 = 4,096.
+	 * The system property `tsidcreator.node` and environment variable
+	 * `TSIDCREATOR_NODE` can be used to replace the random node identifier.
 	 * 
-	 * @param node a node identifier
+	 * ## Random component settings:
+	 * 
+	 * - Node bit length: 8
+	 * 
+	 * - Counter bit length: 14
+	 * 
+	 * - Maximum node: 256 (2^8)
+	 * 
+	 * - Maximum counter: 16,384 (2^14)
+	 * 
 	 * @return a TSID
+	 * 
+	 * @throws TsidCreatorException an overrun exception too many TSIDs are
+	 *                              requested within the same millisecond.
 	 */
-	public static long getTsid(int node) {
-		return NodeTimeIdCreatorHolder.INSTANCE.create(node);
+	public static long getTsid256() {
+		return TimeIdCreator256Holder.INSTANCE.create();
 	}
 
 	/**
-	 * Returns a TSID as string.
+	 * Returns a TSID.
+	 * 
+	 * The node identifier is RANDOM.
+	 * 
+	 * It supports up to 4,096 nodes.
+	 * 
+	 * It can generate up to 1,024 TSIDs per millisecond per node.
+	 * 
+	 * The system property `tsidcreator.node` and environment variable
+	 * `TSIDCREATOR_NODE` can be used to replace the random node identifier.
+	 * 
+	 * ## Random component settings:
+	 * 
+	 * - Node bit length: 12
+	 * 
+	 * - Counter bit length: 10
+	 * 
+	 * - Maximum node: 4,096 (2^12)
+	 * 
+	 * - Maximum counter: 1,024 (2^10)
+	 * 
+	 * @return a TSID
+	 * 
+	 * @throws TsidCreatorException an overrun exception too many TSIDs are
+	 *                              requested within the same millisecond.
+	 */
+	public static long getTsid4096() {
+		return TimeIdCreator4096Holder.INSTANCE.create();
+	}
+
+	/**
+	 * Returns a TSID string.
 	 * 
 	 * The returning string is encoded to Crockford's base32.
 	 * 
-	 * The default counter bit length is 22.
+	 * The node identifier is RANDOM.
 	 * 
-	 * The maximum counter value is 2^22 = 4,194,304.
+	 * It supports up to 1,024 nodes.
 	 * 
-	 * @return a TSID
+	 * It can generate up to 4,096 TSIDs per millisecond per node.
+	 * 
+	 * The system property `tsidcreator.node` and environment variable
+	 * `TSIDCREATOR_NODE` can be used to replace the random node identifier.
+	 * 
+	 * ## Random component settings:
+	 * 
+	 * - Node bit length: 10
+	 * 
+	 * - Counter bit length: 12
+	 * 
+	 * - Maximum node: 1,024 (2^10)
+	 * 
+	 * - Maximum counter: 4,096 (2^12)
+	 * 
+	 * @return a TSID string
+	 * 
+	 * @throws TsidCreatorException an overrun exception too many TSIDs are
+	 *                              requested within the same millisecond.
 	 */
 	public static String getTsidString() {
-		return SimpleTimeIdCreatorHolder.INSTANCE.createString();
+		return TimeIdCreatorHolder.INSTANCE.createString();
 	}
 
 	/**
-	 * Returns a TSID with node identifier.
+	 * Returns a TSID string.
 	 * 
 	 * The returning string is encoded to Crockford's base32.
 	 * 
-	 * The default node identifier bit length is 10.
+	 * The node identifier is RANDOM.
 	 * 
-	 * The default counter bit length is 12.
+	 * It supports up to 256 nodes.
 	 * 
-	 * The maximum node identifier is 2^10 = 1,024.
+	 * It can generate up to 16,384 TSIDs per millisecond per node.
 	 * 
-	 * The maximum counter value is 2^12 = 4,096.
+	 * The system property `tsidcreator.node` and environment variable
+	 * `TSIDCREATOR_NODE` can be used to replace the random node identifier.
 	 * 
-	 * @param node a node identifier
-	 * @return a TSID
+	 * ## Random component settings:
+	 * 
+	 * - Node bit length: 8
+	 * 
+	 * - Counter bit length: 14
+	 * 
+	 * - Maximum node: 256 (2^8)
+	 * 
+	 * - Maximum counter: 16,384 (2^14)
+	 * 
+	 * @return a TSID string
+	 * 
+	 * @throws TsidCreatorException an overrun exception too many TSIDs are
+	 *                              requested within the same millisecond.
 	 */
-	public static String getTsidString(int node) {
-		return NodeTimeIdCreatorHolder.INSTANCE.createString(node);
+	public static String getTsidString256() {
+		return TimeIdCreator256Holder.INSTANCE.createString();
+	}
+
+	/**
+	 * Returns a TSID string.
+	 * 
+	 * The returning string is encoded to Crockford's base32.
+	 * 
+	 * The node identifier is RANDOM.
+	 * 
+	 * It supports up to 4,096 nodes.
+	 * 
+	 * It can generate up to 1,024 TSIDs per millisecond per node.
+	 * 
+	 * The system property `tsidcreator.node` and environment variable
+	 * `TSIDCREATOR_NODE` can be used to replace the random node identifier.
+	 * 
+	 * ## Random component settings:
+	 * 
+	 * - Node bit length: 12
+	 * 
+	 * - Counter bit length: 10
+	 * 
+	 * - Maximum node: 4,096 (2^12)
+	 * 
+	 * - Maximum counter: 1,024 (2^10)
+	 * 
+	 * @return a TSID string
+	 * 
+	 * @throws TsidCreatorException an overrun exception too many TSIDs are
+	 *                              requested within the same millisecond.
+	 */
+	public static String getTsidString4096() {
+		return TimeIdCreator4096Holder.INSTANCE.createString();
 	}
 
 	/**
 	 * Returns a {@link TimeIdCreator}.
 	 * 
-	 * The default counter bit length is 22.
+	 * The node identifier is RANDOM.
 	 * 
-	 * The maximum counter value is 2^22 = 4,194,304.
+	 * It supports up to 1,024 nodes.
+	 * 
+	 * It can generate up to 4,096 TSIDs per millisecond per node.
+	 * 
+	 * The system property `tsidcreator.node` and environment variable
+	 * `TSIDCREATOR_NODE` can be used to replace the random node identifier.
+	 * 
+	 * ## Random component settings:
+	 * 
+	 * - Node bit length: 10
+	 * 
+	 * - Counter bit length: 12
+	 * 
+	 * - Maximum node: 1,024 (2^10)
+	 * 
+	 * - Maximum counter: 4,096 (2^12)
 	 * 
 	 * @return a {@link TimeIdCreator}
 	 */
 	public static TimeIdCreator getTimeIdCreator() {
-		return new SimpleTimeIdCreator();
+		return new TimeIdCreator(null, NODE_LENGTH_1024);
 	}
 
 	/**
 	 * Returns a {@link TimeIdCreator}.
 	 * 
-	 * The default node identifier bit length is 10.
+	 * The node identifier is RANDOM.
 	 * 
-	 * The default counter bit length is 12.
+	 * It supports up to 256 nodes.
 	 * 
-	 * The maximum node identifier is 2^10 = 1,024.
+	 * It can generate up to 16,384 TSIDs per millisecond per node.
 	 * 
-	 * The maximum counter value is 2^12 = 4,096.
+	 * The system property `tsidcreator.node` and environment variable
+	 * `TSIDCREATOR_NODE` can be used to replace the random node identifier.
 	 * 
-	 * @param node the node identifier
+	 * ## Random component settings:
+	 * 
+	 * - Node bit length: 8
+	 * 
+	 * - Counter bit length: 14
+	 * 
+	 * - Maximum node: 256 (2^8)
+	 * 
+	 * - Maximum counter: 16,384 (2^14)
+	 * 
+	 * @return a {@link TimeIdCreator}
+	 */
+	public static TimeIdCreator getTimeIdCreator256() {
+		return new TimeIdCreator(null, NODE_LENGTH_256);
+	}
+
+	/**
+	 * Returns a {@link TimeIdCreator}.
+	 * 
+	 * The node identifier is RANDOM.
+	 * 
+	 * It supports up to 4,096 nodes.
+	 * 
+	 * It can generate up to 1,024 TSIDs per millisecond per node.
+	 * 
+	 * The system property `tsidcreator.node` and environment variable
+	 * `TSIDCREATOR_NODE` can be used to replace the random node identifier.
+	 * 
+	 * ## Random component settings:
+	 * 
+	 * - Node bit length: 12
+	 * 
+	 * - Counter bit length: 10
+	 * 
+	 * - Maximum node: 4,096 (2^12)
+	 * 
+	 * - Maximum counter: 1,024 (2^10)
+	 * 
+	 * @return a {@link TimeIdCreator}
+	 */
+	public static TimeIdCreator getTimeIdCreator4096() {
+		return new TimeIdCreator(null, NODE_LENGTH_4096);
+	}
+
+	/**
+	 * Returns a {@link TimeIdCreator}.
+	 * 
+	 * The node identifier is defined by parameter.
+	 * 
+	 * It supports up to 1,024 nodes.
+	 * 
+	 * It can generate up to 4,096 TSIDs per millisecond per node.
+	 * 
+	 * ## Random component settings:
+	 * 
+	 * - Node bit length: 10
+	 * 
+	 * - Counter bit length: 12
+	 * 
+	 * - Maximum node: 1,024 (2^10)
+	 * 
+	 * - Maximum counter: 4,096 (2^12)
+	 * 
 	 * @return a {@link TimeIdCreator}
 	 */
 	public static TimeIdCreator getTimeIdCreator(int node) {
-		return new NodeTimeIdCreator(node);
+		return new TimeIdCreator(node, NODE_LENGTH_1024);
 	}
 
 	/**
 	 * Returns a {@link TimeIdCreator}.
+	 * 
+	 * The node identifier is defined by parameter.
+	 * 
+	 * It supports up to 256 nodes.
+	 * 
+	 * It can generate up to 16,384 TSIDs per millisecond per node.
+	 * 
+	 * ## Random component settings:
+	 * 
+	 * - Node bit length: 8
+	 * 
+	 * - Counter bit length: 14
+	 * 
+	 * - Maximum node: 256 (2^8)
+	 * 
+	 * - Maximum counter: 16,384 (2^14)
+	 * 
+	 * @return a {@link TimeIdCreator}
+	 */
+	public static TimeIdCreator getTimeIdCreator256(int node) {
+		return new TimeIdCreator(node, NODE_LENGTH_256);
+	}
+
+	/**
+	 * Returns a {@link TimeIdCreator}.
+	 * 
+	 * The node identifier is defined by parameter.
+	 * 
+	 * It supports up to 4,096 nodes.
+	 * 
+	 * It can generate up to 1,024 TSIDs per millisecond per node.
+	 * 
+	 * ## Random component settings:
+	 * 
+	 * - Node bit length: 12
+	 * 
+	 * - Counter bit length: 10
+	 * 
+	 * - Maximum node: 4,096 (2^12)
+	 * 
+	 * - Maximum counter: 1,024 (2^10)
+	 * 
+	 * @return a {@link TimeIdCreator}
+	 */
+	public static TimeIdCreator getTimeIdCreator4096(int node) {
+		return new TimeIdCreator(node, NODE_LENGTH_4096);
+	}
+
+	/**
+	 * Returns a {@link TimeIdCreator}.
+	 * 
+	 * If the node id passed by parameter is null, a random value will be used.
+	 * 
+	 * If the node bit length is null, the default value of 10 bits is used.
 	 * 
 	 * The node identifier bit length can be between 0 and 20.
 	 * 
@@ -158,19 +421,23 @@ public class TsidCreator {
 	 * 
 	 * The maximum counter value also depends on it's bit length.
 	 * 
-	 * @param node       the node identifier
-	 * @param nodeLength the node identifier bit length
+	 * @param node       the node identifier (optional)
+	 * @param nodeLength the node bit length (optional)
 	 * @return a {@link TimeIdCreator}
 	 */
-	public static TimeIdCreator getTimeIdCreator(int node, int nodeLength) {
-		return new AjustableTimeIdCreator(node, nodeLength);
+	public static TimeIdCreator getTimeIdCreator(Integer node, Integer nodeLength) {
+		return new TimeIdCreator(node, nodeLength);
 	}
 
-	private static class SimpleTimeIdCreatorHolder {
-		static final SimpleTimeIdCreator INSTANCE = new SimpleTimeIdCreator();
+	private static class TimeIdCreatorHolder {
+		static final TimeIdCreator INSTANCE = getTimeIdCreator();
 	}
 
-	private static class NodeTimeIdCreatorHolder {
-		static final NodeTimeIdCreator INSTANCE = new NodeTimeIdCreator();
+	private static class TimeIdCreator256Holder {
+		static final TimeIdCreator INSTANCE = getTimeIdCreator256();
+	}
+
+	private static class TimeIdCreator4096Holder {
+		static final TimeIdCreator INSTANCE = getTimeIdCreator4096();
 	}
 }

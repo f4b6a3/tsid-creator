@@ -3,21 +3,23 @@ package com.github.f4b6a3.tsid;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-import com.github.f4b6a3.tsid.creator.AbstractTimeIdCreatorTest;
+import com.github.f4b6a3.tsid.creator.TimeIdCreatorTest;
 import com.github.f4b6a3.tsid.strategy.timestamp.DefaultTimestampStrategyTest;
-import com.github.f4b6a3.tsid.util.TsidTimeUtilTest;
+import com.github.f4b6a3.tsid.util.TsidTimeTest;
 import com.github.f4b6a3.tsid.util.TsidUtilTest;
 import com.github.f4b6a3.tsid.util.TsidValidatorTest;
+import com.github.f4b6a3.tsid.util.TsidSettingsTest;
 import com.github.f4b6a3.tsid.util.TsidConverterTest;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	AbstractTimeIdCreatorTest.class,
+	TimeIdCreatorTest.class,
 	DefaultTimestampStrategyTest.class,
 	TsidConverterTest.class,
-	TsidTimeUtilTest.class,
+	TsidTimeTest.class,
 	TsidUtilTest.class,
 	TsidValidatorTest.class,
+	TsidSettingsTest.class,
 })
 
 /**

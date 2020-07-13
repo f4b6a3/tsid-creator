@@ -26,11 +26,11 @@ package com.github.f4b6a3.tsid.util;
 
 import java.time.Instant;
 
-public final class TsidTimeUtil {
+public final class TsidTime {
 
 	public static final long TSID_EPOCH_MILLISECONDS = Instant.parse("2020-01-01T00:00:00.000Z").toEpochMilli();
 
-	private TsidTimeUtil() {
+	private TsidTime() {
 	}
 
 	/**

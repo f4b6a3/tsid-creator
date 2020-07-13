@@ -95,7 +95,7 @@ public class TsidUtilTest {
 		final int nodeidLength = 10; // default bit length
 		final int nodeidMax = (int) Math.pow(2, nodeidLength);
 
-		long timestamp = TsidTimeUtil.getCurrentTimestamp();
+		long timestamp = TsidTime.getCurrentTimestamp();
 		TimestampStrategy strategy = new FixedTimestampStretegy(timestamp);
 
 		// The default node identifier bit length is 10 (2^10 = 1024)
@@ -113,7 +113,7 @@ public class TsidUtilTest {
 		final int nodeidLength = 12;
 		final int nodeidMax = (int) Math.pow(2, nodeidLength);
 
-		long timestamp = TsidTimeUtil.getCurrentTimestamp();
+		long timestamp = TsidTime.getCurrentTimestamp();
 		TimestampStrategy strategy = new FixedTimestampStretegy(timestamp);
 
 		for (int nodeid = 0; nodeid < nodeidMax; nodeid++) {

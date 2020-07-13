@@ -65,7 +65,7 @@ public final class TsidUtil {
 	 */
 	public static long extractUnixMilliseconds(long tsid) {
 		final long timestamp = extractTimestamp(tsid);
-		return TsidTimeUtil.toUnixMilliseconds(timestamp);
+		return TsidTime.toUnixMilliseconds(timestamp);
 	}
 
 	/**
@@ -92,7 +92,7 @@ public final class TsidUtil {
 	 */
 	public static long extractUnixMilliseconds(long tsid, long customEpoch) {
 		final long timestamp = extractTimestamp(tsid);
-		return TsidTimeUtil.toUnixMilliseconds(timestamp, customEpoch);
+		return TsidTime.toUnixMilliseconds(timestamp, customEpoch);
 	}
 
 	/**
