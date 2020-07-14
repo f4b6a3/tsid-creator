@@ -8,17 +8,25 @@ It brings together some ideas from [Twitter's Snowflake](https://github.com/twit
 How to Use
 ------------------------------------------------------
 
-Create a TSID:
+Create a TSID (up to 256 nodes):
+
+```java
+long tsid = TsidCreator.getTsid256();
+```
+
+Create a TSID (up to 1024 nodes):
 
 ```java
 long tsid = TsidCreator.getTsid1024();
 ```
 
-Create a TSID string:
+Create a TSID (up to 4096 nodes):
 
 ```java
-long tsid = TsidCreator.getTsidString1024();
+long tsid = TsidCreator.getTsid4096();
 ```
+
+The TSID generator is [thread-safe](https://en.wikipedia.org/wiki/Thread_safety).
 
 ### Maven dependency
 
@@ -29,7 +37,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>tsid-creator</artifactId>
-  <version>2.2.2</version>
+  <version>2.2.3</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator).
