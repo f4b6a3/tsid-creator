@@ -24,6 +24,17 @@
 
 package com.github.f4b6a3.tsid.util;
 
+/**
+ * Reads system properties and environment variables.
+ * 
+ * The system properties has prevalence over environment variables.
+ * 
+ * Available properties and variables:
+ * 
+ * - tsidcreator.node
+ * 
+ * - TSIDCREATOR_NODE
+ */
 public final class TsidSettings {
 
 	protected static final String PROPERTY_PREFIX = "tsidcreator";
@@ -35,25 +46,25 @@ public final class TsidSettings {
 	/**
 	 * Returns the node ID.
 	 * 
-	 * Returns -1 if not found, empty or invalid.
+	 * Returns null if not found, empty or invalid.
 	 * 
 	 * @return a node id
 	 */
-	public static int getNodeIdentifier() {
+	public static Integer getNodeIdentifier() {
 		String value = getProperty(PROPERTY_NODE);
 
 		if (value == null || value.isEmpty()) {
-			return -1;
+			return null;
 		}
 
 		try {
 			return Integer.decode(value);
 		} catch (NumberFormatException e) {
-			return -1;
+			return null;
 		}
 	}
 
-	public static void setNodeIdentifier(int nodeid) {
+	public static void setNodeIdentifier(Integer nodeid) {
 		String value = Integer.toString(nodeid);
 		setProperty(PROPERTY_NODE, value);
 	}

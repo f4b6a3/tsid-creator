@@ -262,8 +262,8 @@ public final class TimeIdCreator {
 	 * @return a number
 	 */
 	private synchronized int getNodeIdentifier() {
-		final int _node = TsidSettings.getNodeIdentifier();
-		if (_node >= 0) {
+		final Integer _node = TsidSettings.getNodeIdentifier();
+		if (_node != null) {
 			return _node;
 		}
 		return SECURE_RANDOM.nextInt();
