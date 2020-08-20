@@ -5,26 +5,28 @@ A Java library for generating Time Sortable IDs.
 
 It brings together some ideas from [Twitter's Snowflake](https://github.com/twitter-archive/snowflake) and [ULID Spec](https://github.com/ulid/spec).
 
+* Generated in lexicographical order;
+* Can be stored as an integer of 64 bits;
+* Can be stored as a string of 13 chars;
+* String format is encoded to [Crockford's base32](https://www.crockford.com/base32.html);
+* String format is URL safe, case insensitive and accepts hyphens.
+
 How to Use
 ------------------------------------------------------
 
-Create a TSID (up to 256 nodes):
+Create a TSID for up to 1024 nodes and 4096 ID/ms:
 
 ```java
-long tsid = TsidCreator.getTsid256();
+long tsid = TsidCreator.getTsid1024(); // 38352658567418867
 ```
 
-Create a TSID (up to 1024 nodes):
+Create a TSID string for up to 1024 nodes and 4096 ID/ms:
 
 ```java
-long tsid = TsidCreator.getTsid1024();
+String tsid = TsidCreator.getTsidString1024(); // 01226N0640J7K
 ```
 
-Create a TSID (up to 4096 nodes):
-
-```java
-long tsid = TsidCreator.getTsid4096();
-```
+There are three predefined node ranges: 256, 1024 and 4096.
 
 The TSID generator is [thread-safe](https://en.wikipedia.org/wiki/Thread_safety).
 
@@ -96,18 +98,19 @@ Another way to replace the random value is using a system property `tsidcreator.
 
 ##### Examples
 
+
 ```java
-// Create a TSID (up to 256 nodes)
+// Create a TSID for up to 256 nodes and 16384 ID/ms
 long tsid = TsidCreator.getTsid256();
 ```
 
 ```java
-// Create a TSID (up to 1024 nodes)
+// Create a TSID for up to 1024 nodes and 4096 ID/ms
 long tsid = TsidCreator.getTsid1024();
 ```
 
 ```java
-// Create a TSID (up to 4096 nodes)
+// Create a TSID for up to 4096 nodes and 1024 ID/ms
 long tsid = TsidCreator.getTsid4096();
 ```
 
@@ -143,17 +146,17 @@ The TSID string is a number encoded to [Crockford's base 32](https://www.crockfo
 ##### Examples
 
 ```java
-// Create a TSID string (up to 256 nodes)
+// Create a TSID string for up to 256 nodes and 16384 ID/ms
 long tsid = TsidCreator.getTsidString256();
 ```
 
 ```java
-// Create a TSID string (up to 1024 nodes)
+// Create a TSID string for up to 1024 nodes and 4096 ID/ms
 long tsid = TsidCreator.getTsidString1024();
 ```
 
 ```java
-// Create a TSID string (up to 4096 nodes)
+// Create a TSID string for up to 4096 nodes and 1024 ID/ms
 long tsid = TsidCreator.getTsidString4096();
 ```
 
@@ -203,6 +206,15 @@ The simplest way to avoid collisions is to ensure that each generator has its ow
 // append to /etc/environment or ~/.profile
 export TSIDCREATOR_NODE="492"
 ```
+
+As a suggestion, on Linux systems you can define an environment variable based on the SHA-256 hash of `/etc/hostname`:
+
+```bash
+# SHA-256 hash of `/etc/hostname`, limited to 5 hexadecimal digits
+export TSIDCREATOR_NODE=$(echo 0x`cat /etc/hostname | sha256sum | cut -c-5`)
+```
+
+The maximum node ID is 2^20 or 5 hexadecimal digits.
 
 ### How use the `TimeIdCreator` directly
 
