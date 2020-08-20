@@ -207,15 +207,6 @@ The simplest way to avoid collisions is to ensure that each generator has its ow
 export TSIDCREATOR_NODE="492"
 ```
 
-As a suggestion, on Linux systems you can define an environment variable based on the [SHA-256 hash of hostname](https://gist.github.com/fabiolimace/79ff9e98d9f5d331525b34341c80e61c):
-
-```bash
-# SHA-256 hash of `/etc/hostname`, limited to 5 hexadecimal digits
-export TSIDCREATOR_NODE=$(echo 0x`cat /etc/hostname | sha256sum | cut -c-5`)
-```
-
-The maximum node ID is 2^20 or 5 hexadecimal digits.
-
 ### How use the `TimeIdCreator` directly
 
 These are some examples of using the `TimeIdCreator` to create TSIDs:
