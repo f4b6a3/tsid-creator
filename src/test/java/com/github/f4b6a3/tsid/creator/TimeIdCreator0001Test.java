@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -13,7 +12,6 @@ import java.util.Set;
 import org.junit.Test;
 
 import com.github.f4b6a3.tsid.TsidCreator;
-import com.github.f4b6a3.tsid.exception.TsidCreatorException;
 import com.github.f4b6a3.tsid.strategy.TimestampStrategy;
 import com.github.f4b6a3.tsid.strategy.timestamp.FixedTimestampStretegy;
 import com.github.f4b6a3.tsid.util.TsidUtil;
@@ -111,25 +109,6 @@ public class TimeIdCreator0001Test {
 		checkNullOrInvalid(list);
 		checkUniqueness(list);
 		checkCreationTime(list, startTime, endTime);
-	}
-
-	@Test
-	public void testOverrunException1() {
-
-		int node = random.nextInt();
-		TimestampStrategy strategy = new FixedTimestampStretegy(System.currentTimeMillis());
-		TimeIdCreator creator = TsidCreator.getTimeIdCreator(node, NODE_LENGTH).withTimestampStrategy(strategy);
-
-		for (int i = 0; i < COUNTER_MAX; i++) {
-			creator.create();
-		}
-
-		try {
-			creator.create();
-			fail();
-		} catch (TsidCreatorException e) {
-			// success
-		}
 	}
 
 	@Test

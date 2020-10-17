@@ -28,7 +28,6 @@ import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Random;
 
-import com.github.f4b6a3.tsid.exception.TsidCreatorException;
 import com.github.f4b6a3.tsid.strategy.TimestampStrategy;
 import com.github.f4b6a3.tsid.strategy.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.tsid.util.TsidSettings;
@@ -65,7 +64,7 @@ public final class TimeIdCreator {
 	private int counterLength = 0;
 	private int counterMask = 0;
 
-	private long previousTimestamp;
+	private long lastTimestamp;
 
 	private TimestampStrategy timestampStrategy;
 
@@ -73,8 +72,6 @@ public final class TimeIdCreator {
 	private static final int RANDOM_COMPONENT_MASK = 0x003fffff;
 
 	private static final int DEFAULT_NODE_LENGTH = 10;
-
-	private static final String OVERRUN_MESSAGE = "The system overran the generator by requesting too many TSIDs.";
 
 	private static final Random SECURE_RANDOM = new SecureRandom();
 
@@ -162,9 +159,6 @@ public final class TimeIdCreator {
 	 * Returns a TSID number.
 	 * 
 	 * @return a TSID number.
-	 * 
-	 * @throws TsidCreatorException an overrun exception too many TSIDs are
-	 *                              requested within the same millisecond.
 	 */
 	public synchronized long create() {
 		final long _time = getTimestamp() << RANDOM_COMPONENT_LENGTH;
@@ -180,9 +174,6 @@ public final class TimeIdCreator {
 	 * The returning string is encoded to Crockford's base32.
 	 * 
 	 * @return a TSID string.
-	 * 
-	 * @throws TsidCreatorException an overrun exception too many TSIDs are
-	 *                              requested within the same millisecond.
 	 */
 	public synchronized String createString() {
 		return TsidConverter.toString(create());
@@ -194,41 +185,37 @@ public final class TimeIdCreator {
 	 * If the current timestamp is equal to the previous timestamp, the counter is
 	 * incremented by one. Otherwise the counter is reset to a random value.
 	 * 
+	 * The maximum increment operation depends on the counter bit length. For
+	 * example, if the counter bit length is 12, the maximum number of increment
+	 * operations is 2^12 = 4096.
+	 * 
 	 * @return timestamp
 	 */
 	private synchronized long getTimestamp() {
 
-		final long timestamp = this.timestampStrategy.getTimestamp();
+		long timestamp = this.timestampStrategy.getTimestamp();
 
-		if (timestamp == this.previousTimestamp) {
-			this.increment();
+		if (timestamp == this.lastTimestamp) {
+			if (++this.counter >= this.counterMax) {
+				timestamp = nextTimestamp(timestamp);
+				this.reset();
+			}
 		} else {
 			this.reset();
 		}
 
-		this.previousTimestamp = timestamp;
+		this.lastTimestamp = timestamp;
 		return timestamp;
 	}
 
 	/**
-	 * Increment the counter sub-part of the TSID.
-	 * 
-	 * An exception is thrown when too many increment operations are made.
-	 * 
-	 * The maximum increment operation depends on the counter bit length.
-	 * 
-	 * For example, if the counter bit length is 12, the maximum number of increment
-	 * operations is 2^12 = 4096. It means that an exception is thrown if the
-	 * generator tries to generate more than 4096 TSIDs within the same millisecond.
-	 * 
-	 * @throws TsidCreatorException an overrun exception too many TSIDs are
-	 *                              requested within the same millisecond.
+	 * Stall the creator until the system clock catches up.
 	 */
-	private synchronized void increment() {
-		if (++this.counter >= this.counterMax) {
-			this.reset();
-			throw new TsidCreatorException(OVERRUN_MESSAGE);
+	private synchronized long nextTimestamp(long timestamp) {
+		while (timestamp <= this.lastTimestamp) {
+			timestamp = this.timestampStrategy.getTimestamp();
 		}
+		return timestamp;
 	}
 
 	/**

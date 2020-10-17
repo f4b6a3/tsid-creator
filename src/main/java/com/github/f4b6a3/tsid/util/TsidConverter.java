@@ -26,6 +26,8 @@ package com.github.f4b6a3.tsid.util;
 
 import static com.github.f4b6a3.tsid.util.TsidUtil.*;
 
+import com.github.f4b6a3.tsid.exception.InvalidTsidException;
+
 /**
  * Utility that converts TSIDs to and from strings and byte arrays.
  */
@@ -39,6 +41,7 @@ public final class TsidConverter {
 	 * 
 	 * @param tsid a TSID string
 	 * @return a TSID number
+	 * @throws InvalidTsidException if invalid
 	 */
 	public static long fromString(String tsid) {
 		TsidValidator.validate(tsid);

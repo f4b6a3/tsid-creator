@@ -25,7 +25,7 @@
 package com.github.f4b6a3.tsid;
 
 import com.github.f4b6a3.tsid.creator.TimeIdCreator;
-import com.github.f4b6a3.tsid.exception.TsidCreatorException;
+import com.github.f4b6a3.tsid.exception.InvalidTsidException;
 import com.github.f4b6a3.tsid.util.TsidConverter;
 
 /**
@@ -48,6 +48,7 @@ public final class TsidCreator {
 	 * 
 	 * @param tsid a TSID string
 	 * @return a TSID number
+	 * @throws InvalidTsidException if invalid
 	 */
 	public static long fromString(String tsid) {
 		return TsidConverter.fromString(tsid);
@@ -85,10 +86,7 @@ public final class TsidCreator {
 	 * 
 	 * - Maximum counter: 16,384 (2^14)
 	 * 
-	 * @return a TSID
-	 * 
-	 * @throws TsidCreatorException an overrun exception too many TSIDs are
-	 *                              requested within the same millisecond.
+	 * @return a TSID number
 	 */
 	public static long getTsid256() {
 		return TimeIdCreatorHolder256.INSTANCE.create();
@@ -116,10 +114,7 @@ public final class TsidCreator {
 	 * 
 	 * - Maximum counter: 4,096 (2^12)
 	 * 
-	 * @return a TSID
-	 * 
-	 * @throws TsidCreatorException an overrun exception too many TSIDs are
-	 *                              requested within the same millisecond.
+	 * @return a TSID number
 	 */
 	public static long getTsid1024() {
 		return TimeIdCreatorHolder1024.INSTANCE.create();
@@ -147,10 +142,7 @@ public final class TsidCreator {
 	 * 
 	 * - Maximum counter: 1,024 (2^10)
 	 * 
-	 * @return a TSID
-	 * 
-	 * @throws TsidCreatorException an overrun exception too many TSIDs are
-	 *                              requested within the same millisecond.
+	 * @return a TSID number
 	 */
 	public static long getTsid4096() {
 		return TimeIdCreatorHolder4096.INSTANCE.create();
@@ -181,9 +173,6 @@ public final class TsidCreator {
 	 * - Maximum counter: 16,384 (2^14)
 	 * 
 	 * @return a TSID string
-	 * 
-	 * @throws TsidCreatorException an overrun exception too many TSIDs are
-	 *                              requested within the same millisecond.
 	 */
 	public static String getTsidString256() {
 		return TimeIdCreatorHolder256.INSTANCE.createString();
@@ -214,9 +203,6 @@ public final class TsidCreator {
 	 * - Maximum counter: 4,096 (2^12)
 	 * 
 	 * @return a TSID string
-	 * 
-	 * @throws TsidCreatorException an overrun exception too many TSIDs are
-	 *                              requested within the same millisecond.
 	 */
 	public static String getTsidString1024() {
 		return TimeIdCreatorHolder1024.INSTANCE.createString();
@@ -247,9 +233,6 @@ public final class TsidCreator {
 	 * - Maximum counter: 1,024 (2^10)
 	 * 
 	 * @return a TSID string
-	 * 
-	 * @throws TsidCreatorException an overrun exception too many TSIDs are
-	 *                              requested within the same millisecond.
 	 */
 	public static String getTsidString4096() {
 		return TimeIdCreatorHolder4096.INSTANCE.createString();

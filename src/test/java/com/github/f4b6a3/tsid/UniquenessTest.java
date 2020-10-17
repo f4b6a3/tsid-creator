@@ -4,7 +4,6 @@ import java.util.HashSet;
 
 import com.github.f4b6a3.tsid.TsidCreator;
 import com.github.f4b6a3.tsid.creator.TimeIdCreator;
-import com.github.f4b6a3.tsid.exception.TsidCreatorException;
 import com.github.f4b6a3.tsid.strategy.timestamp.FixedTimestampStretegy;
 import com.github.f4b6a3.tsid.util.TsidTime;
 
@@ -83,12 +82,7 @@ public class UniquenessTest {
 
 			for (int i = 0; i < max; i++) {
 				// Request a TSID
-				long tsid = 0;
-				try {
-					tsid = creator.create();
-				} catch (TsidCreatorException e) {
-					tsid = creator.create();
-				}
+				long tsid = creator.create();
 
 				if (verbose) {
 					// Calculate and show progress
