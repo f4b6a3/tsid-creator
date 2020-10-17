@@ -36,23 +36,31 @@ import com.github.f4b6a3.tsid.util.TsidConverter;
  */
 public final class TsidCreator {
 
-	public static final int NODE_LENGTH_64 = 6; // XS
 	public static final int NODE_LENGTH_256 = 8; // S
 	public static final int NODE_LENGTH_1024 = 10; // M
 	public static final int NODE_LENGTH_4096 = 12; // L
-	public static final int NODE_LENGTH_16384 = 14; // XL
 
 	private TsidCreator() {
 	}
 
 	/**
-	 * Returns a TSID from a string.
+	 * Returns a TSID number from a TSID string.
 	 * 
 	 * @param tsid a TSID string
-	 * @return a TSID
+	 * @return a TSID number
 	 */
 	public static long fromString(String tsid) {
 		return TsidConverter.fromString(tsid);
+	}
+
+	/**
+	 * Returns a TSID string from a TSID number.
+	 * 
+	 * @param tsid a TSID number
+	 * @return a TSID string
+	 */
+	public static String toString(long tsid) {
+		return TsidConverter.toString(tsid);
 	}
 
 	/**
@@ -350,6 +358,7 @@ public final class TsidCreator {
 	 * 
 	 * - Maximum counter: 16,384 (2^14)
 	 * 
+	 * @param node a node identifier
 	 * @return a {@link TimeIdCreator}
 	 */
 	public static TimeIdCreator getTimeIdCreator256(int node) {
@@ -375,6 +384,7 @@ public final class TsidCreator {
 	 * 
 	 * - Maximum counter: 4,096 (2^12)
 	 * 
+	 * @param node a node identifier
 	 * @return a {@link TimeIdCreator}
 	 */
 	public static TimeIdCreator getTimeIdCreator1024(int node) {
@@ -400,6 +410,7 @@ public final class TsidCreator {
 	 * 
 	 * - Maximum counter: 1,024 (2^10)
 	 * 
+	 * @param node a node identifier
 	 * @return a {@link TimeIdCreator}
 	 */
 	public static TimeIdCreator getTimeIdCreator4096(int node) {

@@ -69,10 +69,10 @@ public final class TimeIdCreator {
 
 	private TimestampStrategy timestampStrategy;
 
-	private static final int RANDOMNESS_LENGTH = 22;
-	private static final int RANDOMNESS_MASK = 0x003fffff;
+	private static final int RANDOM_COMPONENT_LENGTH = 22;
+	private static final int RANDOM_COMPONENT_MASK = 0x003fffff;
 
-	private static final int DEFAULT_NODEID_LENGTH = 10;
+	private static final int DEFAULT_NODE_LENGTH = 10;
 
 	private static final String OVERRUN_MESSAGE = "The system overran the generator by requesting too many TSIDs.";
 
@@ -143,7 +143,7 @@ public final class TimeIdCreator {
 	 */
 	public TimeIdCreator(Integer node, Integer nodeLength) {
 		final int _node = node != null ? node : getNodeIdentifier();
-		final int _length = nodeLength != null ? nodeLength : DEFAULT_NODEID_LENGTH;
+		final int _length = nodeLength != null ? nodeLength : DEFAULT_NODE_LENGTH;
 		this.setupRandomComponent(_node, _length);
 		this.timestampStrategy = new DefaultTimestampStrategy();
 	}
@@ -153,21 +153,21 @@ public final class TimeIdCreator {
 		if (nodeLength < 0 || nodeLength > 20) {
 			throw new IllegalArgumentException("The node identifier bit length is out of the permited range: [0, 20]");
 		}
-		this.counterLength = RANDOMNESS_LENGTH - nodeLength;
-		this.counterMask = RANDOMNESS_MASK >>> nodeLength;
-		this.node = node & (RANDOMNESS_MASK >>> this.counterLength);
+		this.counterLength = RANDOM_COMPONENT_LENGTH - nodeLength;
+		this.counterMask = RANDOM_COMPONENT_MASK >>> nodeLength;
+		this.node = node & (RANDOM_COMPONENT_MASK >>> this.counterLength);
 	}
 
 	/**
-	 * Returns a TSID.
+	 * Returns a TSID number.
 	 * 
-	 * @return a TSID.
+	 * @return a TSID number.
 	 * 
 	 * @throws TsidCreatorException an overrun exception too many TSIDs are
 	 *                              requested within the same millisecond.
 	 */
 	public synchronized long create() {
-		final long _time = getTimestamp() << RANDOMNESS_LENGTH;
+		final long _time = getTimestamp() << RANDOM_COMPONENT_LENGTH;
 		final long _node = this.node << this.counterLength;
 		final long _counter = this.counter & this.counterMask;
 

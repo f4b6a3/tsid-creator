@@ -26,7 +26,7 @@ Create a TSID string for up to 1024 nodes and 4096 ID/ms:
 String tsid = TsidCreator.getTsidString1024(); // 01226N0640J7K
 ```
 
-There are three predefined node ranges: 256, 1024 and 4096.
+There are three predefined node ranges: 256, 1024 and 4096. If you need another node range, you can use the `TimeIdCreator` directly.
 
 The TSID generator is [thread-safe](https://en.wikipedia.org/wiki/Thread_safety).
 
@@ -39,7 +39,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>tsid-creator</artifactId>
-  <version>2.2.4</version>
+  <version>2.2.5</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator).
@@ -63,9 +63,9 @@ The random component has 2 sub-parts:
 - Node ID (0 to 20 bits)
 - Counter (2 to 22 bits)
 
-The counter bit length depends on the node identifier bit length. If the node identifier bit length is 10, the counter bit length is limited to 12. In this example, the maximum node identifier value is 2^10 = 1024 and the maximum counter value is 2^12 = 4096. So the maximum TSIDs that can be generated per millisecond is about 4 thousand. This is the default.
+The counter bit length depends on the node identifier bit length. If the node identifier bit length is 10, the counter bit length is limited to 12. In this example, the maximum node identifier value is 2^10 = 1024 and the maximum counter value is 2^12 = 4096. So the maximum TSIDs that can be generated per millisecond is about 4 thousand.
 
-The node identifier uses 10 bits of the random component by default. It's possible to adjust the node bit length to a value between 0 and 20. The counter bit length is affected by the node bit length.
+In the generator `TimeIdCreator` the node identifier uses 10 bits of the random component by default. It's possible to adjust the node bit length to a value between 0 and 20. The counter bit length is affected by the node bit length.
 
 ##### TSID structure
 
