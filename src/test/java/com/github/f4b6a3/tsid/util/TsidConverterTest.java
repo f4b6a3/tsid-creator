@@ -1,6 +1,7 @@
 package com.github.f4b6a3.tsid.util;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Random;
 
@@ -9,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import com.github.f4b6a3.tsid.TsidCreator;
+import com.github.f4b6a3.tsid.exception.InvalidTsidException;
 
 public class TsidConverterTest {
 
@@ -16,6 +18,9 @@ public class TsidConverterTest {
 	
 	protected static final char[] ALPHABET_CROCKFORD = "0123456789ABCDEFGHJKMNPQRSTVWXYZ".toCharArray();
 	protected static final char[] ALPHABET_JAVA = "0123456789abcdefghijklmnopqrstuv".toCharArray(); // Long.parseUnsignedLong()
+	
+	// 7ZZZZZZZZZZZZ: 9223372036854775807 (2^63 - 1)
+	protected static final long TSID_MAX = 0x7fffffffffffffffL;
 	
 	@Test
 	public void testToStringIsValid() {
@@ -26,7 +31,7 @@ public class TsidConverterTest {
 
 	@Test
 	public void testToString() {
-		long tsid1 = 0x7fffffffffffffffL; // 2^31
+		long tsid1 = TSID_MAX;
 		String string1 = "7ZZZZZZZZZZZZ";
 		String result1 = TsidConverter.toString(tsid1);
 		assertEquals(string1, result1);
@@ -40,7 +45,7 @@ public class TsidConverterTest {
 	@Test
 	public void testFromString() {
 
-		long tsid1 = 0x7fffffffffffffffL; // 2^31
+		long tsid1 = TSID_MAX;
 		String string1 = "7ZZZZZZZZZZZZ";
 		long result1 = TsidConverter.fromString(string1);
 		assertEquals(tsid1, result1);
@@ -49,18 +54,23 @@ public class TsidConverterTest {
 		String string2 = "000000000000A";
 		long result2 = TsidConverter.fromString(string2);
 		assertEquals(tsid2, result2);
-
+		
+		try {
+			String string3 = "8ZZZZZZZZZZZZ";
+			TsidConverter.fromString(string3);
+			fail("Should throw an InvalidTsidException");
+		} catch (InvalidTsidException e) {
+			// success
+		}
 	}
 	
 	@Test
 	public void testFromString2() {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			Random random = new Random();
-			final long number0 = random.nextLong();
+			final long number0 = random.nextLong() & TSID_MAX;
 			final String string0 = toString(number0);
-			
 			final long number1 = TsidConverter.fromString(string0);
-
 			assertEquals(number0, number1);
 		}
 	}

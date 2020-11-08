@@ -24,9 +24,14 @@
 
 package com.github.f4b6a3.tsid.util;
 
+import static com.github.f4b6a3.tsid.util.TsidConverter.BASE32_VALUES;
+
 import com.github.f4b6a3.tsid.exception.InvalidTsidException;
 
 public final class TsidValidator {
+
+	// 7ZZZZZZZZZZZZ: 9223372036854775807 (2^63 - 1)
+	protected static final long TSID_MAX = 0x7fffffffffffffffL;
 
 	protected static final int TSID_LENGTH = 13;
 
@@ -52,7 +57,11 @@ public final class TsidValidator {
 	 * @return boolean true if valid
 	 */
 	public static boolean isValid(String tsid) {
-		return tsid != null && isValidString(tsid.toCharArray());
+		if (tsid == null) {
+			return false;
+		}
+		final char[] chars = tsid.toCharArray();
+		return isValidString(chars) && isValidNumber(chars);
 	}
 
 	/**
@@ -64,9 +73,13 @@ public final class TsidValidator {
 	 * @throws InvalidTsidException if invalid
 	 */
 	public static void validate(String tsid) {
-		if (tsid == null || !isValidString(tsid.toCharArray())) {
-			throw new InvalidTsidException(String.format("Invalid TSID string: %s.", tsid));
+		if (tsid != null) {
+			final char[] chars = tsid.toCharArray();
+			if (isValidString(chars) && isValidNumber(chars)) {
+				return; // valid
+			}
 		}
+		throw new InvalidTsidException(String.format("Invalid TSID: %s.", tsid));
 	}
 
 	/**
@@ -103,5 +116,32 @@ public final class TsidValidator {
 			}
 		}
 		return (c.length - hyphen) == TSID_LENGTH;
+	}
+
+	/**
+	 * Checks if the timestamp is between 0 and 2^48-1
+	 * 
+	 * @param chars a char array
+	 * @return false if invalid.
+	 */
+	protected static boolean isValidNumber(char[] chars) {
+
+		long number = 0;
+
+		number |= BASE32_VALUES[chars[0x00]] << 60;
+		number |= BASE32_VALUES[chars[0x01]] << 55;
+		number |= BASE32_VALUES[chars[0x02]] << 50;
+		number |= BASE32_VALUES[chars[0x03]] << 45;
+		number |= BASE32_VALUES[chars[0x04]] << 40;
+		number |= BASE32_VALUES[chars[0x05]] << 35;
+		number |= BASE32_VALUES[chars[0x06]] << 30;
+		number |= BASE32_VALUES[chars[0x07]] << 25;
+		number |= BASE32_VALUES[chars[0x08]] << 20;
+		number |= BASE32_VALUES[chars[0x09]] << 15;
+		number |= BASE32_VALUES[chars[0x0a]] << 10;
+		number |= BASE32_VALUES[chars[0x0b]] << 5;
+		number |= BASE32_VALUES[chars[0x0c]];
+
+		return number >= 0 && number <= TSID_MAX;
 	}
 }
