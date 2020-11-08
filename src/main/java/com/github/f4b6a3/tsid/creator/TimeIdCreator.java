@@ -30,8 +30,8 @@ import java.util.Random;
 
 import com.github.f4b6a3.tsid.strategy.TimestampStrategy;
 import com.github.f4b6a3.tsid.strategy.timestamp.DefaultTimestampStrategy;
-import com.github.f4b6a3.tsid.util.TsidSettings;
 import com.github.f4b6a3.tsid.util.TsidConverter;
+import com.github.f4b6a3.tsid.util.internal.TsidCreatorSettings;
 
 /**
  * Factory that creates time sortable IDs (TSIDs).
@@ -249,7 +249,7 @@ public final class TimeIdCreator {
 	 * @return a number
 	 */
 	private synchronized int getNodeIdentifier() {
-		final Integer _node = TsidSettings.getNodeIdentifier();
+		final Integer _node = TsidCreatorSettings.getNodeIdentifier();
 		if (_node != null) {
 			return _node;
 		}

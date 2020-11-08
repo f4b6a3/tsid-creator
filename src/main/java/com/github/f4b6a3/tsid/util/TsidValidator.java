@@ -26,9 +26,9 @@ package com.github.f4b6a3.tsid.util;
 
 import com.github.f4b6a3.tsid.exception.InvalidTsidException;
 
-import static com.github.f4b6a3.tsid.util.TsidUtil.*;
-
 public final class TsidValidator {
+
+	protected static final int TSID_LENGTH = 13;
 
 	private TsidValidator() {
 	}
@@ -52,13 +52,7 @@ public final class TsidValidator {
 	 * @return boolean true if valid
 	 */
 	public static boolean isValid(String tsid) {
-
-		if (tsid == null) {
-			return false;
-		}
-
-		char[] chars = removeHyphens(tsid.toCharArray());
-		return (chars.length == TSID_CHAR_LENGTH && isCrockfordBase32(chars));
+		return tsid != null && isValidString(tsid.toCharArray());
 	}
 
 	/**
@@ -70,8 +64,44 @@ public final class TsidValidator {
 	 * @throws InvalidTsidException if invalid
 	 */
 	protected static void validate(String tsid) {
-		if (!isValid(tsid)) {
+		if (tsid == null || !isValidString(tsid.toCharArray())) {
 			throw new InvalidTsidException(String.format("Invalid TSID string: %s.", tsid));
 		}
+	}
+
+	/**
+	 * Checks if the string is a valid TSID.
+	 * 
+	 * A valid TSID string is a sequence of 13 characters from Crockford's base 32
+	 * alphabet.
+	 * 
+	 * <pre>
+	 * Examples of valid TSID strings:
+	 * 
+	 * - 0123456789ABC (13 alphanumeric, case insensitive, except U)
+	 * - 0123456789OIL (13 alphanumeric, case insensitive, including OIL, except U)
+	 * - 0123-4567-89ABC (13 alphanumeric, case insensitive, except U, with hyphens)
+	 * - 0123-4567-89OIL (13 alphanumeric, case insensitive, including OIL, except U, with hyphens)
+	 * </pre>
+	 * 
+	 * @param c a char array
+	 * @return boolean true if valid
+	 */
+	protected static boolean isValidString(final char[] c) {
+		int hyphen = 0;
+		for (int i = 0; i < c.length; i++) {
+			if (c[i] == '-') {
+				hyphen++;
+				continue;
+			}
+			if (c[i] == 'U' || c[i] == 'u') {
+				return false;
+			}
+			// ASCII codes: A-Z, 0-9, a-z
+			if (!((c[i] >= 0x41 && c[i] <= 0x5a) || (c[i] >= 0x30 && c[i] <= 0x39) || (c[i] >= 0x61 && c[i] <= 0x7a))) {
+				return false;
+			}
+		}
+		return (c.length - hyphen) == TSID_LENGTH;
 	}
 }

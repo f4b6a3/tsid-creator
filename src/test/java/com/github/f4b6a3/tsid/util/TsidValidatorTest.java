@@ -2,12 +2,16 @@ package com.github.f4b6a3.tsid.util;
 
 import static org.junit.Assert.*;
 
+import java.util.Random;
+
 import org.junit.Test;
 
 import com.github.f4b6a3.tsid.exception.InvalidTsidException;
 
 public class TsidValidatorTest {
 
+	private static final int DEFAULT_LOOP_MAX = 100_000;
+	
 	@Test
 	public void testIsValid() {
 
@@ -56,6 +60,16 @@ public class TsidValidatorTest {
 			fail();
 		} catch (InvalidTsidException e) {
 			// Success
+		}
+	}
+	
+	@Test
+	public void testToString2() {
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			Random random = new Random();
+			final long number0 = random.nextLong();
+			final String string1 = TsidConverter.toString(number0);
+			assertTrue(TsidValidator.isValid(string1));
 		}
 	}
 }

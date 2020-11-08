@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.tsid.util;
+package com.github.f4b6a3.tsid.util.internal;
 
 /**
  * Reads system properties and environment variables.
@@ -35,12 +35,12 @@ package com.github.f4b6a3.tsid.util;
  * 
  * - TSIDCREATOR_NODE
  */
-public final class TsidSettings {
+public final class TsidCreatorSettings {
 
 	protected static final String PROPERTY_PREFIX = "tsidcreator";
 	protected static final String PROPERTY_NODE = "node";
 
-	protected TsidSettings() {
+	protected TsidCreatorSettings() {
 	}
 
 	/**

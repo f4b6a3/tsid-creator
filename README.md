@@ -39,7 +39,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>tsid-creator</artifactId>
-  <version>2.3.0</version>
+  <version>2.4.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator).
@@ -257,32 +257,16 @@ This section shows benchmarks comparing `TsidCreator` to `java.util.UUID`.
 ------------------------------------------------------------------------------
 THROUGHPUT                              Mode  Cnt      Score    Error   Units
 ------------------------------------------------------------------------------
-Throughput.Java_RandomBased            thrpt    5   2206,467 ± 10,305  ops/ms
-Throughput.TsidCreator_Tsid256         thrpt    5  16384,145 ±  0,882  ops/ms
-Throughput.TsidCreator_Tsid1024        thrpt    5   4096,236 ±  0,352  ops/ms
-Throughput.TsidCreator_Tsid4096        thrpt    5   1024,061 ±  0,125  ops/ms
-Throughput.TsidCreator_TsidString256   thrpt    5  11645,971 ± 99,542  ops/ms
-Throughput.TsidCreator_TsidString1024  thrpt    5   4088,976 ±  0,729  ops/ms
-Throughput.TsidCreator_TsidString4096  thrpt    5   1023,982 ±  0,125  ops/ms
+Throughput.JDK_RandomBased             thrpt    5   2199,582 ±  7,864  ops/ms
+Throughput.TsidCreator_Tsid256         thrpt    5  16375,673 ± 38,712  ops/ms
+Throughput.TsidCreator_Tsid1024        thrpt    5   4096,214 ±  0,189  ops/ms
+Throughput.TsidCreator_Tsid4096        thrpt    5   1024,060 ±  0,107  ops/ms
+Throughput.TsidCreator_TsidString256   thrpt    5  14806,519 ± 68,378  ops/ms
+Throughput.TsidCreator_TsidString1024  thrpt    5   4092,947 ±  0,909  ops/ms
+Throughput.TsidCreator_TsidString4096  thrpt    5   1024,026 ±  0,135  ops/ms
 ------------------------------------------------------------------------------
 Total time: 00:09:22
 ------------------------------------------------------------------------------
-```
-
-```
---------------------------------------------------------------------------
-AVERAGE TIME                            Mode  Cnt    Score   Error  Units
---------------------------------------------------------------------------
-AverageTime.Java_RandomBased            avgt    5  452,725 ± 1,763  ns/op
-AverageTime.TsidCreator_Tsid256         avgt    5   61,122 ± 0,300  ns/op
-AverageTime.TsidCreator_Tsid1024        avgt    5  244,127 ± 0,026  ns/op
-AverageTime.TsidCreator_Tsid4096        avgt    5  976,512 ± 0,105  ns/op
-AverageTime.TsidCreator_TsidString256   avgt    5   86,461 ± 0,984  ns/op
-AverageTime.TsidCreator_TsidString1024  avgt    5  244,594 ± 0,422  ns/op
-AverageTime.TsidCreator_TsidString4096  avgt    5  976,548 ± 0,211  ns/op
---------------------------------------------------------------------------
-Total time: 00:09:22
---------------------------------------------------------------------------
 ```
 
 System: CPU i5-3330, 8G RAM, Ubuntu 20.04.
