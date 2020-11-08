@@ -63,7 +63,7 @@ public final class TsidValidator {
 	 * @param tsid a TSID
 	 * @throws InvalidTsidException if invalid
 	 */
-	protected static void validate(String tsid) {
+	public static void validate(String tsid) {
 		if (tsid == null || !isValidString(tsid.toCharArray())) {
 			throw new InvalidTsidException(String.format("Invalid TSID string: %s.", tsid));
 		}
