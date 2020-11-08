@@ -1,4 +1,5 @@
 
+
 # TSID Creator
 
 A Java library for generating Time Sortable IDs.
@@ -87,12 +88,7 @@ The node id is adjustable from 0 to 20 bits.
 The node id bit length affects the counter bit length.
 ```
 
-The node identifier is a random number from 0 to 1023 (default). It can be replaced by a value passed to the `TimeIdCreator` constructor or method factory. Example:
-
-```java
-int node = 842;
-long tsid = TsdiCreator.getTimeIdCreator1024(node).create();
-```
+The node identifier is a random number from 0 to 1023 (default). It can be replaced by a value passed to the `TimeIdCreator` constructor or method factory.
 
 Another way to replace the random value is using a system property `tsidcreator.node` or a environment variable `TSIDCREATOR_NODE`.
 
@@ -203,17 +199,8 @@ The simplest way to avoid collisions is to ensure that each generator has its ow
 * Using environment variable:
 
 ```bash
-// append to /etc/environment or ~/.profile
+# append to /etc/environment or ~/.profile
 export TSIDCREATOR_NODE="492"
-```
-
-This is an example of how to define hash-based environment variable:
-
-```bash
-# Append to /etc/environment or ~/.profile
-
-# Use 10 bits of the host name hash (BITS=10)
-export TSIDCREATOR_NODE=$(BITS=10; HASH=`hostname | sha256sum | cut -c-8`; echo $(( 0x$HASH % 2**$BITS )))
 ```
 
 ### How use the `TimeIdCreator` directly
@@ -221,31 +208,31 @@ export TSIDCREATOR_NODE=$(BITS=10; HASH=`hostname | sha256sum | cut -c-8`; echo 
 These are some examples of using the `TimeIdCreator` to create TSIDs:
 
 ```java
-// with a CUSTOM timestamp strategy
-TimestampStrategy customStrategy = new CustomTimestampStrategy();
-long tsid = TsidCreator.getTimeIdCreator1024()
-	.withTimestampStrategy(customStrategy)
-	.create();
-```
-```java
-// with a CUSTOM epoch (fall of the Berlin Wall)
-Instant customEpoch = Instant.parse("1989-11-09T00:00:00Z");
-long tsid = TsidCreator.getTimeIdCreator1024()
-	.withCustomEpoch(customEpoch)
-	.create();
-```
-```java
 // with a FIXED node identifier
 int node = 256; // max: 2^10
-long tsid = TsidCreator.getTimeIdCreator1024(node)
-	.create();
+TimeIdCreator creator = new TimeIdCreator(node); 
+long tsid = creator.create();
 ```
 ```java
 // with a FIXED node identifier and a CUSTOM node bit length.
 int length = 16;   // max: 20
 int node = 32768;  // max: 2^length
-long tsid = TsidCreator.getTimeIdCreator(node, length)
-	.create();
+TimeIdCreator creator = new TimeIdCreator(node, length); 
+long tsid = creator.create();
+```
+```java
+// with a CUSTOM timestamp strategy
+TimestampStrategy customStrategy = new CustomTimestampStrategy();
+TimeIdCreator creator = TsidCreator.getTimeIdCreator1024()
+	.withTimestampStrategy(customStrategy)
+long tsid = creator.create();
+```
+```java
+// with a CUSTOM epoch (fall of the Berlin Wall)
+Instant customEpoch = Instant.parse("1989-11-09T00:00:00Z");
+TimeIdCreator creator = TsidCreator.getTimeIdCreator1024()
+	.withCustomEpoch(customEpoch);
+long tsid = creator.create();
 ```
 
 Benchmark
