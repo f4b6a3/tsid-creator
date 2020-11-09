@@ -40,7 +40,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>tsid-creator</artifactId>
-  <version>2.4.2</version>
+  <version>2.4.3</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator).
@@ -79,7 +79,7 @@ This is the default TSID structure:
        millisecs since 2020-01-01             nodeid      counter
                 42 bits                       10 bits     12 bits
 
-- timestamp: 2^42 = ~69 years (with adjustable epoch)
+- timestamp: 2^42 = ~139 years (with adjustable epoch)
 - nodeid: 2^10 = 1,024 (with adjustable bit length)
 - counter: 2^12 = 4,096 (initially random)
 

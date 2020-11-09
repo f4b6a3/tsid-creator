@@ -12,9 +12,6 @@ public class TsidValidatorTest {
 
 	private static final int DEFAULT_LOOP_MAX = 100_000;
 	
-	// 7ZZZZZZZZZZZZ: 9223372036854775807 (2^63 - 1)
-	protected static final long TSID_MAX = 0x7fffffffffffffffL;
-	
 	@Test
 	public void testIsValid() {
 
@@ -70,7 +67,7 @@ public class TsidValidatorTest {
 	public void testToString2() {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			Random random = new Random();
-			final long number0 = random.nextLong() & TSID_MAX;
+			final long number0 = random.nextLong();
 			final String string1 = TsidConverter.toString(number0);
 			assertTrue(TsidValidator.isValid(string1));
 		}

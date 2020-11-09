@@ -19,9 +19,6 @@ public class TsidConverterTest {
 	protected static final char[] ALPHABET_CROCKFORD = "0123456789ABCDEFGHJKMNPQRSTVWXYZ".toCharArray();
 	protected static final char[] ALPHABET_JAVA = "0123456789abcdefghijklmnopqrstuv".toCharArray(); // Long.parseUnsignedLong()
 	
-	// 7ZZZZZZZZZZZZ: 9223372036854775807 (2^63 - 1)
-	protected static final long TSID_MAX = 0x7fffffffffffffffL;
-	
 	@Test
 	public void testToStringIsValid() {
 		long tsid = TsidCreator.getTsid1024();
@@ -31,8 +28,8 @@ public class TsidConverterTest {
 
 	@Test
 	public void testToString() {
-		long tsid1 = TSID_MAX;
-		String string1 = "7ZZZZZZZZZZZZ";
+		long tsid1 = 0xffffffffffffffffL;
+		String string1 = "FZZZZZZZZZZZZ";
 		String result1 = TsidConverter.toString(tsid1);
 		assertEquals(string1, result1);
 
@@ -45,8 +42,8 @@ public class TsidConverterTest {
 	@Test
 	public void testFromString() {
 
-		long tsid1 = TSID_MAX;
-		String string1 = "7ZZZZZZZZZZZZ";
+		long tsid1 = 0xffffffffffffffffL;
+		String string1 = "FZZZZZZZZZZZZ";
 		long result1 = TsidConverter.fromString(string1);
 		assertEquals(tsid1, result1);
 
@@ -56,7 +53,8 @@ public class TsidConverterTest {
 		assertEquals(tsid2, result2);
 		
 		try {
-			String string3 = "8ZZZZZZZZZZZZ";
+			// Test the first extra bit added by the base32 encoding
+			 String string3 = "G000000000000";
 			TsidConverter.fromString(string3);
 			fail("Should throw an InvalidTsidException");
 		} catch (InvalidTsidException e) {
@@ -68,7 +66,7 @@ public class TsidConverterTest {
 	public void testFromString2() {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			Random random = new Random();
-			final long number0 = random.nextLong() & TSID_MAX;
+			final long number0 = random.nextLong();
 			final String string0 = toString(number0);
 			final long number1 = TsidConverter.fromString(string0);
 			assertEquals(number0, number1);
