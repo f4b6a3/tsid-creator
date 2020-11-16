@@ -17,12 +17,15 @@ import com.github.f4b6a3.tsid.strategy.timestamp.FixedTimestampStretegy;
 import com.github.f4b6a3.tsid.util.TsidUtil;
 import com.github.f4b6a3.tsid.util.TsidValidator;
 
-public class TimeIdCreator4096Test {
+public class TimeIdCreator16384Test {
 
 	private static final int TSID_LENGTH = 13;
 
-	private static final int COUNTER_LENGTH = 10;
+	private static final int NODE_LENGTH = 14;
+	private static final int COUNTER_LENGTH = 8;
 	private static final int COUNTER_MAX = (int) Math.pow(2, COUNTER_LENGTH);
+	
+	private static final int LOOP_MAX = 100_000;
 
 	private static Random random = new Random();
 
@@ -31,32 +34,14 @@ public class TimeIdCreator4096Test {
 	protected static final int THREAD_TOTAL = availableProcessors();
 
 	@Test
-	public void testGetTsid4096() {
+	public void testGetTsid1() {
 
 		long startTime = System.currentTimeMillis();
 
-		long[] list = new long[COUNTER_MAX];
-		for (int i = 0; i < COUNTER_MAX; i++) {
-			list[i] = TsidCreator.getTsid4096();
-		}
+		TimeIdCreator creator = TsidCreator.getTimeIdCreator(null, NODE_LENGTH);
 
-		long endTime = System.currentTimeMillis();
-
-		checkNullOrInvalid(list);
-		checkUniqueness(list);
-		checkCreationTime(list, startTime, endTime);
-	}
-
-	@Test
-	public void testGetTsid4096WithNode() {
-
-		long startTime = System.currentTimeMillis();
-
-		int node = random.nextInt();
-		TimeIdCreator creator = TsidCreator.getTimeIdCreator4096(node);
-
-		long[] list = new long[COUNTER_MAX];
-		for (int i = 0; i < COUNTER_MAX; i++) {
+		long[] list = new long[LOOP_MAX];
+		for (int i = 0; i < LOOP_MAX; i++) {
 			list[i] = creator.create();
 		}
 
@@ -68,13 +53,16 @@ public class TimeIdCreator4096Test {
 	}
 
 	@Test
-	public void testGetTsidString4096() {
+	public void testGetTsid1WithNode() {
 
 		long startTime = System.currentTimeMillis();
 
-		String[] list = new String[COUNTER_MAX];
-		for (int i = 0; i < COUNTER_MAX; i++) {
-			list[i] = TsidCreator.getTsidString4096();
+		int node = random.nextInt();
+		TimeIdCreator creator = TsidCreator.getTimeIdCreator(node, NODE_LENGTH);
+
+		long[] list = new long[LOOP_MAX];
+		for (int i = 0; i < LOOP_MAX; i++) {
+			list[i] = creator.create();
 		}
 
 		long endTime = System.currentTimeMillis();
@@ -85,15 +73,14 @@ public class TimeIdCreator4096Test {
 	}
 
 	@Test
-	public void testGetTsidString4096WithNode() {
+	public void testGetTsidString1() {
 
 		long startTime = System.currentTimeMillis();
 
-		int node = random.nextInt();
-		TimeIdCreator creator = TsidCreator.getTimeIdCreator4096(node);
+		TimeIdCreator creator = TsidCreator.getTimeIdCreator(null, NODE_LENGTH);
 
-		String[] list = new String[COUNTER_MAX];
-		for (int i = 0; i < COUNTER_MAX; i++) {
+		String[] list = new String[LOOP_MAX];
+		for (int i = 0; i < LOOP_MAX; i++) {
 			list[i] = creator.createString();
 		}
 
@@ -105,17 +92,38 @@ public class TimeIdCreator4096Test {
 	}
 
 	@Test
-	public void testGetTsid4096Parallel() throws InterruptedException {
+	public void testGetTsidString1WithNode() {
+
+		long startTime = System.currentTimeMillis();
+
+		int node = random.nextInt();
+		TimeIdCreator creator = TsidCreator.getTimeIdCreator(node, NODE_LENGTH);
+
+		String[] list = new String[LOOP_MAX];
+		for (int i = 0; i < LOOP_MAX; i++) {
+			list[i] = creator.createString();
+		}
+
+		long endTime = System.currentTimeMillis();
+
+		checkNullOrInvalid(list);
+		checkUniqueness(list);
+		checkCreationTime(list, startTime, endTime);
+	}
+
+	@Test
+	public void testGetTsid1Parallel() throws InterruptedException {
 
 		TestThread.clearHashSet();
 		Thread[] threads = new Thread[THREAD_TOTAL];
+		int counterMax = COUNTER_MAX / THREAD_TOTAL;
 
 		TimestampStrategy strategy = new FixedTimestampStretegy(System.currentTimeMillis());
+		TimeIdCreator sharedCreator = TsidCreator.getTimeIdCreator(null, NODE_LENGTH).withTimestampStrategy(strategy);
 
 		// Instantiate and start many threads
 		for (int i = 0; i < THREAD_TOTAL; i++) {
-			TimeIdCreator parallelCreator = TsidCreator.getTimeIdCreator4096(i).withTimestampStrategy(strategy);
-			threads[i] = new TestThread(parallelCreator, COUNTER_MAX);
+			threads[i] = new TestThread(sharedCreator, counterMax);
 			threads[i].start();
 		}
 
@@ -125,7 +133,7 @@ public class TimeIdCreator4096Test {
 		}
 
 		// Check if the quantity of unique UUIDs is correct
-		assertEquals(DUPLICATE_UUID_MSG, (COUNTER_MAX * THREAD_TOTAL), TestThread.hashSet.size());
+		assertEquals(DUPLICATE_UUID_MSG, (counterMax * THREAD_TOTAL), TestThread.hashSet.size());
 	}
 
 	public static class TestThread extends Thread {

@@ -31,12 +31,12 @@ import com.github.f4b6a3.tsid.exception.InvalidTsidException;
  */
 public final class TsidConverter {
 
-	public static final char[] BASE32_CHARS = //
+	protected static final char[] BASE32_CHARS = //
 			{ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', //
 					'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', //
 					'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Y', 'Z' };
 
-	public static final long[] BASE32_VALUES = new long[128];
+	protected static final long[] BASE32_VALUES = new long[128];
 	static {
 
 		// Numbers
@@ -117,10 +117,11 @@ public final class TsidConverter {
 	 * @throws InvalidTsidException if invalid
 	 */
 	public static long fromString(String tsid) {
-		TsidValidator.validate(tsid);
+
+		final char[] chars = tsid == null ? new char[0] : tsid.toCharArray();
+		TsidValidator.validate(chars);
 
 		long number = 0;
-		final char[] chars = tsid.toCharArray();
 
 		number |= BASE32_VALUES[chars[0x00]] << 60;
 		number |= BASE32_VALUES[chars[0x01]] << 55;
@@ -149,18 +150,18 @@ public final class TsidConverter {
 
 		final char[] chars = new char[13];
 
-		chars[0x00] = BASE32_CHARS[(int) (tsid >>> 60 & 0b11111)];
-		chars[0x01] = BASE32_CHARS[(int) (tsid >>> 55 & 0b11111)];
-		chars[0x02] = BASE32_CHARS[(int) (tsid >>> 50 & 0b11111)];
-		chars[0x03] = BASE32_CHARS[(int) (tsid >>> 45 & 0b11111)];
-		chars[0x04] = BASE32_CHARS[(int) (tsid >>> 40 & 0b11111)];
-		chars[0x05] = BASE32_CHARS[(int) (tsid >>> 35 & 0b11111)];
-		chars[0x06] = BASE32_CHARS[(int) (tsid >>> 30 & 0b11111)];
-		chars[0x07] = BASE32_CHARS[(int) (tsid >>> 25 & 0b11111)];
-		chars[0x08] = BASE32_CHARS[(int) (tsid >>> 20 & 0b11111)];
-		chars[0x09] = BASE32_CHARS[(int) (tsid >>> 15 & 0b11111)];
-		chars[0x0a] = BASE32_CHARS[(int) (tsid >>> 10 & 0b11111)];
-		chars[0x0b] = BASE32_CHARS[(int) (tsid >>> 5 & 0b11111)];
+		chars[0x00] = BASE32_CHARS[(int) ((tsid >>> 60) & 0b11111)];
+		chars[0x01] = BASE32_CHARS[(int) ((tsid >>> 55) & 0b11111)];
+		chars[0x02] = BASE32_CHARS[(int) ((tsid >>> 50) & 0b11111)];
+		chars[0x03] = BASE32_CHARS[(int) ((tsid >>> 45) & 0b11111)];
+		chars[0x04] = BASE32_CHARS[(int) ((tsid >>> 40) & 0b11111)];
+		chars[0x05] = BASE32_CHARS[(int) ((tsid >>> 35) & 0b11111)];
+		chars[0x06] = BASE32_CHARS[(int) ((tsid >>> 30) & 0b11111)];
+		chars[0x07] = BASE32_CHARS[(int) ((tsid >>> 25) & 0b11111)];
+		chars[0x08] = BASE32_CHARS[(int) ((tsid >>> 20) & 0b11111)];
+		chars[0x09] = BASE32_CHARS[(int) ((tsid >>> 15) & 0b11111)];
+		chars[0x0a] = BASE32_CHARS[(int) ((tsid >>> 10) & 0b11111)];
+		chars[0x0b] = BASE32_CHARS[(int) ((tsid >>> 5) & 0b11111)];
 		chars[0x0c] = BASE32_CHARS[(int) (tsid & 0b11111)];
 
 		return new String(chars);

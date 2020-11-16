@@ -17,7 +17,7 @@ import com.github.f4b6a3.tsid.strategy.timestamp.FixedTimestampStretegy;
 import com.github.f4b6a3.tsid.util.TsidUtil;
 import com.github.f4b6a3.tsid.util.TsidValidator;
 
-public class TimeIdCreator0001Test {
+public class TimeIdCreator00001Test {
 
 	private static final int TSID_LENGTH = 13;
 

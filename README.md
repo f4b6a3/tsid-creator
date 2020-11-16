@@ -40,7 +40,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>tsid-creator</artifactId>
-  <version>2.4.3</version>
+  <version>2.4.4</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator).
@@ -76,11 +76,11 @@ This is the default TSID structure:
                                             adjustable
                                            <---------->
 |------------------------------------------|----------|------------|
-       millisecs since 2020-01-01             nodeid      counter
+       time (msecs since 2020-01-01)           node      counter
                 42 bits                       10 bits     12 bits
 
-- timestamp: 2^42 = ~139 years (with adjustable epoch)
-- nodeid: 2^10 = 1,024 (with adjustable bit length)
+- time:    2^42 = ~139 years (with adjustable epoch)
+- node:    2^10 = 1,024 (with adjustable bit length)
 - counter: 2^12 = 4,096 (initially random)
 
 Note:
@@ -241,22 +241,23 @@ Benchmark
 This section shows benchmarks comparing `TsidCreator` to `java.util.UUID`.
 
 ```
-------------------------------------------------------------------------------
-THROUGHPUT                              Mode  Cnt      Score    Error   Units
-------------------------------------------------------------------------------
-Throughput.JDK_RandomBased             thrpt    5   2199,582 ±  7,864  ops/ms
-Throughput.TsidCreator_Tsid256         thrpt    5  16375,673 ± 38,712  ops/ms
-Throughput.TsidCreator_Tsid1024        thrpt    5   4096,214 ±  0,189  ops/ms
-Throughput.TsidCreator_Tsid4096        thrpt    5   1024,060 ±  0,107  ops/ms
-Throughput.TsidCreator_TsidString256   thrpt    5  14806,519 ± 68,378  ops/ms
-Throughput.TsidCreator_TsidString1024  thrpt    5   4092,947 ±  0,909  ops/ms
-Throughput.TsidCreator_TsidString4096  thrpt    5   1024,026 ±  0,135  ops/ms
-------------------------------------------------------------------------------
-Total time: 00:09:22
-------------------------------------------------------------------------------
+================================================================================
+THROUGHPUT (operations/millis)           Mode  Cnt      Score     Error   Units
+================================================================================
+Throughput.JDK_RandomBased              thrpt    5   2050,995 ±  21,636  ops/ms
+--------------------------------------------------------------------------------
+Throughput.TsidCreator_Tsid256          thrpt    5  16383,417 ±   5,386  ops/ms
+Throughput.TsidCreator_Tsid1024         thrpt    5   4096,246 ±   0,063  ops/ms
+Throughput.TsidCreator_Tsid4096         thrpt    5   1024,052 ±   0,102  ops/ms
+Throughput.TsidCreator_TsidString256    thrpt    5  14574,401 ± 202,471  ops/ms
+Throughput.TsidCreator_TsidString1024   thrpt    5   4076,432 ±   3,552  ops/ms
+Throughput.TsidCreator_TsidString4096   thrpt    5   1023,696 ±   0,445  ops/ms
+================================================================================
+Total time: 00:09:20
+================================================================================
 ```
 
-System: CPU i5-3330, 8G RAM, Ubuntu 20.04.
+System: JVM 8, Ubuntu 20.04, CPU i5-3330, 8G RAM.
 
 See: [uuid-creator-benchmark](https://github.com/fabiolimace/uuid-creator-benchmark)
 

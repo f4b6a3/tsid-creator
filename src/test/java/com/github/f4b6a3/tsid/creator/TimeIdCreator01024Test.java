@@ -17,11 +17,11 @@ import com.github.f4b6a3.tsid.strategy.timestamp.FixedTimestampStretegy;
 import com.github.f4b6a3.tsid.util.TsidUtil;
 import com.github.f4b6a3.tsid.util.TsidValidator;
 
-public class TimeIdCreator0256Test {
+public class TimeIdCreator01024Test {
 
 	private static final int TSID_LENGTH = 13;
 
-	private static final int COUNTER_LENGTH = 14;
+	private static final int COUNTER_LENGTH = 12;
 	private static final int COUNTER_MAX = (int) Math.pow(2, COUNTER_LENGTH);
 
 	private static Random random = new Random();
@@ -31,13 +31,13 @@ public class TimeIdCreator0256Test {
 	protected static final int THREAD_TOTAL = availableProcessors();
 
 	@Test
-	public void testGetTsid256() {
+	public void testGetTsid1024() {
 
 		long startTime = System.currentTimeMillis();
 
 		long[] list = new long[COUNTER_MAX];
 		for (int i = 0; i < COUNTER_MAX; i++) {
-			list[i] = TsidCreator.getTsid256();
+			list[i] = TsidCreator.getTsid1024();
 		}
 
 		long endTime = System.currentTimeMillis();
@@ -48,12 +48,12 @@ public class TimeIdCreator0256Test {
 	}
 
 	@Test
-	public void testGetTsid256WithNode() {
+	public void testGetTsid1024WithNode() {
 
 		long startTime = System.currentTimeMillis();
 
 		int node = random.nextInt();
-		TimeIdCreator creator = TsidCreator.getTimeIdCreator256(node);
+		TimeIdCreator creator = TsidCreator.getTimeIdCreator1024(node);
 
 		long[] list = new long[COUNTER_MAX];
 		for (int i = 0; i < COUNTER_MAX; i++) {
@@ -68,13 +68,13 @@ public class TimeIdCreator0256Test {
 	}
 
 	@Test
-	public void testGetTsidString256() {
+	public void testGetTsidString1024() {
 
 		long startTime = System.currentTimeMillis();
 
 		String[] list = new String[COUNTER_MAX];
 		for (int i = 0; i < COUNTER_MAX; i++) {
-			list[i] = TsidCreator.getTsidString256();
+			list[i] = TsidCreator.getTsidString1024();
 		}
 
 		long endTime = System.currentTimeMillis();
@@ -85,12 +85,12 @@ public class TimeIdCreator0256Test {
 	}
 
 	@Test
-	public void testGetTsidString256WithNode() {
+	public void testGetTsidString1024WithNode() {
 
 		long startTime = System.currentTimeMillis();
 
 		int node = random.nextInt();
-		TimeIdCreator creator = TsidCreator.getTimeIdCreator256(node);
+		TimeIdCreator creator = TsidCreator.getTimeIdCreator1024(node);
 
 		String[] list = new String[COUNTER_MAX];
 		for (int i = 0; i < COUNTER_MAX; i++) {
@@ -105,7 +105,7 @@ public class TimeIdCreator0256Test {
 	}
 
 	@Test
-	public void testGetTsid256Parallel() throws InterruptedException {
+	public void testGetTsid1024Parallel() throws InterruptedException {
 
 		TestThread.clearHashSet();
 		Thread[] threads = new Thread[THREAD_TOTAL];
@@ -114,7 +114,7 @@ public class TimeIdCreator0256Test {
 
 		// Instantiate and start many threads
 		for (int i = 0; i < THREAD_TOTAL; i++) {
-			TimeIdCreator parallelCreator = TsidCreator.getTimeIdCreator256(i).withTimestampStrategy(strategy);
+			TimeIdCreator parallelCreator = TsidCreator.getTimeIdCreator1024(i).withTimestampStrategy(strategy);
 			threads[i] = new TestThread(parallelCreator, COUNTER_MAX);
 			threads[i].start();
 		}

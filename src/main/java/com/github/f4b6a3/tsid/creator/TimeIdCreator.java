@@ -235,9 +235,19 @@ public final class TimeIdCreator {
 	 * @return a number
 	 */
 	private synchronized int getRandomComponent() {
-		byte[] bytes = new byte[3];
-		SECURE_RANDOM.nextBytes(bytes);
-		return ((bytes[0] & 0x0000003f) << 16) | ((bytes[1] & 0x000000ff) << 8) | (bytes[2] & 0x000000ff);
+		if (this.counterLength <= 8) {
+			final byte[] bytes = new byte[1]; // 1 byte
+			SECURE_RANDOM.nextBytes(bytes);
+			return (bytes[0] & 0xff);
+		} else if (this.counterLength <= 16) {
+			final byte[] bytes = new byte[2]; // 2 bytes
+			SECURE_RANDOM.nextBytes(bytes);
+			return ((bytes[0] & 0xff) << 8) | (bytes[1] & 0xff);
+		} else {
+			final byte[] bytes = new byte[3]; // 3 bytes
+			SECURE_RANDOM.nextBytes(bytes);
+			return ((bytes[0] & 0x3f) << 16) | ((bytes[1] & 0xff) << 8) | (bytes[2] & 0xff);
+		}
 	}
 
 	/**

@@ -50,7 +50,7 @@ public final class TsidValidator {
 	 * - 0123-4567-89OIL (13 alphanumeric, case insensitive, including OIL, except U, with hyphens)
 	 * </pre>
 	 * 
-	 * @param tsid a TSID
+	 * @param tsid a TSID string
 	 * @return boolean true if valid
 	 */
 	public static boolean isValid(String tsid) {
@@ -58,16 +58,52 @@ public final class TsidValidator {
 	}
 
 	/**
-	 * Checks if the TSID string is a valid.
+	 * Checks if the char array is a valid TSID.
+	 * 
+	 * A valid TSID string is a sequence of 13 characters from Crockford's base 32
+	 * alphabet.
+	 * 
+	 * <pre>
+	 * Examples of valid TSID strings:
+	 * 
+	 * - 0123456789ABC (13 alphanumeric, case insensitive, except U)
+	 * - 0123456789OIL (13 alphanumeric, case insensitive, including OIL, except U)
+	 * - 0123-4567-89ABC (13 alphanumeric, case insensitive, except U, with hyphens)
+	 * - 0123-4567-89OIL (13 alphanumeric, case insensitive, including OIL, except U, with hyphens)
+	 * </pre>
+	 * 
+	 * @param tsid a TSID char array
+	 * @return boolean true if valid
+	 */
+	public static boolean isValid(char[] tsid) {
+		return (tsid != null && tsid.length != 0 && isValidString(tsid));
+	}
+
+	/**
+	 * Checks if the TSID string is valid.
 	 * 
 	 * See {@link TsidValidator#isValid(String)}.
 	 * 
-	 * @param tsid a TSID
+	 * @param tsid a TSID string
 	 * @throws InvalidTsidException if invalid
 	 */
 	public static void validate(String tsid) {
 		if (tsid == null || tsid.length() == 0 || !isValidString(tsid.toCharArray())) {
-			throw new InvalidTsidException(String.format("Invalid TSID: %s.", tsid));
+			throw new InvalidTsidException("Invalid TSID: \"" + tsid + "\"");
+		}
+	}
+
+	/**
+	 * Checks if the TSID char array is valid.
+	 * 
+	 * See {@link TsidValidator#isValid(String)}.
+	 * 
+	 * @param tsid a TSID char array
+	 * @throws InvalidTsidException if invalid
+	 */
+	public static void validate(char[] tsid) {
+		if (tsid == null || tsid.length == 0 || !isValidString(tsid)) {
+			throw new InvalidTsidException("Invalid TSID: \"" + (tsid == null ? null : new String(tsid)) + "\"");
 		}
 	}
 
@@ -90,12 +126,12 @@ public final class TsidValidator {
 	 * @return boolean true if valid
 	 */
 	protected static boolean isValidString(final char[] c) {
-		
+
 		// the extra bit added by base-32 encoding must be zero
 		if ((BASE32_VALUES[c[0]] & 0b10000) != 0) {
 			return false; // overflow
 		}
-		
+
 		int hyphen = 0;
 		for (int i = 0; i < c.length; i++) {
 			if (c[i] == '-') {
