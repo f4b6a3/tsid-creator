@@ -22,19 +22,18 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.tsid.creator;
+package com.github.f4b6a3.tsid.factory;
 
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Random;
 
-import com.github.f4b6a3.tsid.strategy.TimestampStrategy;
-import com.github.f4b6a3.tsid.strategy.timestamp.DefaultTimestampStrategy;
-import com.github.f4b6a3.tsid.util.TsidConverter;
+import com.github.f4b6a3.tsid.Tsid;
+import com.github.f4b6a3.tsid.util.TsidTime;
 import com.github.f4b6a3.tsid.util.internal.TsidCreatorSettings;
 
 /**
- * Factory that creates time sortable IDs (TSIDs).
+ * Factory that creates Time Sortable IDs (TSIDs).
  * 
  * A TSID is a number that is formed by a creation time followed by random bits.
  * 
@@ -44,7 +43,7 @@ import com.github.f4b6a3.tsid.util.internal.TsidCreatorSettings;
  * 
  * - Random component (22 bits)
  * 
- * The Random component may have 2 sub-parts:
+ * The Random component has 2 sub-parts:
  * 
  * - Node ID (0 to 20 bits)
  * 
@@ -56,7 +55,7 @@ import com.github.f4b6a3.tsid.util.internal.TsidCreatorSettings;
  * counter value is 2^12 = 4096. So the maximum TSIDs that can be generated per
  * millisecond is about 4 thousand.
  */
-public final class TimeIdCreator {
+public final class TsidFactory {
 
 	private int node = 0;
 	private int counter = 0;
@@ -64,12 +63,12 @@ public final class TimeIdCreator {
 	private int counterLength = 0;
 	private int counterMask = 0;
 
-	private long lastTimestamp;
+	private long lastTime;
 
-	private TimestampStrategy timestampStrategy;
+	protected Long customEpoch = TsidTime.TSID_EPOCH_MILLISECONDS;
 
-	private static final int RANDOM_COMPONENT_LENGTH = 22;
-	private static final int RANDOM_COMPONENT_MASK = 0x003fffff;
+	private static final int RANDOM_LENGTH = 22;
+	private static final int RANDOM_MASK = 0x003fffff;
 
 	private static final int DEFAULT_NODE_LENGTH = 10;
 
@@ -92,7 +91,7 @@ public final class TimeIdCreator {
 	 * - Maximum counter value: 2^12 = 4096.
 	 * 
 	 */
-	public TimeIdCreator() {
+	public TsidFactory() {
 		this(null, null);
 	}
 
@@ -115,7 +114,7 @@ public final class TimeIdCreator {
 	 * 
 	 * @param node the node identifier
 	 */
-	public TimeIdCreator(int node) {
+	public TsidFactory(int node) {
 		this(node, null);
 	}
 
@@ -138,11 +137,10 @@ public final class TimeIdCreator {
 	 * @param node       the node identifier (optional)
 	 * @param nodeLength the node bit length (optional)
 	 */
-	public TimeIdCreator(Integer node, Integer nodeLength) {
+	public TsidFactory(Integer node, Integer nodeLength) {
 		final int _node = node != null ? node : getNodeIdentifier();
 		final int _length = nodeLength != null ? nodeLength : DEFAULT_NODE_LENGTH;
 		this.setupRandomComponent(_node, _length);
-		this.timestampStrategy = new DefaultTimestampStrategy();
 	}
 
 	private synchronized void setupRandomComponent(final int node, final int nodeLength) {
@@ -150,70 +148,73 @@ public final class TimeIdCreator {
 		if (nodeLength < 0 || nodeLength > 20) {
 			throw new IllegalArgumentException("The node identifier bit length is out of the permited range: [0, 20]");
 		}
-		this.counterLength = RANDOM_COMPONENT_LENGTH - nodeLength;
-		this.counterMask = RANDOM_COMPONENT_MASK >>> nodeLength;
-		this.node = node & (RANDOM_COMPONENT_MASK >>> this.counterLength);
+		this.counterLength = RANDOM_LENGTH - nodeLength;
+		this.counterMask = RANDOM_MASK >>> nodeLength;
+		this.node = node & (RANDOM_MASK >>> this.counterLength);
 	}
 
 	/**
-	 * Returns a TSID number.
-	 * 
-	 * @return a TSID number.
+	 * Set a custom epoch instead of the default.
+	 *
+	 * The default epoch is 2020-01-01 00:00:00Z (TSID epoch).
+	 *
+	 * @param customEpoch the custom epoch instant
+	 * @return {@link TsidFactory}
 	 */
-	public synchronized long create() {
-		final long _time = getTimestamp() << RANDOM_COMPONENT_LENGTH;
+	public synchronized TsidFactory withCustomEpoch(Instant customEpoch) {
+		this.customEpoch = customEpoch.toEpochMilli();
+		return this;
+	}
+
+	/**
+	 * Returns a TSID.
+	 * 
+	 * @return a TSID.
+	 */
+	public synchronized Tsid create() {
+
+		final long _time = getTime() << RANDOM_LENGTH;
 		final long _node = this.node << this.counterLength;
 		final long _counter = this.counter & this.counterMask;
 
-		return (_time | _node | _counter);
+		return new Tsid(_time | _node | _counter);
 	}
 
 	/**
-	 * Returns a TSID string.
+	 * Returns the current time.
 	 * 
-	 * The returning string is encoded to Crockford's base32.
-	 * 
-	 * @return a TSID string.
-	 */
-	public synchronized String createString() {
-		return TsidConverter.toString(create());
-	}
-
-	/**
-	 * Returns the current timestamp.
-	 * 
-	 * If the current timestamp is equal to the previous timestamp, the counter is
-	 * incremented by one. Otherwise the counter is reset to a random value.
+	 * If the current time is equal to the previous time, the counter is incremented
+	 * by one. Otherwise the counter is reset to a random value.
 	 * 
 	 * The maximum increment operation depends on the counter bit length. For
 	 * example, if the counter bit length is 12, the maximum number of increment
 	 * operations is 2^12 = 4096.
 	 * 
-	 * @return timestamp
+	 * @return the current time
 	 */
-	private synchronized long getTimestamp() {
+	private synchronized long getTime() {
 
-		long timestamp = this.timestampStrategy.getTimestamp();
+		long time = TsidTime.getCurrentTimestamp(this.customEpoch);
 
-		if (timestamp == this.lastTimestamp) {
+		if (time == this.lastTime) {
 			if (++this.counter >= this.counterMax) {
-				timestamp = nextTimestamp(timestamp);
+				time = nextTime(time);
 				this.reset();
 			}
 		} else {
 			this.reset();
 		}
 
-		this.lastTimestamp = timestamp;
-		return timestamp;
+		this.lastTime = time;
+		return time;
 	}
 
 	/**
 	 * Stall the creator until the system clock catches up.
 	 */
-	private synchronized long nextTimestamp(long timestamp) {
-		while (timestamp <= this.lastTimestamp) {
-			timestamp = this.timestampStrategy.getTimestamp();
+	private synchronized long nextTime(long timestamp) {
+		while (timestamp <= this.lastTime) {
+			timestamp = TsidTime.getCurrentTimestamp(this.customEpoch);
 		}
 		return timestamp;
 	}
@@ -264,29 +265,5 @@ public final class TimeIdCreator {
 			return _node;
 		}
 		return SECURE_RANDOM.nextInt();
-	}
-
-	/**
-	 * Set a custom epoch instead of the default.
-	 *
-	 * The default epoch is 2020-01-01 00:00:00Z (TSID epoch).
-	 *
-	 * @param customEpoch the custom epoch instant
-	 * @return {@link TimeIdCreator}
-	 */
-	public synchronized TimeIdCreator withCustomEpoch(Instant customEpoch) {
-		this.timestampStrategy = new DefaultTimestampStrategy(customEpoch);
-		return this;
-	}
-
-	/**
-	 * Replace the default strategy with another {@link TimestampStrategy}.
-	 * 
-	 * @param timestampStrategy a timestamp strategy
-	 * @return {@link TimeIdCreator}
-	 */
-	public synchronized TimeIdCreator withTimestampStrategy(TimestampStrategy timestampStrategy) {
-		this.timestampStrategy = timestampStrategy;
-		return this;
 	}
 }

@@ -42,44 +42,30 @@ public class Benchmarks {
 	@Benchmark
 	@BenchmarkMode(Mode.Throughput)
 	@OutputTimeUnit(TimeUnit.MILLISECONDS)
-	public long getTsidThroughput() {
-		return TsidCreator.getTsid();
+	public long getTsid() {
+		return TsidCreator.getTsid1024().toNumber();
 	}
-
-//	@Benchmark
-//	@BenchmarkMode(Mode.AverageTime)
-//	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-//	public long getTsidAverage() {
-//		return TsidCreator.getTsid();
-//	}
 
 	@Benchmark
 	@BenchmarkMode(Mode.Throughput)
 	@OutputTimeUnit(TimeUnit.MILLISECONDS)
-	public String getTsidStringThroughput() {
-		return TsidCreator.getTsidString();
+	public String getTsidString() {
+		return TsidCreator.getTsid1024().toString();
 	}
-
-//	@Benchmark
-//	@BenchmarkMode(Mode.AverageTime)
-//	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-//	public String getTsidStringAverage() {
-//		return TsidCreator.getTsidString();
-//	}
 
 	@Benchmark
 	@BenchmarkMode(Mode.Throughput)
 	@OutputTimeUnit(TimeUnit.MILLISECONDS)
-	public UUID getRandomUUIDThroughput() {
+	public UUID getUuid() {
 		return UUID.randomUUID();
 	}
 
-//	@Benchmark
-//	@BenchmarkMode(Mode.AverageTime)
-//	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-//	public UUID getRandomUUIDAverage() {
-//		return UUID.randomUUID();
-//	}
+	@Benchmark
+	@BenchmarkMode(Mode.Throughput)
+	@OutputTimeUnit(TimeUnit.MILLISECONDS)
+	public String getUuidString() {
+		return UUID.randomUUID().toString();
+	}
 
 	public static void main(String[] args) throws RunnerException {
 		Options opt = new OptionsBuilder().include(Benchmarks.class.getSimpleName()).forks(1).build();

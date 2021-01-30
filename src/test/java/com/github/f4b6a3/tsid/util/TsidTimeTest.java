@@ -8,6 +8,7 @@ import java.time.ZoneId;
 
 import org.junit.Test;
 
+import com.github.f4b6a3.tsid.Tsid;
 import com.github.f4b6a3.tsid.TsidCreator;
 
 public class TsidTimeTest {
@@ -36,8 +37,8 @@ public class TsidTimeTest {
 	public void testCurrentTimestamp() {
 
 		long start = System.currentTimeMillis();
-		long tsid = TsidCreator.getTsid1024();
-		long middle = TsidUtil.extractUnixMilliseconds(tsid);
+		Tsid tsid = TsidCreator.getTsid1024();
+		long middle = tsid.getInstant().toEpochMilli();
 		long end = System.currentTimeMillis();
 
 		assertTrue(start <= middle);

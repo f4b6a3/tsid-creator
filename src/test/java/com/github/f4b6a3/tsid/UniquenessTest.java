@@ -3,9 +3,7 @@ package com.github.f4b6a3.tsid;
 import java.util.HashSet;
 
 import com.github.f4b6a3.tsid.TsidCreator;
-import com.github.f4b6a3.tsid.creator.TimeIdCreator;
-import com.github.f4b6a3.tsid.strategy.timestamp.FixedTimestampStretegy;
-import com.github.f4b6a3.tsid.util.TsidTime;
+import com.github.f4b6a3.tsid.factory.TsidFactory;
 
 /**
  * This is is not included in the {@link TestSuite} because it may take a long
@@ -17,8 +15,6 @@ public class UniquenessTest {
 	private int requestCount; // Number of requests for thread
 
 	private HashSet<Long> hashSet = new HashSet<>();
-
-	private long now = TsidTime.getCurrentTimestamp();
 
 	private boolean verbose; // Show progress or not
 
@@ -63,12 +59,12 @@ public class UniquenessTest {
 		private int id;
 		private boolean verbose;
 
-		private TimeIdCreator creator;
+		private TsidFactory creator;
 
 		public UniquenessTestThread(int id, boolean verbose) {
 			this.id = id;
 			this.verbose = verbose;
-			this.creator = TsidCreator.getTimeIdCreator1024(id).withTimestampStrategy(new FixedTimestampStretegy(now));
+			this.creator = TsidCreator.getTsidFactory1024(id);
 		}
 
 		/**
@@ -81,13 +77,14 @@ public class UniquenessTest {
 			int max = requestCount;
 
 			for (int i = 0; i < max; i++) {
+				
 				// Request a TSID
-				long tsid = creator.create();
+				long tsid = creator.create().toLong();
 
 				if (verbose) {
-					// Calculate and show progress
-					progress = (int) ((i * 1.0 / max) * 100);
-					if ((progress) % 10 == 0) {
+					if (i % (max / 100) == 0) {
+						// Calculate and show progress
+						progress = (int) ((i * 1.0 / max) * 100);
 						System.out.println(String.format("[Thread %06d] %s %s %s%%", id, tsid, i, (int) progress));
 					}
 				}

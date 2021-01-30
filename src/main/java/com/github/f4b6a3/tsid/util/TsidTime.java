@@ -122,8 +122,8 @@ public final class TsidTime {
 	/**
 	 * Get the Unix Epoch milliseconds of a given timestmap.
 	 * 
-	 * The value returned by this method is the number of milliseconds since a
-	 * custom epoch.
+	 * The value returned by this method is the number of milliseconds since
+	 * 1970-01-01 00:00:00Z (Unix epoch).
 	 * 
 	 * @param timestamp   a timestamp
 	 * @param customEpoch the custom epoch milliseconds

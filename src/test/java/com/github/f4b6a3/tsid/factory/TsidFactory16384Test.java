@@ -1,4 +1,4 @@
-package com.github.f4b6a3.tsid.creator;
+package com.github.f4b6a3.tsid.factory;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -11,21 +11,16 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.tsid.TsidCreator;
-import com.github.f4b6a3.tsid.strategy.TimestampStrategy;
-import com.github.f4b6a3.tsid.strategy.timestamp.FixedTimestampStretegy;
-import com.github.f4b6a3.tsid.util.TsidUtil;
-import com.github.f4b6a3.tsid.util.TsidValidator;
+import com.github.f4b6a3.tsid.Tsid;
+import com.github.f4b6a3.tsid.factory.TsidFactory;
 
-public class TimeIdCreator00001Test {
+public class TsidFactory16384Test {
 
 	private static final int TSID_LENGTH = 13;
 
-	private static final int NODE_LENGTH = 0;
-	private static final int COUNTER_LENGTH = 22;
+	private static final int NODE_LENGTH = 14;
+	private static final int COUNTER_LENGTH = 8;
 	private static final int COUNTER_MAX = (int) Math.pow(2, COUNTER_LENGTH);
-	
-	private static final int LOOP_MAX = 100_000;
 
 	private static Random random = new Random();
 
@@ -38,11 +33,11 @@ public class TimeIdCreator00001Test {
 
 		long startTime = System.currentTimeMillis();
 
-		TimeIdCreator creator = TsidCreator.getTimeIdCreator(null, NODE_LENGTH);
+		TsidFactory creator = new TsidFactory(null, NODE_LENGTH);
 
-		long[] list = new long[LOOP_MAX];
-		for (int i = 0; i < LOOP_MAX; i++) {
-			list[i] = creator.create();
+		long[] list = new long[COUNTER_MAX];
+		for (int i = 0; i < COUNTER_MAX; i++) {
+			list[i] = creator.create().toLong();
 		}
 
 		long endTime = System.currentTimeMillis();
@@ -58,11 +53,11 @@ public class TimeIdCreator00001Test {
 		long startTime = System.currentTimeMillis();
 
 		int node = random.nextInt();
-		TimeIdCreator creator = TsidCreator.getTimeIdCreator(node, NODE_LENGTH);
+		TsidFactory creator = new TsidFactory(node, NODE_LENGTH);
 
-		long[] list = new long[LOOP_MAX];
-		for (int i = 0; i < LOOP_MAX; i++) {
-			list[i] = creator.create();
+		long[] list = new long[COUNTER_MAX];
+		for (int i = 0; i < COUNTER_MAX; i++) {
+			list[i] = creator.create().toLong();
 		}
 
 		long endTime = System.currentTimeMillis();
@@ -77,11 +72,11 @@ public class TimeIdCreator00001Test {
 
 		long startTime = System.currentTimeMillis();
 
-		TimeIdCreator creator = TsidCreator.getTimeIdCreator(null, NODE_LENGTH);
+		TsidFactory creator = new TsidFactory(null, NODE_LENGTH);
 
-		String[] list = new String[LOOP_MAX];
-		for (int i = 0; i < LOOP_MAX; i++) {
-			list[i] = creator.createString();
+		String[] list = new String[COUNTER_MAX];
+		for (int i = 0; i < COUNTER_MAX; i++) {
+			list[i] = creator.create().toString();
 		}
 
 		long endTime = System.currentTimeMillis();
@@ -97,11 +92,11 @@ public class TimeIdCreator00001Test {
 		long startTime = System.currentTimeMillis();
 
 		int node = random.nextInt();
-		TimeIdCreator creator = TsidCreator.getTimeIdCreator(node, NODE_LENGTH);
+		TsidFactory creator = new TsidFactory(node, NODE_LENGTH);
 
-		String[] list = new String[LOOP_MAX];
-		for (int i = 0; i < LOOP_MAX; i++) {
-			list[i] = creator.createString();
+		String[] list = new String[COUNTER_MAX];
+		for (int i = 0; i < COUNTER_MAX; i++) {
+			list[i] = creator.create().toString();
 		}
 
 		long endTime = System.currentTimeMillis();
@@ -118,8 +113,7 @@ public class TimeIdCreator00001Test {
 		Thread[] threads = new Thread[THREAD_TOTAL];
 		int counterMax = COUNTER_MAX / THREAD_TOTAL;
 
-		TimestampStrategy strategy = new FixedTimestampStretegy(System.currentTimeMillis());
-		TimeIdCreator sharedCreator = TsidCreator.getTimeIdCreator(null, NODE_LENGTH).withTimestampStrategy(strategy);
+		TsidFactory sharedCreator = new TsidFactory(null, NODE_LENGTH);
 
 		// Instantiate and start many threads
 		for (int i = 0; i < THREAD_TOTAL; i++) {
@@ -138,12 +132,12 @@ public class TimeIdCreator00001Test {
 
 	public static class TestThread extends Thread {
 
-		private TimeIdCreator creator;
+		private TsidFactory creator;
 		private int loopLimit;
 
 		protected static final Set<Long> hashSet = new HashSet<>();
 
-		public TestThread(TimeIdCreator creator, int loopLimit) {
+		public TestThread(TsidFactory creator, int loopLimit) {
 			this.creator = creator;
 			this.loopLimit = loopLimit;
 		}
@@ -158,7 +152,7 @@ public class TimeIdCreator00001Test {
 		public void run() {
 			for (int i = 0; i < loopLimit; i++) {
 				synchronized (hashSet) {
-					hashSet.add(creator.create());
+					hashSet.add(creator.create().toLong());
 				}
 			}
 		}
@@ -176,7 +170,7 @@ public class TimeIdCreator00001Test {
 			assertTrue("TSID is empty", !tsid.isEmpty());
 			assertTrue("TSID is blank", !tsid.replace(" ", "").isEmpty());
 			assertEquals("TSID length is wrong " + tsid.length(), TSID_LENGTH, tsid.length());
-			assertTrue("TSID is not valid", TsidValidator.isValid(tsid));
+			assertTrue("TSID is not valid", Tsid.isValid(tsid));
 		}
 	}
 
@@ -207,7 +201,7 @@ public class TimeIdCreator00001Test {
 		assertTrue("Start time was after end time", startTime <= endTime);
 
 		for (Long tsid : list) {
-			long creationTime = TsidUtil.extractUnixMilliseconds(tsid);
+			long creationTime = Tsid.from(tsid).getInstant().toEpochMilli();
 			assertTrue("Creation time was before start time", creationTime >= startTime);
 			assertTrue("Creation time was after end time", creationTime <= endTime);
 		}
@@ -218,7 +212,7 @@ public class TimeIdCreator00001Test {
 		assertTrue("Start time was after end time", startTime <= endTime);
 
 		for (String tsid : list) {
-			long creationTime = TsidUtil.extractUnixMilliseconds(tsid);
+			long creationTime = Tsid.from(tsid).getInstant().toEpochMilli();
 			assertTrue("Creation time was before start time ", creationTime >= startTime);
 			assertTrue("Creation time was after end time", creationTime <= endTime);
 		}

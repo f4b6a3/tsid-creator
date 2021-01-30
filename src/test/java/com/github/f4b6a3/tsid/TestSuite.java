@@ -3,32 +3,25 @@ package com.github.f4b6a3.tsid;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-import com.github.f4b6a3.tsid.creator.TimeIdCreator00001Test;
-import com.github.f4b6a3.tsid.creator.TimeIdCreator00064Test;
-import com.github.f4b6a3.tsid.creator.TimeIdCreator00256Test;
-import com.github.f4b6a3.tsid.creator.TimeIdCreator01024Test;
-import com.github.f4b6a3.tsid.creator.TimeIdCreator04096Test;
-import com.github.f4b6a3.tsid.creator.TimeIdCreator16384Test;
-import com.github.f4b6a3.tsid.strategy.timestamp.DefaultTimestampStrategyTest;
 import com.github.f4b6a3.tsid.util.TsidTimeTest;
-import com.github.f4b6a3.tsid.util.TsidUtilTest;
-import com.github.f4b6a3.tsid.util.TsidValidatorTest;
 import com.github.f4b6a3.tsid.util.internal.TsidCreatorSettingsTest;
-import com.github.f4b6a3.tsid.util.TsidConverterTest;
+import com.github.f4b6a3.tsid.factory.TsidFactory00001Test;
+import com.github.f4b6a3.tsid.factory.TsidFactory00064Test;
+import com.github.f4b6a3.tsid.factory.TsidFactory00256Test;
+import com.github.f4b6a3.tsid.factory.TsidFactory01024Test;
+import com.github.f4b6a3.tsid.factory.TsidFactory04096Test;
+import com.github.f4b6a3.tsid.factory.TsidFactory16384Test;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	TimeIdCreator00001Test.class,
-	TimeIdCreator00064Test.class,
-	TimeIdCreator00256Test.class,
-	TimeIdCreator01024Test.class,
-	TimeIdCreator04096Test.class,
-	TimeIdCreator16384Test.class,
-	DefaultTimestampStrategyTest.class,
-	TsidConverterTest.class,
+	TsidFactory00001Test.class,
+	TsidFactory00064Test.class,
+	TsidFactory00256Test.class,
+	TsidFactory01024Test.class,
+	TsidFactory04096Test.class,
+	TsidFactory16384Test.class,
 	TsidTimeTest.class,
-	TsidUtilTest.class,
-	TsidValidatorTest.class,
+	TsidTest.class,
 	TsidCreatorSettingsTest.class,
 })
 
