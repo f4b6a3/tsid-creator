@@ -65,7 +65,7 @@ public final class TsidFactory {
 
 	private long lastTime;
 
-	protected Long customEpoch = TsidTime.TSID_EPOCH_MILLISECONDS;
+	private long customEpoch = TsidTime.TSID_EPOCH_MILLISECONDS;
 
 	private static final int RANDOM_LENGTH = 22;
 	private static final int RANDOM_MASK = 0x003fffff;
@@ -212,11 +212,11 @@ public final class TsidFactory {
 	/**
 	 * Stall the creator until the system clock catches up.
 	 */
-	private synchronized long nextTime(long timestamp) {
-		while (timestamp <= this.lastTime) {
-			timestamp = TsidTime.getCurrentTimestamp(this.customEpoch);
+	private synchronized long nextTime(long time) {
+		while (time == this.lastTime) {
+			time = TsidTime.getCurrentTimestamp(this.customEpoch);
 		}
-		return timestamp;
+		return time;
 	}
 
 	/**

@@ -24,13 +24,13 @@ Tsid tsid = TsidCreator.getTsid1024();
 Create a TSID number:
 
 ```java
-long number = TsidCreator.getTsid1024().toLong(); // 143368810498515001
+long number = TsidCreator.getTsid1024().toLong(); // 38352658567418872
 ```
 
 Create a TSID string:
 
 ```java
-String string = TsidCreator.getTsid1024().toString(); // 03ZAS5HQ24SRD
+String string = TsidCreator.getTsid1024().toString(); // 01226N0640J7Q
 ```
 
 There are three predefined node ranges: 256, 1024 and 4096.
@@ -46,7 +46,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>tsid-creator</artifactId>
-  <version>3.0.0</version>
+  <version>3.0.1</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator).
@@ -54,6 +54,8 @@ See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b
 ### TSID as number
 
 This section shows how to create TSID numbers.
+
+The method `Tsid.toLong()` simply unwraps the internal `long` value.
 
 ```java
 // Create a TSID for up to 256 nodes and 16384 ID/ms
@@ -100,6 +102,8 @@ Sequence of TSIDs:
 This section shows how to create TSID strings.
 
 The TSID string is a 13 characters long string encoded to [Crockford's base 32](https://www.crockford.com/base32.html).
+
+There are 3 methods to generate TSID strings: `Tsid.toString()`, `Tsid.toUpperCase()` and `Tsid.toLowerCase()`.
 
 ```java
 // Create a TSID string for up to 256 nodes and 16384 ID/ms
@@ -191,7 +195,7 @@ Use a `TsidFactory` instance with a FIXED node identifier to generate TSIDs:
 int node = 256; // max: 2^10
 TsidFactory factory = new TsidFactory(node);
 
-long tsid = factory.create();
+Tsid tsid = factory.create();
 ```
 
 Use a `TsidFactory` instance with a FIXED node identifier and a CUSTOM node bit length to generate TSIDs:
@@ -201,16 +205,16 @@ int length = 16;   // max: 20
 int node = 32768;  // max: 2^length
 TsidFactory factory = new TsidFactory(node, length);
 
-long tsid = factory.create();
+Tsid tsid = factory.create();
 ```
 
 Use a `TsidFactory` instance with a CUSTOM epoch (fall of the Berlin Wall) to generate TSIDs:
 
 ```java
 Instant customEpoch = Instant.parse("1989-11-09T00:00:00Z");
-TsidFactory factory = TsidCreator.getTsidFactory1024().withCustomEpoch(customEpoch);
+TsidFactory factory = TsidCreator.getTsidFactory1024(null).withCustomEpoch(customEpoch);
 	
-long tsid = factory.create();
+Tsid tsid = factory.create();
 ```
 
 ### TSID structure

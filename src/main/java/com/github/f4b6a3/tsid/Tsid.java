@@ -151,6 +151,8 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	/**
 	 * Create a new TSID.
 	 * 
+	 * This constructor wraps the input value in an immutable object.
+	 * 
 	 * @param number a number
 	 */
 	public Tsid(final long number) {
@@ -159,6 +161,8 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 
 	/**
 	 * Converts a number into a TSID.
+	 * 
+	 * This method wraps the input value in an immutable object.
 	 * 
 	 * @param number a number
 	 * @return a TSID
@@ -229,6 +233,8 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 
 	/**
 	 * Convert the TSID into a number.
+	 * 
+	 * This method simply unwraps the internal value.
 	 * 
 	 * @return an number.
 	 */
