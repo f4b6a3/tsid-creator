@@ -8,7 +8,7 @@
 
 	<name>tsid-creator</name>
 	<url>http://github.com/f4b6a3/tsid-creator</url>
-	<description>A Java library for generating time sortable IDs.</description>
+	<description>A Java library for generating TSIDs (Time Sortable Identifier)</description>
 
 
 	<licenses>
@@ -25,10 +25,11 @@
 	</developers>
 
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jdk.version>8</jdk.version>
+		<module.name>com.github.f4b6a3.tsid</module.name>
 		<maven.compiler.source>${jdk.version}</maven.compiler.source>
 		<maven.compiler.target>${jdk.version}</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<dependencies>
@@ -60,6 +61,25 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.2.0</version>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Automatic-Module-Name>${module.name}</Automatic-Module-Name>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.2.0</version>
+				<configuration>
+				</configuration>
+			</plugin>
 			<plugin>
 				<artifactId>maven-deploy-plugin</artifactId>
 				<version>2.8.2</version>
