@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2020 Fabio Lima
+ * Copyright (c) 2020-2021 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -283,7 +283,7 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 * The output string is 13 characters long and contains only characters from
 	 * Crockford's base 32 alphabet.
 	 * 
-	 * It is faster than {@code Tsid.toString().toLowerCase()}.
+	 * It is faster shorthand for {@code Tsid#toString()#toLowerCase()}.
 	 * 
 	 * See: https://www.crockford.com/base32.html
 	 * 
@@ -356,7 +356,13 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	/**
 	 * Converts the TSID into a canonical string in upper case.
 	 * 
-	 * It is the same as {@code Tsid.toUpperCase()}.
+	 * The output string is 13 characters long and contains only characters from
+	 * Crockford's base 32 alphabet.
+	 * 
+	 * For lower case string, use the shorthand {@code Tsid#toLowerCase()}, instead
+	 * of {@code Tsid#toString()#toLowerCase()}.
+	 * 
+	 * See: https://www.crockford.com/base32.html
 	 * 
 	 * @return a TSID string
 	 */

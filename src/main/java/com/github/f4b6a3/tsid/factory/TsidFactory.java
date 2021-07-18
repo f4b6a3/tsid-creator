@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2020 Fabio Lima
+ * Copyright (c) 2020-2021 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@ import java.util.Random;
 
 import com.github.f4b6a3.tsid.Tsid;
 import com.github.f4b6a3.tsid.util.TsidTime;
-import com.github.f4b6a3.tsid.util.internal.TsidCreatorSettings;
+import com.github.f4b6a3.tsid.util.internal.SettingsUtil;
 
 /**
  * Factory that creates Time Sortable IDs (TSIDs).
@@ -260,7 +260,7 @@ public final class TsidFactory {
 	 * @return a number
 	 */
 	private synchronized int getNodeIdentifier() {
-		final Integer _node = TsidCreatorSettings.getNodeIdentifier();
+		final Integer _node = SettingsUtil.getNodeIdentifier();
 		if (_node != null) {
 			return _node;
 		}

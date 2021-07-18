@@ -4,7 +4,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 import com.github.f4b6a3.tsid.util.TsidTimeTest;
-import com.github.f4b6a3.tsid.util.internal.TsidCreatorSettingsTest;
+import com.github.f4b6a3.tsid.util.internal.SettingsUtilTest;
 import com.github.f4b6a3.tsid.factory.TsidFactory00001Test;
 import com.github.f4b6a3.tsid.factory.TsidFactory00064Test;
 import com.github.f4b6a3.tsid.factory.TsidFactory00256Test;
@@ -22,7 +22,7 @@ import com.github.f4b6a3.tsid.factory.TsidFactory16384Test;
 	TsidFactory16384Test.class,
 	TsidTimeTest.class,
 	TsidTest.class,
-	TsidCreatorSettingsTest.class,
+	SettingsUtilTest.class,
 })
 
 /**

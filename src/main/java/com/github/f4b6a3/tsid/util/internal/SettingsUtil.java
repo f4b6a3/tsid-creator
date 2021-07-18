@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2020 Fabio Lima
+ * Copyright (c) 2020-2021 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,12 +35,12 @@ package com.github.f4b6a3.tsid.util.internal;
  * 
  * - TSIDCREATOR_NODE
  */
-public final class TsidCreatorSettings {
+public final class SettingsUtil {
 
 	protected static final String PROPERTY_PREFIX = "tsidcreator";
 	protected static final String PROPERTY_NODE = "node";
 
-	protected TsidCreatorSettings() {
+	protected SettingsUtil() {
 	}
 
 	/**

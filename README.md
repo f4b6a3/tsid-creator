@@ -2,7 +2,7 @@
 
 # TSID Creator
 
-A Java library for generating Time Sortable IDs.
+A Java library for generating TSIDs (Time Sortable Identifier).
 
 It brings together some ideas from [Twitter's Snowflake](https://github.com/twitter-archive/snowflake/tree/snowflake-2010) and [ULID Spec](https://github.com/ulid/spec).
 
@@ -46,7 +46,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>tsid-creator</artifactId>
-  <version>3.0.1</version>
+  <version>3.0.3</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator).
@@ -312,3 +312,5 @@ Links for generators
 -------------------------------------------
 * [UUID Creator](https://github.com/f4b6a3/uuid-creator): for generating UUIDs
 * [ULID Creator](https://github.com/f4b6a3/ulid-creator): for generating ULIDs
+* [KSUID Creator](https://github.com/f4b6a3/ksuid-creator): for generating KSUIDs
+
