@@ -51,6 +51,8 @@ Add these lines to your `pom.xml`:
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator).
 
+Module name: `com.github.f4b6a3.tsid`.
+
 ### TSID as number
 
 This section shows how to create TSID numbers.
