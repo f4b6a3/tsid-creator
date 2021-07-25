@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-Nothing unreleased.
+## Added
+
+- Add benchmark code to compare TSID with UUID
 
 ## [3.0.3] - 2021-07-18
 

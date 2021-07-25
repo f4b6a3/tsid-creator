@@ -10,7 +10,8 @@ It brings together some ideas from [Twitter's Snowflake](https://github.com/twit
 * Can be stored as an integer of 64 bits;
 * Can be stored as a string of 13 chars;
 * String format is encoded to [Crockford's base32](https://www.crockford.com/base32.html);
-* String format is URL safe and case insensitive.
+* String format is URL safe and case insensitive;
+* It is shorter than UUID, ULID and KSUID.
 
 How to Use
 ------------------------------------------------------
@@ -105,8 +106,6 @@ This section shows how to create TSID strings.
 
 The TSID string is a 13 characters long string encoded to [Crockford's base 32](https://www.crockford.com/base32.html).
 
-There are 3 methods to generate TSID strings: `Tsid.toString()`, `Tsid.toUpperCase()` and `Tsid.toLowerCase()`.
-
 ```java
 // Create a TSID string for up to 256 nodes and 16384 ID/ms
 String tsid = TsidCreator.getTsid256().toString();
@@ -196,7 +195,6 @@ Use a `TsidFactory` instance with a FIXED node identifier to generate TSIDs:
 ```java
 int node = 256; // max: 2^10
 TsidFactory factory = new TsidFactory(node);
-
 Tsid tsid = factory.create();
 ```
 
@@ -210,12 +208,12 @@ TsidFactory factory = new TsidFactory(node, length);
 Tsid tsid = factory.create();
 ```
 
-Use a `TsidFactory` instance with a CUSTOM epoch (fall of the Berlin Wall) to generate TSIDs:
+Use a `TsidFactory` instance with a CUSTOM epoch to generate TSIDs:
 
 ```java
+// use a CUSTOM epoch that starts from the fall of the Berlin Wall
 Instant customEpoch = Instant.parse("1989-11-09T00:00:00Z");
 TsidFactory factory = TsidCreator.getTsidFactory1024(null).withCustomEpoch(customEpoch);
-	
 Tsid tsid = factory.create();
 ```
 
@@ -230,14 +228,14 @@ The TSID has 2 components:
 
 The time component is the count of milliseconds since 2020-01-01 00:00:00 UTC.
 
-The random component has 2 sub-parts:
+The Random component has 2 sub-parts:
 
 - Node ID (0 to 20 bits)
 - Counter (2 to 22 bits)
 
-The counter bit length depends on the node identifier bit length. If the node identifier bit length is 10, the counter bit length is limited to 12. In this example, the maximum node identifier value is 2^10 = 1024 and the maximum counter value is 2^12 = 4096. So the maximum TSIDs that can be generated per millisecond is about 4 thousand.
+The counter bit length depends on the node identifier bit length. If the node identifier bit length is 10, the counter bit length is limited to 12. In this example, the maximum node identifier value is 2^10-1 = 1023 and the maximum counter value is 2^12-1 = 4095. So the maximum TSIDs that can be generated per millisecond is 4096.
 
-In the generator `TsidFactory` the node identifier uses 10 bits of the random component by default. It's possible to adjust the node bit length to a value between 0 and 20. The counter bit length is affected by the node bit length.
+The node identifier uses 10 bits of the random component by default in the `TsidFactory`. It's possible to adjust the node bit length to a value between 0 and 20. The counter bit length is affected by the node bit length.
 
 This is the default TSID structure:
 
@@ -252,12 +250,13 @@ This is the default TSID structure:
 - node:    2^10 = 1,024 (with adjustable bit length)
 - counter: 2^12 = 4,096 (initially random)
 
-Note:
+Notes:
 The node id is adjustable from 0 to 20 bits.
 The node id bit length affects the counter bit length.
+The time component can be used for ~69 years if stored in a SIGNED 64 bits integer field.
 ```
 
-The node identifier is a random number from 0 to 1023 (default). It can be replaced by a value passed to the `TsidFactory` constructor or method factory.
+The node identifier is a random number from 0 to 1023 (default). It can be replaced by a value given to the `TsidFactory` constructor or method factory.
 
 Another way to replace the random node is by using a system property `tsidcreator.node` or a environment variable `TSIDCREATOR_NODE`.
 
@@ -266,9 +265,9 @@ Another way to replace the random node is by using a system property `tsidcreato
 
 ##### Node identifier
 
-The `tsidcreator.node` property is used by the `TsidFactory`. If this property or variable exists, its value is returned. Otherwise, a random value is returned. It may be useful if you want to identify each single machine by yourself, instead of allowing the PRNG do it for you.
+The node identifier can be given to the `TsidFactory` by defining a system property `tsidcreator.node` or a environment variable `TSIDCREATOR_NODE`. If this property or variable exists, the node identifier is its value. Otherwise, the node identifier is random number.
 
-The simplest way to avoid collisions is to ensure that each generator has its own node identifier.
+The simplest way to avoid collisions is to ensure that each generator has its exclusive node identifier.
 
 * Using system property:
 
@@ -290,29 +289,29 @@ Benchmark
 This section shows benchmarks comparing `TsidCreator` to `java.util.UUID`.
 
 ```
-=================================================================================
-THROUGHPUT (operations/millis)            Mode  Cnt      Score     Error   Units
-=================================================================================
-Throughput.Uuid03_RandomBased            thrpt    5   2022,604 ±  23,528  ops/ms
----------------------------------------------------------------------------------
-Throughput.TsidCreator01_Tsid256         thrpt    5  16075,867 ± 274,681  ops/ms
-Throughput.TsidCreator02_Tsid1024        thrpt    5   4093,735 ±   0,272  ops/ms
-Throughput.TsidCreator03_Tsid4096        thrpt    5   1024,009 ±   0,252  ops/ms
-Throughput.TsidCreator04_Tsid256String   thrpt    5  15379,666 ± 167,178  ops/ms
-Throughput.TsidCreator05_Tsid1024String  thrpt    5   4076,510 ±   2,437  ops/ms
-Throughput.TsidCreator06_Tsid4096String  thrpt    5   1023,653 ±   0,379  ops/ms
-=================================================================================
-Total time: 00:09:20
-=================================================================================
+--------------------------------------------------------------------------------
+THROUGHPUT (operations/msec)            Mode  Cnt      Score     Error   Units
+--------------------------------------------------------------------------------
+UUID_randomUUID                        thrpt    5   2062,642 ±  34,230  ops/ms
+UUID_randomUUID_toString               thrpt    5   1166,183 ±  16,001  ops/ms
+TsidCreator_getTsid256                 thrpt    5  16075,867 ± 274,681  ops/ms
+TsidCreator_getTsid256_toString        thrpt    5  15379,666 ± 167,178  ops/ms
+TsidCreator_getTsid1024                thrpt    5   4093,735 ±   0,272  ops/ms
+TsidCreator_getTsid1024_toString       thrpt    5   4076,510 ±   2,437  ops/ms
+TsidCreator_getTsid4096                thrpt    5   1024,009 ±   0,252  ops/ms
+TsidCreator_getTsid4096_toString       thrpt    5   1023,653 ±   0,379  ops/ms
+--------------------------------------------------------------------------------
+Total time: 00:10:40
+--------------------------------------------------------------------------------
 ```
 
 System: JVM 8, Ubuntu 20.04, CPU i5-3330, 8G RAM.
 
-See: [uuid-creator-benchmark](https://github.com/fabiolimace/uuid-creator-benchmark)
+To execute the benchmark, run `./benchmark/run.sh`.
 
-Links for generators
+Other identifier generators
 -------------------------------------------
-* [UUID Creator](https://github.com/f4b6a3/uuid-creator): for generating UUIDs
-* [ULID Creator](https://github.com/f4b6a3/ulid-creator): for generating ULIDs
-* [KSUID Creator](https://github.com/f4b6a3/ksuid-creator): for generating KSUIDs
+* [UUID Creator](https://github.com/f4b6a3/uuid-creator)
+* [ULID Creator](https://github.com/f4b6a3/ulid-creator)
+* [KSUID Creator](https://github.com/f4b6a3/ksuid-creator)
 
