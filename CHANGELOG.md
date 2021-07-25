@@ -296,8 +296,9 @@ Project created as an alternative Java implementation for Twitter's Snowflake.
 - Added `LICENSE`
 - Added test cases
 
-[unreleased]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-3.2.0...HEAD
-
+[unreleased]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-3.0.3...HEAD
+[3.0.3]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-3.0.2...tsid-creator-3.0.3
+[3.0.2]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-3.0.1...tsid-creator-3.0.2
 [3.0.1]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-3.0.0...tsid-creator-3.0.1
 [3.0.0]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-2.4.4...tsid-creator-3.0.0
 [2.4.4]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-2.4.3...tsid-creator-2.4.4
@@ -310,7 +311,8 @@ Project created as an alternative Java implementation for Twitter's Snowflake.
 [2.2.3]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-2.2.2...tsid-creator-2.2.3
 [2.2.2]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-2.2.1...tsid-creator-2.2.2
 [2.2.1]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-2.2.0...tsid-creator-2.2.1
-[2.2.0]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-2.1.0...tsid-creator-2.2.0
+[2.2.0]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-2.1.1...tsid-creator-2.2.0
+[2.1.1]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-2.1.0...tsid-creator-2.1.1
 [2.1.0]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-2.0.0...tsid-creator-2.1.0
 [2.0.0]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-1.0.1...tsid-creator-2.0.0
 [1.0.2]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-1.0.1...tsid-creator-1.0.2
