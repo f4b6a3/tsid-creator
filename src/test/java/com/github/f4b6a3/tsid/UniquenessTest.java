@@ -1,9 +1,7 @@
 package com.github.f4b6a3.tsid;
 
 import java.util.HashSet;
-
-import com.github.f4b6a3.tsid.TsidCreator;
-import com.github.f4b6a3.tsid.factory.TsidFactory;
+import java.util.Random;
 
 /**
  * This is is not included in the {@link TestSuite} because it may take a long
@@ -23,7 +21,7 @@ public class UniquenessTest {
 	 * 
 	 * @param threadCount
 	 * @param requestCount
-	 * @param creator
+	 * @param factory
 	 */
 	public UniquenessTest(int threadCount, int requestCount, boolean progress) {
 		this.threadCount = threadCount;
@@ -59,12 +57,12 @@ public class UniquenessTest {
 		private int id;
 		private boolean verbose;
 
-		private TsidFactory creator;
+		private TsidFactory factory;
 
 		public UniquenessTestThread(int id, boolean verbose) {
 			this.id = id;
 			this.verbose = verbose;
-			this.creator = TsidCreator.getTsidFactory1024(id);
+			this.factory = TsidFactory.builder().withNode(id).withRandom(new Random()).build();
 		}
 
 		/**
@@ -77,9 +75,9 @@ public class UniquenessTest {
 			int max = requestCount;
 
 			for (int i = 0; i < max; i++) {
-				
+
 				// Request a TSID
-				long tsid = creator.create().toLong();
+				long tsid = factory.create().toLong();
 
 				if (verbose) {
 					if (i % (max / 100) == 0) {

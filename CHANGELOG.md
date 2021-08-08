@@ -4,9 +4,27 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-## Added
+Nothing unreleased
 
-- Add benchmark code to compare TSID with UUID
+## [4.0.0] - 2021-08-08
+
+Now you call `TsidFactory.newInstance1024()` and it's variants to get a new `TsidFactory`.
+
+### Added
+
+- Added `TsidFactory.Builder`
+- Added `TsidFactory.newInstance256()`
+- Added `TsidFactory.newInstance256(int)`
+- Added `TsidFactory.newInstance1024()`
+- Added `TsidFactory.newInstance1024(int)`
+- Added `TsidFactory.newInstance4096()`
+- Added `TsidFactory.newInstance4096(int)`
+- Added benchmark code to compare TSID with UUID
+
+### Removed
+
+- Removed `TsidTime`
+- Removed `Tsid.toUpperCase()`
 
 ## [3.0.3] - 2021-07-18
 
@@ -296,7 +314,8 @@ Project created as an alternative Java implementation for Twitter's Snowflake.
 - Added `LICENSE`
 - Added test cases
 
-[unreleased]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-3.0.3...HEAD
+[unreleased]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.0.0...HEAD
+[4.0.0]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-3.0.3...tsid-creator-4.0.0
 [3.0.3]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-3.0.2...tsid-creator-3.0.3
 [3.0.2]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-3.0.1...tsid-creator-3.0.2
 [3.0.1]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-3.0.0...tsid-creator-3.0.1

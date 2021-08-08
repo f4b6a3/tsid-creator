@@ -47,7 +47,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>tsid-creator</artifactId>
-  <version>3.0.3</version>
+  <version>4.0.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator).
@@ -201,9 +201,11 @@ Tsid tsid = factory.create();
 Use a `TsidFactory` instance with a FIXED node identifier and a CUSTOM node bit length to generate TSIDs:
 
 ```java
-int length = 16;   // max: 20
-int node = 32768;  // max: 2^length
-TsidFactory factory = new TsidFactory(node, length);
+// setup a factory for up to 64 nodes and 65536 ID/ms.
+TsidFactory factory = TsidFactory.builder()
+    .withNodeBitLength(6) // max: 20
+    .withNode(63)         // max: 2^nodeBitLength
+    .build();
 
 Tsid tsid = factory.create();
 ```
@@ -213,7 +215,26 @@ Use a `TsidFactory` instance with a CUSTOM epoch to generate TSIDs:
 ```java
 // use a CUSTOM epoch that starts from the fall of the Berlin Wall
 Instant customEpoch = Instant.parse("1989-11-09T00:00:00Z");
-TsidFactory factory = TsidCreator.getTsidFactory1024(null).withCustomEpoch(customEpoch);
+TsidFactory factory = TsidFactory.builder().withCustomEpoch(customEpoch).build();
+Tsid tsid = factory.create();
+```
+
+Use a `TsidFactory` with `java.util.Random`:
+
+```java
+// use a `java.util.Random` instance for fast generation
+TsidFactory factory = TsidFactory.builder().withRandom(new Random()).build();
+Tsid tsid = factory.create();
+```
+
+Use a `TsidFactory` with a random generator of your choice:
+
+```java
+// use a random function that returns an array of bytes with a given length
+AwesomeRandom awesomeRandom = new AwesomeRandom(); // a hypothetical RNG
+TsidFactory factory = TsidFactory.builder()
+    .withRandomFunction(length -> awesomeRandom.nextBytes(length))
+    .build();
 Tsid tsid = factory.create();
 ```
 
@@ -260,10 +281,7 @@ The node identifier is a random number from 0 to 1023 (default). It can be repla
 
 Another way to replace the random node is by using a system property `tsidcreator.node` or a environment variable `TSIDCREATOR_NODE`.
 
-
-### System properties and environment variables
-
-##### Node identifier
+#### Node identifier
 
 The node identifier can be given to the `TsidFactory` by defining a system property `tsidcreator.node` or a environment variable `TSIDCREATOR_NODE`. If this property or variable exists, the node identifier is its value. Otherwise, the node identifier is random number.
 

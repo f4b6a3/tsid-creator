@@ -1,4 +1,4 @@
-package com.github.f4b6a3.tsid.util.internal;
+package com.github.f4b6a3.tsid.internal;
 
 import static org.junit.Assert.*;
 
@@ -8,7 +8,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.github.f4b6a3.tsid.util.internal.SettingsUtil;
+import com.github.f4b6a3.tsid.internal.SettingsUtil;
 
 public class SettingsUtilTest {
 

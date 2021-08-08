@@ -27,12 +27,10 @@ package com.github.f4b6a3.tsid;
 import java.io.Serializable;
 import java.time.Instant;
 
-import com.github.f4b6a3.tsid.util.TsidTime;
-
 /**
- * Class that represents a Time Sortable ID (TSID).
+ * Class that represents a TSID (Time Sortable Identifier).
  * 
- * A TSID is a number that is formed by a creation time followed by random bits.
+ * A TSID is formed by a creation time followed by random bits.
  * 
  * The TSID has 2 components:
  * 
@@ -46,11 +44,11 @@ import com.github.f4b6a3.tsid.util.TsidTime;
  * 
  * - Counter (2 to 22 bits)
  * 
- * The counter bit length depends on the node identifier bit length. If the node
- * identifier bit length is 10, the counter bit length is limited to 12. In this
- * example, the maximum node identifier value is 2^10 = 1024 and the maximum
- * counter value is 2^12 = 4096. So the maximum TSIDs that can be generated per
- * millisecond is about 4 thousand.
+ * The random component settings depend on the node identifier bit length. If
+ * the node identifier bit length is 10, the counter bit length is limited to
+ * 12. In this example, the maximum node identifier value is 2^10-1 = 1023 and
+ * the maximum counter value is 2^12-1 = 4093. So the maximum TSIDs that can be
+ * generated per millisecond per node is 4096.
  * 
  * Instances of this class are immutable.
  */
@@ -60,11 +58,13 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 
 	private final long number;
 
-	public static final int TSID_LENGTH = 13;
-	public static final int TSID_BYTES_LENGTH = 8;
+	public static final int TSID_CHARS = 13;
+	public static final int TSID_BYTES = 8;
 
 	private static final int RANDOM_BITS_LENGTH = 22;
 	private static final int RANDOM_BITS_MASK = 0x003fffff;
+
+	public static final long TSID_EPOCH_MILLISECONDS = Instant.parse("2020-01-01T00:00:00.000Z").toEpochMilli();
 
 	private static final char[] ALPHABET_UPPERCASE = //
 			{ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', //
@@ -179,7 +179,7 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 */
 	public static Tsid from(final byte[] bytes) {
 
-		if (bytes == null || bytes.length != TSID_BYTES_LENGTH) {
+		if (bytes == null || bytes.length != TSID_BYTES) {
 			throw new IllegalArgumentException("Invalid TSID bytes"); // null or wrong length!
 		}
 
@@ -249,7 +249,7 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 */
 	public byte[] toBytes() {
 
-		final byte[] bytes = new byte[TSID_BYTES_LENGTH];
+		final byte[] bytes = new byte[TSID_BYTES];
 
 		bytes[0x0] = (byte) (number >>> 56);
 		bytes[0x1] = (byte) (number >>> 48);
@@ -269,11 +269,15 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 * The output string is 13 characters long and contains only characters from
 	 * Crockford's base 32 alphabet.
 	 * 
+	 * For lower case string, use the shorthand {@code Tsid#toLowerCase()}, instead
+	 * of {@code Tsid#toString()#toLowerCase()}.
+	 * 
 	 * See: https://www.crockford.com/base32.html
 	 * 
-	 * @return a string
+	 * @return a TSID string
 	 */
-	public String toUpperCase() {
+	@Override
+	public String toString() {
 		return toString(ALPHABET_UPPERCASE);
 	}
 
@@ -301,7 +305,7 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 * @return {@link Instant}
 	 */
 	public Instant getInstant() {
-		return TsidTime.toInstant(this.getTime());
+		return Instant.ofEpochMilli(this.getTime() + TSID_EPOCH_MILLISECONDS);
 	}
 
 	/**
@@ -313,7 +317,7 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 * @return {@link Instant}
 	 */
 	public Instant getInstant(final Instant customEpoch) {
-		return TsidTime.toInstant(this.getTime(), customEpoch);
+		return Instant.ofEpochMilli(this.getTime() + customEpoch.toEpochMilli());
 	}
 
 	/**
@@ -353,24 +357,6 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 		return string != null && isValidCharArray(string.toCharArray());
 	}
 
-	/**
-	 * Converts the TSID into a canonical string in upper case.
-	 * 
-	 * The output string is 13 characters long and contains only characters from
-	 * Crockford's base 32 alphabet.
-	 * 
-	 * For lower case string, use the shorthand {@code Tsid#toLowerCase()}, instead
-	 * of {@code Tsid#toString()#toLowerCase()}.
-	 * 
-	 * See: https://www.crockford.com/base32.html
-	 * 
-	 * @return a TSID string
-	 */
-	@Override
-	public String toString() {
-		return this.toUpperCase();
-	}
-
 	@Override
 	public int compareTo(Tsid other) {
 		if (this.number < other.number)
@@ -404,7 +390,7 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 
 	protected String toString(final char[] alphabet) {
 
-		final char[] chars = new char[TSID_LENGTH];
+		final char[] chars = new char[TSID_CHARS];
 
 		chars[0x00] = alphabet[(int) ((number >>> 60) & 0b11111)];
 		chars[0x01] = alphabet[(int) ((number >>> 55) & 0b11111)];
@@ -444,7 +430,7 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 */
 	protected static boolean isValidCharArray(final char[] chars) {
 
-		if (chars == null || chars.length != TSID_LENGTH) {
+		if (chars == null || chars.length != TSID_CHARS) {
 			return false; // null or wrong size!
 		}
 

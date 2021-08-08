@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.tsid.util.internal;
+package com.github.f4b6a3.tsid.internal;
 
 /**
  * Reads system properties and environment variables.
