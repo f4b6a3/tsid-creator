@@ -6,6 +6,14 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased
 
+## [4.1.0] - 2021-09-04
+
+Add OSGi entries to Manifest.MF #11
+
+Module and bundle names are the same as the root package name.
+
+The OSGi symbolic name is the same as the JPMS module name: `com.github.f4b6a3.tsid`.
+
 ## [4.0.0] - 2021-08-08
 
 Now you call `TsidFactory.newInstance1024()` and it's variants to get a new `TsidFactory`.
@@ -314,7 +322,8 @@ Project created as an alternative Java implementation for Twitter's Snowflake.
 - Added `LICENSE`
 - Added test cases
 
-[unreleased]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.0.0...HEAD
+[unreleased]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.1.0...HEAD
+[4.1.0]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.0.0...tsid-creator-4.1.0
 [4.0.0]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-3.0.3...tsid-creator-4.0.0
 [3.0.3]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-3.0.2...tsid-creator-3.0.3
 [3.0.2]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-3.0.1...tsid-creator-3.0.2

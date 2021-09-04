@@ -26,7 +26,7 @@
 
 	<properties>
 		<jdk.version>8</jdk.version>
-		<module.name>com.github.f4b6a3.tsid</module.name>
+		<package.name>com.github.f4b6a3.tsid</package.name>
 		<maven.compiler.source>${jdk.version}</maven.compiler.source>
 		<maven.compiler.target>${jdk.version}</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -68,7 +68,15 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<Automatic-Module-Name>${module.name}</Automatic-Module-Name>
+							<!-- Java Modularity -->
+							<Automatic-Module-Name>${package.name}</Automatic-Module-Name>
+							<!-- OSGi Modularity -->
+							<Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+							<Bundle-Name>${project.artifactId}</Bundle-Name>
+							<Bundle-SymbolicName>${package.name}</Bundle-SymbolicName>
+							<Bundle-Version>${project.version}</Bundle-Version>
+							<Export-Package>${package.name}</Export-Package>
+							<Require-Capability>osgi.ee;filter:="(&amp;(osgi.ee=JavaSE)(version=1.8))"</Require-Capability>
 						</manifestEntries>
 					</archive>
 				</configuration>

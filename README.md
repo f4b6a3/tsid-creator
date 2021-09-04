@@ -47,12 +47,17 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>tsid-creator</artifactId>
-  <version>4.0.0</version>
+  <version>4.1.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator).
 
-Module name: `com.github.f4b6a3.tsid`.
+### Modularity
+
+Module and bundle names are the same as the root package name.
+
+- JPMS module name: `com.github.f4b6a3.tsid`
+- OSGi symbolic name: `com.github.f4b6a3.tsid`
 
 ### TSID as number
 
