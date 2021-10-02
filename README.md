@@ -6,12 +6,12 @@ A Java library for generating TSIDs (Time Sortable Identifier).
 
 It brings together some ideas from [Twitter's Snowflake](https://github.com/twitter-archive/snowflake/tree/snowflake-2010) and [ULID Spec](https://github.com/ulid/spec).
 
-* Generated in lexicographical order;
-* Can be stored as an integer of 64 bits;
-* Can be stored as a string of 13 chars;
-* String format is encoded to [Crockford's base32](https://www.crockford.com/base32.html);
-* String format is URL safe and case insensitive;
-* It is shorter than UUID, ULID and KSUID.
+*   Generated in lexicographical order;
+*   Can be stored as an integer of 64 bits;
+*   Can be stored as a string of 13 chars;
+*   String format is encoded to [Crockford's base32](https://www.crockford.com/base32.html);
+*   String format is URL safe and case insensitive;
+*   It is shorter than UUID, ULID and KSUID.
 
 How to Use
 ------------------------------------------------------
@@ -56,8 +56,8 @@ See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b
 
 Module and bundle names are the same as the root package name.
 
-- JPMS module name: `com.github.f4b6a3.tsid`
-- OSGi symbolic name: `com.github.f4b6a3.tsid`
+*   JPMS module name: `com.github.f4b6a3.tsid`
+*   OSGi symbolic name: `com.github.f4b6a3.tsid`
 
 ### TSID as number
 
@@ -249,15 +249,15 @@ The term TSID stands for (roughly) Time Sortable ID. A TSID is a number that is 
 
 The TSID has 2 components:
 
-- Time component (42 bits)
-- Random component (22 bits)
+*   Time component (42 bits)
+*   Random component (22 bits)
 
 The time component is the count of milliseconds since 2020-01-01 00:00:00 UTC.
 
 The Random component has 2 sub-parts:
 
-- Node ID (0 to 20 bits)
-- Counter (2 to 22 bits)
+*   Node ID (0 to 20 bits)
+*   Counter (2 to 22 bits)
 
 The counter bit length depends on the node identifier bit length. If the node identifier bit length is 10, the counter bit length is limited to 12. In this example, the maximum node identifier value is 2^10-1 = 1023 and the maximum counter value is 2^12-1 = 4095. So the maximum TSIDs that can be generated per millisecond is 4096.
 
@@ -292,14 +292,14 @@ The node identifier can be given to the `TsidFactory` by defining a system prope
 
 The simplest way to avoid collisions is to ensure that each generator has its exclusive node identifier.
 
-* Using system property:
+*   Using system property:
 
 ```bash
 // append to VM arguments
 -Dtsidcreator.node="755"
 ```
 
-* Using environment variable:
+*   Using environment variable:
 
 ```bash
 # append to /etc/environment or ~/.profile
@@ -334,7 +334,7 @@ To execute the benchmark, run `./benchmark/run.sh`.
 
 Other identifier generators
 -------------------------------------------
-* [UUID Creator](https://github.com/f4b6a3/uuid-creator)
-* [ULID Creator](https://github.com/f4b6a3/ulid-creator)
-* [KSUID Creator](https://github.com/f4b6a3/ksuid-creator)
+*   [UUID Creator](https://github.com/f4b6a3/uuid-creator)
+*   [ULID Creator](https://github.com/f4b6a3/ulid-creator)
+*   [KSUID Creator](https://github.com/f4b6a3/ksuid-creator)
 

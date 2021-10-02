@@ -20,19 +20,19 @@ Now you call `TsidFactory.newInstance1024()` and it's variants to get a new `Tsi
 
 ### Added
 
-- Added `TsidFactory.Builder`
-- Added `TsidFactory.newInstance256()`
-- Added `TsidFactory.newInstance256(int)`
-- Added `TsidFactory.newInstance1024()`
-- Added `TsidFactory.newInstance1024(int)`
-- Added `TsidFactory.newInstance4096()`
-- Added `TsidFactory.newInstance4096(int)`
-- Added benchmark code to compare TSID with UUID
+-   Added `TsidFactory.Builder`
+-   Added `TsidFactory.newInstance256()`
+-   Added `TsidFactory.newInstance256(int)`
+-   Added `TsidFactory.newInstance1024()`
+-   Added `TsidFactory.newInstance1024(int)`
+-   Added `TsidFactory.newInstance4096()`
+-   Added `TsidFactory.newInstance4096(int)`
+-   Added benchmark code to compare TSID with UUID
 
 ### Removed
 
-- Removed `TsidTime`
-- Removed `Tsid.toUpperCase()`
+-   Removed `TsidTime`
+-   Removed `Tsid.toUpperCase()`
 
 ## [3.0.3] - 2021-07-18
 
@@ -42,14 +42,14 @@ Regular mantainence
 
 Module name for Java 9+ #7
 
-- Added
+-   Added
 
-- Added this line to MANIFEST.MF: `Automatic-Module-Name: com.github.f4b6a3.tsid`
+-   Added this line to MANIFEST.MF: `Automatic-Module-Name: com.github.f4b6a3.tsid`
 
 ### Upated
 
-- Updated README.md
-- Updated pom.xml
+-   Updated README.md
+-   Updated pom.xml
 
 ## [3.0.1] - 2021-01-31
 
@@ -67,43 +67,43 @@ Teste coverage: 82,2%
 
 ### Added
 
-- Added `Tsid`
-- Added `TsidFactory`
-- Added test cases
+-   Added `Tsid`
+-   Added `TsidFactory`
+-   Added test cases
 
 ### Changed
 
-- Updated README.md
-- Updated test cases
-- Updated javadoc
+-   Updated README.md
+-   Updated test cases
+-   Updated javadoc
 
 ### Removed
 
-- Removed `TimeIdCreator`
-- Removed `InvalidTsidException`
-- Removed `TimestampStrategy`
-- Removed `DefaultTimestampStrategy`
-- Removed `FixedTimestampStrategy`
-- Removed `TsidConverter`
-- Removed `TsidUtil`
-- Remvoed `TsidValidator`
-- Removed test cases
+-   Removed `TimeIdCreator`
+-   Removed `InvalidTsidException`
+-   Removed `TimestampStrategy`
+-   Removed `DefaultTimestampStrategy`
+-   Removed `FixedTimestampStrategy`
+-   Removed `TsidConverter`
+-   Removed `TsidUtil`
+-   Remvoed `TsidValidator`
+-   Removed test cases
 
 ## [2.4.4] - 2020-11-16
 
 ### Added
 
-- Added `TimeIdCreator00064Test` // test with up to 64 nodes
-- Added `TimeIdCreator16384Test` // test with up to 16k nodes
+-   Added `TimeIdCreator00064Test` // test with up to 64 nodes
+-   Added `TimeIdCreator16384Test` // test with up to 16k nodes
 
 ### Changed
 
-- Change `TsidUtil` // remove unused code
-- Change `TsidUtilTest` // remove unused code
-- Optimize `TimeIdCreator` // small optimization
-- Optimize `TsidConverter` // small optimization
-- Optimize `TsidValidator` // add methods for char[] args
-- Update README.md
+-   Change `TsidUtil` // remove unused code
+-   Change `TsidUtilTest` // remove unused code
+-   Optimize `TimeIdCreator` // small optimization
+-   Optimize `TsidConverter` // small optimization
+-   Optimize `TsidValidator` // add methods for char[] args
+-   Update README.md
 
 ## [2.4.3] - 2020-11-09
 
@@ -129,32 +129,32 @@ Coverage 94%
 
 ### Added
 
-- Add test cases
+-   Add test cases
 
 ### Changed
 
-- Rename `TsidSettings` to `TsidCreatorSettings`
-- Optimize `TimeIdCreator`
-- Optimize `TsidConverter`
-- Optimize `TsidValidator`
-- Update README.md
+-   Rename `TsidSettings` to `TsidCreatorSettings`
+-   Optimize `TimeIdCreator`
+-   Optimize `TsidConverter`
+-   Optimize `TsidValidator`
+-   Update README.md
 
 ## [2.3.0] - 2020-10-17
 
 ### Added
 
-- Added `TsidCreator.toString()`
+-   Added `TsidCreator.toString()`
 
 ### Changed
 
-- Change `TimeIdCreator` // wait the next millisecond like Snowflake does
-- Update test cases
-- Update README.md
-- Update javadoc
+-   Change `TimeIdCreator` // wait the next millisecond like Snowflake does
+-   Update test cases
+-   Update README.md
+-   Update javadoc
 
 ### Removed
 
-- Remove `TsidCreatorException`
+-   Remove `TsidCreatorException`
 
 ## [2.2.4] - 2020-07-15
 
@@ -164,10 +164,10 @@ Change `TsidSetting`.
 
 ### Changed 
 
-- Chenge `TsidSettings.getNodeIdentifier()` // return null if not found
-- Chenge `TimeIdCreator.getNodeIdentifier()` // check if return is null
-- Update javadoc
-- Update test cases
+-   Chenge `TsidSettings.getNodeIdentifier()` // return null if not found
+-   Chenge `TimeIdCreator.getNodeIdentifier()` // check if return is null
+-   Update javadoc
+-   Update test cases
 
 ## [2.2.3] - 2020-07-14
 
@@ -177,18 +177,18 @@ Coverage: 91.8%
 
 ### Added
 
-- Add `TimeIdCreator0001Test`
-- Add `TimeIdCreator0256Test`
-- Add `TimeIdCreator1024Test`
-- Add `TimeIdCreator4096Test`
+-   Add `TimeIdCreator0001Test`
+-   Add `TimeIdCreator0256Test`
+-   Add `TimeIdCreator1024Test`
+-   Add `TimeIdCreator4096Test`
 
 ### Changed
 
-- Update TestSuite
-- Update README.md
+-   Update TestSuite
+-   Update README.md
 
 ### Removed
-- Remove `TimeIdCreatorTest`
+-   Remove `TimeIdCreatorTest`
 
 ## [2.2.2] - 2020-07-13
 
@@ -197,16 +197,16 @@ found, empty or invalid. ZERO is a valid node ID.
 
 ## Changed
 
-- Changed `TsidSettings.getNodeIdentifier()`
+-   Changed `TsidSettings.getNodeIdentifier()`
 
 ## [2.2.1] - 2020-07-13
 
 ### Renamed
 
-- Rename `TsidCreator.getTsid()` to `getTsid1024()`
-- Rename `TsidCreator.getTsidString()` to `getTsidString1024()`
-- Rename `TsidCreator.getTimeIdCreator()` to `getTimeIdCreator1024()`
-- Rename `TsidCreator.getTimeIdCreator(node)` to `getTimeIdCreator1024(node)`
+-   Rename `TsidCreator.getTsid()` to `getTsid1024()`
+-   Rename `TsidCreator.getTsidString()` to `getTsidString1024()`
+-   Rename `TsidCreator.getTimeIdCreator()` to `getTimeIdCreator1024()`
+-   Rename `TsidCreator.getTimeIdCreator(node)` to `getTimeIdCreator1024(node)`
 
 ## [2.2.0] - 2020-07-13
 
@@ -216,89 +216,89 @@ Now its possible to define the node id using a system property `tsidcreator.node
 
 ### Added
 
-- Added `TsidCreator.getTsid256()` // up to 256 nodes
-- Added `TsidCreator.getTsid4096()` // up to 4096 nodes
-- Added `TsidCreator.getTsidString256()` // up to 256 nodes
-- Added `TsidCreator.getTsidString4096()` // up to 4096 nodes
-- Added `TsidCreator.getTimeIdCreator256()` // up to 256 nodes
-- Added `TsidCreator.getTimeIdCreator4096()` // up to 4096 nodes
-- Added `TsidSetings` // for node id definition via property or variable
-- Added `TimeIdCreator` // unique generator for all types of TSID
+-   Added `TsidCreator.getTsid256()` // up to 256 nodes
+-   Added `TsidCreator.getTsid4096()` // up to 4096 nodes
+-   Added `TsidCreator.getTsidString256()` // up to 256 nodes
+-   Added `TsidCreator.getTsidString4096()` // up to 4096 nodes
+-   Added `TsidCreator.getTimeIdCreator256()` // up to 256 nodes
+-   Added `TsidCreator.getTimeIdCreator4096()` // up to 4096 nodes
+-   Added `TsidSetings` // for node id definition via property or variable
+-   Added `TimeIdCreator` // unique generator for all types of TSID
 
 ### Changed
 
-- Renamed `TsidTimeUtil` to `TsidTime`
-- Update README.md
-- Update test cases
-- Update pom.xml
+-   Renamed `TsidTimeUtil` to `TsidTime`
+-   Update README.md
+-   Update test cases
+-   Update pom.xml
 
 ### Removed
 
-- Removed `TsidCreator.getTsid(int node)` // use TimeIdCreator instead
-- Removed `TsidCreator.getTsidString(int node)` // use TimeIdCreator instead
-- Removed `TimeIdCreator` (interface) // there's generator hierarchy anymore
-- Removed `AbstractTimeIdCreator` // there's generator hierarchy anymore
-- Removed `SimpleTimeIdCreator` // there's generator hierarchy anymore
-- Removed `NodeTimeIdCreator` // there's generator hierarchy anymore
-- Removed `AjustableTimeIdCreator` // there's generator hierarchy anymore
+-   Removed `TsidCreator.getTsid(int node)` // use TimeIdCreator instead
+-   Removed `TsidCreator.getTsidString(int node)` // use TimeIdCreator instead
+-   Removed `TimeIdCreator` (interface) // there's generator hierarchy anymore
+-   Removed `AbstractTimeIdCreator` // there's generator hierarchy anymore
+-   Removed `SimpleTimeIdCreator` // there's generator hierarchy anymore
+-   Removed `NodeTimeIdCreator` // there's generator hierarchy anymore
+-   Removed `AjustableTimeIdCreator` // there's generator hierarchy anymore
 
 ## [2.1.1] - 2020-07-06
 
 ### Fixed
 
-- Fixed `AbstractTimeIdCrator.increment()`
+-   Fixed `AbstractTimeIdCrator.increment()`
 
 ## [2.1.0] - 2020-07-04
 
 ### Added
 
-- Added `TsidCrator.fromString()`
-- Add test cases
+-   Added `TsidCrator.fromString()`
+-   Add test cases
 
 ### Changed
 
-- Renamed `DefaultTimeIdCreator` to `SimpleTimeIdCreator`
-- Renamed `AdjustableNodeTimeIdCreator` to `AdjustableTimeIdCreator`
-- Optimized `AbstractTimeIdCreator`
-- Optimize `SimpleTimeIdCreator`
-- Optimized `AdjustableTimeIdCreator`
-- Optimized `NodeTimeIdCreator`
-- Optimized `TsidConverter.fromString()`
-- Optimize `TsidConverter.toString()`
-- Optimize `TsidValidator.isValid(String)`
-- Update test cases
-- Update README.md
+-   Renamed `DefaultTimeIdCreator` to `SimpleTimeIdCreator`
+-   Renamed `AdjustableNodeTimeIdCreator` to `AdjustableTimeIdCreator`
+-   Optimized `AbstractTimeIdCreator`
+-   Optimize `SimpleTimeIdCreator`
+-   Optimized `AdjustableTimeIdCreator`
+-   Optimized `NodeTimeIdCreator`
+-   Optimized `TsidConverter.fromString()`
+-   Optimize `TsidConverter.toString()`
+-   Optimize `TsidValidator.isValid(String)`
+-   Update test cases
+-   Update README.md
 
 ### Removed
-- Removed `TsidConverter.fromBytes()`
-- Remove `TsidConverter.toBytes()`
-- Remove `TsidValidator.isValid(byte[])`
+-   Removed `TsidConverter.fromBytes()`
+-   Remove `TsidConverter.toBytes()`
+-   Remove `TsidValidator.isValid(byte[])`
 
 ## [2.0.0] - 2020-05-25
 
 ### Added
-- Added `AbstractTimeIdCreator`
-- Added `DefaultTimeIdCreator`
-- Added `NodeTimeIdCreator`
-- Added `AdjustableNodeTimeIdCreator`
+-   Added `AbstractTimeIdCreator`
+-   Added `DefaultTimeIdCreator`
+-   Added `NodeTimeIdCreator`
+-   Added `AdjustableNodeTimeIdCreator`
 
 ### Changed:
-- Renamed `TimeSortableIdCreator` to `TimeIdCreator`
-- Updated `TsidCreator`
-- Updated README.md
-- Updated test cases
+-   Renamed `TimeSortableIdCreator` to `TimeIdCreator`
+-   Updated `TsidCreator`
+-   Updated README.md
+-   Updated test cases
 
 ## [1.0.2] - 2020-04-19
 
 ### Changed
 
-- Updated pom.xml
+-   Updated pom.xml
 
 ## [1.0.1] - 2020-04-18
 
 ### Fixed
 
-- Fixed package name in two test cases
+-   Fixed package name in two test cases
 
 ## [1.0.0] - 2020-04-17
 
@@ -306,21 +306,21 @@ Project created as an alternative Java implementation for Twitter's Snowflake.
 
 ### Added
 
-- Added `TsidCreator`
-- Added `TimeSortableIdCreator`
-- Added `TimestampStrategy`
-- Added `DefaultTimestampStrategy`
-- Added `FixedTimestampStrategy`
-- Added `TsidUtil`
-- Added `TsidConverter`
-- Added `TsidTimeUtil`
-- Added `TsidValidator`
-- Added `TsidCreatorException`
-- Added `InvalidTsidException`
-- Added `README.md`
-- Added `pom.xml`
-- Added `LICENSE`
-- Added test cases
+-   Added `TsidCreator`
+-   Added `TimeSortableIdCreator`
+-   Added `TimestampStrategy`
+-   Added `DefaultTimestampStrategy`
+-   Added `FixedTimestampStrategy`
+-   Added `TsidUtil`
+-   Added `TsidConverter`
+-   Added `TsidTimeUtil`
+-   Added `TsidValidator`
+-   Added `TsidCreatorException`
+-   Added `InvalidTsidException`
+-   Added `README.md`
+-   Added `pom.xml`
+-   Added `LICENSE`
+-   Added test cases
 
 [unreleased]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.1.0...HEAD
 [4.1.0]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.0.0...tsid-creator-4.1.0
