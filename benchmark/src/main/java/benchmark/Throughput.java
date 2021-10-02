@@ -28,42 +28,42 @@ import com.github.f4b6a3.tsid.TsidCreator;
 public class Throughput {
 
 	@Benchmark
-	public UUID uuidRandomUUID() {
+	public UUID UUID_randomUUID() {
 		return UUID.randomUUID();
 	}
 
 	@Benchmark
-	public String uuidRandomUUIDToString() {
+	public String UUID_randomUUID_toString() {
 		return UUID.randomUUID().toString();
 	}
 
 	@Benchmark
-	public Tsid tsidCreatorGetTsid256() {
+	public Tsid TsidCreator_getTsid256() {
 		return TsidCreator.getTsid256();
 	}
 
 	@Benchmark
-	public String tsidCreatorGetTsid256ToString() {
+	public String TsidCreator_getTsid256_toString() {
 		return TsidCreator.getTsid256().toString();
 	}
 
 	@Benchmark
-	public Tsid tsidCreatorGetTsid1024() {
+	public Tsid TsidCreator_getTsid1024() {
 		return TsidCreator.getTsid1024();
 	}
 
 	@Benchmark
-	public String tsidCreatorGetTsid1024ToString() {
+	public String TsidCreator_getTsid1024_toString() {
 		return TsidCreator.getTsid1024().toString();
 	}
 
 	@Benchmark
-	public Tsid tsidCreatorGetTsid4096() {
+	public Tsid TsidCreator_getTsid4096() {
 		return TsidCreator.getTsid4096();
 	}
 
 	@Benchmark
-	public String tsidCreatorGetTsid4096ToString() {
+	public String TsidCreator_getTsid4096_toString() {
 		return TsidCreator.getTsid4096().toString();
 	}
 }

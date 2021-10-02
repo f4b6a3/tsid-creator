@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased
 
+## [4.1.1] - 2021-10-03
+
+Regular maintenance.
+
 ## [4.1.0] - 2021-09-04
 
 Add OSGi entries to Manifest.MF #11
@@ -322,7 +326,8 @@ Project created as an alternative Java implementation for Twitter's Snowflake.
 -   Added `LICENSE`
 -   Added test cases
 
-[unreleased]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.1.0...HEAD
+[unreleased]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.1.1...HEAD
+[4.1.1]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.1.0...tsid-creator-4.1.1
 [4.1.0]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.0.0...tsid-creator-4.1.0
 [4.0.0]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-3.0.3...tsid-creator-4.0.0
 [3.0.3]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-3.0.2...tsid-creator-3.0.3

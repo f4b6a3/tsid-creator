@@ -1,6 +1,5 @@
-
-
 # TSID Creator
+======================================================
 
 A Java library for generating TSIDs (Time Sortable Identifier).
 
@@ -13,7 +12,7 @@ It brings together some ideas from [Twitter's Snowflake](https://github.com/twit
 *   String format is URL safe and case insensitive;
 *   It is shorter than UUID, ULID and KSUID.
 
-How to Use
+## How to Use
 ------------------------------------------------------
 
 Create a TSID:
@@ -47,7 +46,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>tsid-creator</artifactId>
-  <version>4.1.0</version>
+  <version>4.1.1</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator).
@@ -306,7 +305,7 @@ The simplest way to avoid collisions is to ensure that each generator has its ex
 export TSIDCREATOR_NODE="492"
 ```
 
-Benchmark
+## Benchmark
 ------------------------------------------------------
 
 This section shows benchmarks comparing `TsidCreator` to `java.util.UUID`.
@@ -332,9 +331,8 @@ System: JVM 8, Ubuntu 20.04, CPU i5-3330, 8G RAM.
 
 To execute the benchmark, run `./benchmark/run.sh`.
 
-Other identifier generators
--------------------------------------------
+## Other identifier generators
+------------------------------------------------------
 *   [UUID Creator](https://github.com/f4b6a3/uuid-creator)
 *   [ULID Creator](https://github.com/f4b6a3/ulid-creator)
 *   [KSUID Creator](https://github.com/f4b6a3/ksuid-creator)
-
