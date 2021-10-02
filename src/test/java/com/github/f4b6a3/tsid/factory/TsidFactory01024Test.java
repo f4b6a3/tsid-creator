@@ -43,9 +43,9 @@ public class TsidFactory01024Test {
 
 		long endTime = System.currentTimeMillis();
 
-		checkNullOrInvalid(list);
-		checkUniqueness(list);
-		checkCreationTime(list, startTime, endTime);
+		assertTrue(checkNullOrInvalid(list));
+		assertTrue(checkUniqueness(list));
+		assertTrue(checkCreationTime(list, startTime, endTime));
 	}
 
 	@Test
@@ -64,9 +64,9 @@ public class TsidFactory01024Test {
 
 		long endTime = System.currentTimeMillis();
 
-		checkNullOrInvalid(list);
-		checkUniqueness(list);
-		checkCreationTime(list, startTime, endTime);
+		assertTrue(checkNullOrInvalid(list));
+		assertTrue(checkUniqueness(list));
+		assertTrue(checkCreationTime(list, startTime, endTime));
 	}
 
 	@Test
@@ -83,9 +83,9 @@ public class TsidFactory01024Test {
 
 		long endTime = System.currentTimeMillis();
 
-		checkNullOrInvalid(list);
-		checkUniqueness(list);
-		checkCreationTime(list, startTime, endTime);
+		assertTrue(checkNullOrInvalid(list));
+		assertTrue(checkUniqueness(list));
+		assertTrue(checkCreationTime(list, startTime, endTime));
 	}
 
 	@Test
@@ -104,9 +104,9 @@ public class TsidFactory01024Test {
 
 		long endTime = System.currentTimeMillis();
 
-		checkNullOrInvalid(list);
-		checkUniqueness(list);
-		checkCreationTime(list, startTime, endTime);
+		assertTrue(checkNullOrInvalid(list));
+		assertTrue(checkUniqueness(list));
+		assertTrue(checkCreationTime(list, startTime, endTime));
 	}
 
 	@Test
@@ -160,13 +160,14 @@ public class TsidFactory01024Test {
 		}
 	}
 
-	private void checkNullOrInvalid(long[] list) {
+	private boolean checkNullOrInvalid(long[] list) {
 		for (long tsid : list) {
 			assertNotEquals("TSID is zero", tsid, 0);
 		}
+		return true; // success
 	}
 
-	private void checkNullOrInvalid(String[] list) {
+	private boolean checkNullOrInvalid(String[] list) {
 		for (String tsid : list) {
 			assertNotNull("TSID is null", tsid);
 			assertFalse("TSID is empty", tsid.isEmpty());
@@ -174,9 +175,10 @@ public class TsidFactory01024Test {
 			assertEquals("TSID length is wrong " + tsid.length(), TSID_LENGTH, tsid.length());
 			assertTrue("TSID is not valid", Tsid.isValid(tsid));
 		}
+		return true; // success
 	}
 
-	private void checkUniqueness(long[] list) {
+	private boolean checkUniqueness(long[] list) {
 
 		HashSet<Long> set = new HashSet<>();
 
@@ -185,9 +187,10 @@ public class TsidFactory01024Test {
 		}
 
 		assertEquals("There are duplicated TSIDs", set.size(), list.length);
+		return true; // success
 	}
 
-	private void checkUniqueness(String[] list) {
+	private boolean checkUniqueness(String[] list) {
 
 		HashSet<String> set = new HashSet<>();
 
@@ -196,9 +199,10 @@ public class TsidFactory01024Test {
 		}
 
 		assertEquals("There are duplicated TSIDs", set.size(), list.length);
+		return true; // success
 	}
 
-	private void checkCreationTime(long[] list, long startTime, long endTime) {
+	private boolean checkCreationTime(long[] list, long startTime, long endTime) {
 
 		assertTrue("Start time was after end time", startTime <= endTime);
 
@@ -207,9 +211,10 @@ public class TsidFactory01024Test {
 			assertTrue("Creation time was before start time", creationTime >= startTime);
 			assertTrue("Creation time was after end time", creationTime <= endTime);
 		}
+		return true; // success
 	}
 
-	private void checkCreationTime(String[] list, long startTime, long endTime) {
+	private boolean checkCreationTime(String[] list, long startTime, long endTime) {
 
 		assertTrue("Start time was after end time", startTime <= endTime);
 
@@ -218,6 +223,7 @@ public class TsidFactory01024Test {
 			assertTrue("Creation time was before start time ", creationTime >= startTime);
 			assertTrue("Creation time was after end time", creationTime <= endTime);
 		}
+		return true; // success
 	}
 
 	private static int availableProcessors() {
