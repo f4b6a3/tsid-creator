@@ -1,6 +1,7 @@
 package com.github.f4b6a3.tsid.factory;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -169,8 +170,8 @@ public class TsidFactory16384Test {
 	private void checkNullOrInvalid(String[] list) {
 		for (String tsid : list) {
 			assertNotNull("TSID is null", tsid);
-			assertTrue("TSID is empty", !tsid.isEmpty());
-			assertTrue("TSID is blank", !tsid.replace(" ", "").isEmpty());
+			assertFalse("TSID is empty", tsid.isEmpty());
+			assertFalse("TSID is blank", tsid.replace(" ", "").isEmpty());
 			assertEquals("TSID length is wrong " + tsid.length(), TSID_LENGTH, tsid.length());
 			assertTrue("TSID is not valid", Tsid.isValid(tsid));
 		}
