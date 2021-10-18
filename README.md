@@ -1,4 +1,4 @@
-# TSID Creator
+TSID Creator
 ======================================================
 
 A Java library for generating TSIDs (Time Sortable Identifier).
@@ -12,7 +12,7 @@ It brings together some ideas from [Twitter's Snowflake](https://github.com/twit
 *   String format is URL safe and case insensitive;
 *   It is shorter than UUID, ULID and KSUID.
 
-## How to Use
+How to Use
 ------------------------------------------------------
 
 Create a TSID:
@@ -158,12 +158,6 @@ Create a TSID from a canonical string (13 chars):
 Tsid tsid = Tsid.from("0123456789ABC");
 ```
 
-Convert a TSID into a canonical string in upper case:
-
-```java
-String string = tsid.toUpperCase(); // 0123456789ABC
-```
-
 Convert a TSID into a canonical string in lower case:
 
 ```java
@@ -305,7 +299,7 @@ The simplest way to avoid collisions is to ensure that each generator has its ex
 export TSIDCREATOR_NODE="492"
 ```
 
-## Benchmark
+Benchmark
 ------------------------------------------------------
 
 This section shows benchmarks comparing `TsidCreator` to `java.util.UUID`.
@@ -331,7 +325,7 @@ System: JVM 8, Ubuntu 20.04, CPU i5-3330, 8G RAM.
 
 To execute the benchmark, run `./benchmark/run.sh`.
 
-## Other identifier generators
+Other identifier generators
 ------------------------------------------------------
 *   [UUID Creator](https://github.com/f4b6a3/uuid-creator)
 *   [ULID Creator](https://github.com/f4b6a3/ulid-creator)
