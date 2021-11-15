@@ -193,6 +193,8 @@ Use a `TsidFactory` instance with a FIXED node identifier to generate TSIDs:
 ```java
 int node = 256; // max: 2^10
 TsidFactory factory = new TsidFactory(node);
+
+// use the factory
 Tsid tsid = factory.create();
 ```
 
@@ -205,6 +207,7 @@ TsidFactory factory = TsidFactory.builder()
     .withNode(63)         // max: 2^nodeBitLength
     .build();
 
+// use the factory
 Tsid tsid = factory.create();
 ```
 
@@ -222,6 +225,8 @@ Use a `TsidFactory` with `java.util.Random`:
 ```java
 // use a `java.util.Random` instance for fast generation
 TsidFactory factory = TsidFactory.builder().withRandom(new Random()).build();
+
+// use the factory
 Tsid tsid = factory.create();
 ```
 
@@ -233,6 +238,8 @@ AwesomeRandom awesomeRandom = new AwesomeRandom(); // a hypothetical RNG
 TsidFactory factory = TsidFactory.builder()
     .withRandomFunction(length -> awesomeRandom.nextBytes(length))
     .build();
+
+// use the factory
 Tsid tsid = factory.create();
 ```
 
