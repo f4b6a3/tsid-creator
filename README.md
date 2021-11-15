@@ -225,7 +225,7 @@ TsidFactory factory = TsidFactory.builder().withRandom(new Random()).build();
 Tsid tsid = factory.create();
 ```
 
-Use a `TsidFactory` with a random generator of your choice:
+Use a `TsidFactory` with a random generator of your choice inside of an `IntFunction<byte[]>`:
 
 ```java
 // use a random function that returns an array of bytes with a given length
@@ -233,6 +233,21 @@ AwesomeRandom awesomeRandom = new AwesomeRandom(); // a hypothetical RNG
 TsidFactory factory = TsidFactory.builder()
     .withRandomFunction(length -> awesomeRandom.nextBytes(length))
     .build();
+Tsid tsid = factory.create();
+```
+
+Use a `TsidFactory` with `ThreadLocalRandom` inside of an `IntFunction<byte[]>`:
+
+```java
+// use a random function that returns an array of bytes with a given length
+TsidFactory factory = TsidFactory.builder()
+	.withRandomFunction(length -> {
+		final byte[] bytes = new byte[length];
+		ThreadLocalRandom.current().nextBytes(bytes);
+		return bytes;
+	}).build();
+
+// use the factory
 Tsid tsid = factory.create();
 ```
 
