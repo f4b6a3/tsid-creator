@@ -250,11 +250,11 @@ Use a `TsidFactory` with `ThreadLocalRandom` inside of an `IntFunction<byte[]>`:
 ```java
 // use a random function that returns an array of bytes with a given length
 TsidFactory factory = TsidFactory.builder()
-	.withRandomFunction(length -> {
-		final byte[] bytes = new byte[length];
-		ThreadLocalRandom.current().nextBytes(bytes);
-		return bytes;
-	}).build();
+    .withRandomFunction(length -> {
+        final byte[] bytes = new byte[length];
+        ThreadLocalRandom.current().nextBytes(bytes);
+        return bytes;
+    }).build();
 
 // use the factory
 Tsid tsid = factory.create();
