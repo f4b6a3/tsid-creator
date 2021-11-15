@@ -217,6 +217,8 @@ Use a `TsidFactory` instance with a CUSTOM epoch to generate TSIDs:
 // use a CUSTOM epoch that starts from the fall of the Berlin Wall
 Instant customEpoch = Instant.parse("1989-11-09T00:00:00Z");
 TsidFactory factory = TsidFactory.builder().withCustomEpoch(customEpoch).build();
+
+// use the factory
 Tsid tsid = factory.create();
 ```
 
