@@ -2,6 +2,7 @@ package com.github.f4b6a3.tsid;
 
 import static org.junit.Assert.*;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.util.Arrays;
@@ -319,39 +320,56 @@ public class TsidTest {
 	}
 
 	@Test
-	public void testCompareTo() {
+	public void testEquals() {
+
 		Random random = new Random();
+		byte[] bytes = new byte[Tsid.TSID_BYTES];
+
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
-			long number1 = random.nextLong();
-			long number2 = random.nextLong();
+			random.nextBytes(bytes);
+			Tsid tsid1 = Tsid.from(bytes);
+			Tsid tsid2 = Tsid.from(bytes);
+			assertEquals(tsid1, tsid2);
+			assertEquals(tsid1.toString(), tsid2.toString());
+			assertEquals(Arrays.toString(tsid1.toBytes()), Arrays.toString(tsid2.toBytes()));
 
-			Tsid tsid1 = Tsid.from(number1);
-			Tsid tsid2 = Tsid.from(number2);
-
-			assertEquals(number1 < number2, tsid1.compareTo(tsid2) < 0);
-			assertEquals(number1 > number2, tsid1.compareTo(tsid2) > 0);
-
-			assertEquals(0, tsid1.compareTo(tsid1));
-			assertEquals(0, tsid2.compareTo(tsid2));
+			// change all bytes
+			for (int j = 0; j < bytes.length; j++) {
+				bytes[j]++;
+			}
+			Tsid tsid3 = Tsid.from(bytes);
+			assertNotEquals(tsid1, tsid3);
+			assertNotEquals(tsid1.toString(), tsid3.toString());
+			assertNotEquals(Arrays.toString(tsid1.toBytes()), Arrays.toString(tsid3.toBytes()));
 		}
 	}
 
 	@Test
-	public void testEqualsTo() {
+	public void testCompareTo() {
 		Random random = new Random();
+		byte[] bytes = new byte[Tsid.TSID_BYTES];
+
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			random.nextBytes(bytes);
+			Tsid tsid1 = Tsid.from(bytes);
+			BigInteger number1 = new BigInteger(1, bytes);
 
-			long number = random.nextLong();
-			Tsid tsid1 = Tsid.from(number);
-			Tsid tsid2 = Tsid.from(number);
+			random.nextBytes(bytes);
+			Tsid tsid2 = Tsid.from(bytes);
+			Tsid tsid3 = Tsid.from(bytes);
+			BigInteger number2 = new BigInteger(1, bytes);
+			BigInteger number3 = new BigInteger(1, bytes);
 
-			assertEquals(tsid1, tsid2);
-			assertEquals(tsid1, tsid1);
-			assertEquals(tsid2, tsid2);
-			assertNotEquals(tsid1, null);
-			assertNotEquals(tsid2, null);
-			assertNotEquals(tsid1, Tsid.from(number + 1));
+			// compare numerically
+			assertEquals(number1.compareTo(number2) > 0, tsid1.compareTo(tsid2) > 0);
+			assertEquals(number1.compareTo(number2) < 0, tsid1.compareTo(tsid2) < 0);
+			assertEquals(number2.compareTo(number3) == 0, tsid2.compareTo(tsid3) == 0);
+
+			// compare lexicographically
+			assertEquals(number1.compareTo(number2) > 0, tsid1.toString().compareTo(tsid2.toString()) > 0);
+			assertEquals(number1.compareTo(number2) < 0, tsid1.toString().compareTo(tsid2.toString()) < 0);
+			assertEquals(number2.compareTo(number3) == 0, tsid2.toString().compareTo(tsid3.toString()) == 0);
 		}
 	}
 

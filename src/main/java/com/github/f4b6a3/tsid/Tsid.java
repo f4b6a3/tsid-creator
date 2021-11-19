@@ -60,8 +60,8 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	public static final int TSID_BYTES = 8;
 	public static final int TSID_CHARS = 13;
 
-	private static final int RANDOM_BITS = 22;
-	private static final int RANDOM_MASK = 0x003fffff;
+	protected static final int RANDOM_BITS = 22;
+	protected static final int RANDOM_MASK = 0x003fffff;
 
 	public static final long TSID_EPOCH = Instant.parse("2020-01-01T00:00:00.000Z").toEpochMilli();
 
@@ -358,10 +358,20 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 
 	@Override
 	public int compareTo(Tsid other) {
-		if (this.number < other.number)
-			return -1;
-		if (this.number > other.number)
+
+		final long mask = 0xffffffffL;
+
+		// compare as unsigned integers
+		if ((this.number >>> 32) > (other.number >>> 32)) {
 			return 1;
+		} else if ((this.number >>> 32) < (other.number >>> 32)) {
+			return -1;
+		} else if ((this.number & mask) > (other.number & mask)) {
+			return 1;
+		} else if ((this.number & mask) < (other.number & mask)) {
+			return -1;
+		}
+
 		return 0;
 	}
 

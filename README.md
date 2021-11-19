@@ -12,6 +12,8 @@ It brings together some ideas from [Twitter's Snowflake](https://github.com/twit
 *   String format is URL safe and case insensitive;
 *   It is shorter than UUID, ULID and KSUID.
 
+Read [Snowflake ID](https://en.wikipedia.org/wiki/Snowflake_ID) on Wikipedia.
+
 How to Use
 ------------------------------------------------------
 
@@ -46,7 +48,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>tsid-creator</artifactId>
-  <version>4.1.1</version>
+  <version>4.1.2</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator).
