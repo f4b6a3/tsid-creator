@@ -13,8 +13,8 @@ import com.github.f4b6a3.tsid.Tsid;
 
 public class TsidTest {
 
-	private static final int TIME_BITS_LENGTH = 42;
-	private static final int RANDOM_BITS_LENGTH = 22;
+	private static final int TIME_BITS = 42;
+	private static final int RANDOM_BITS = 22;
 	private static final int DEFAULT_LOOP_MAX = 1_000;
 
 	protected static final char[] ALPHABET_CROCKFORD = "0123456789ABCDEFGHJKMNPQRSTVWXYZ".toCharArray();
@@ -178,7 +178,7 @@ public class TsidTest {
 			final long number = random.nextLong();
 			Tsid tsid = Tsid.from(number);
 
-			long time0 = number >>> RANDOM_BITS_LENGTH;
+			long time0 = number >>> RANDOM_BITS;
 			long time1 = tsid.getTime();
 
 			assertEquals(time0, time1);
@@ -192,7 +192,7 @@ public class TsidTest {
 			final long number = random.nextLong();
 			Tsid tsid = Tsid.from(number);
 
-			long random0 = number << TIME_BITS_LENGTH >>> TIME_BITS_LENGTH;
+			long random0 = number << TIME_BITS >>> TIME_BITS;
 			long random1 = tsid.getRandom();
 
 			assertEquals(random0, random1);

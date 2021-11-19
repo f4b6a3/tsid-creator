@@ -31,7 +31,9 @@ import java.util.function.IntFunction;
 
 import com.github.f4b6a3.tsid.internal.SettingsUtil;
 
-import static com.github.f4b6a3.tsid.Tsid.TSID_EPOCH_MILLISECONDS;
+import static com.github.f4b6a3.tsid.Tsid.TSID_EPOCH;
+import static com.github.f4b6a3.tsid.Tsid.RANDOM_BITS;
+import static com.github.f4b6a3.tsid.Tsid.RANDOM_MASK;
 
 /**
  * Factory that creates Time Sortable IDs (TSIDs).
@@ -46,25 +48,24 @@ import static com.github.f4b6a3.tsid.Tsid.TSID_EPOCH_MILLISECONDS;
  * 
  * The Random component has 2 sub-parts:
  * 
- * - Node ID (0 to 20 bits)
+ * - Node (0 to 20 bits)
  * 
  * - Counter (2 to 22 bits)
  * 
  * These are the DEFAULT Random component settings:
  * 
- * - Node identifier bit length: 10;
+ * - Node bits: 10;
  * 
  * - Maximum node value: 2^10-1 = 1023;
  * 
- * - Counter bit length: 12;
+ * - Counter bits: 12;
  * 
  * - Maximum counter value: 2^12-1 = 4095.
  * 
- * The random component settings depend on the node identifier bit length. If
- * the node identifier bit length is 10, the counter bit length is limited to
- * 12. In this example, the maximum node identifier value is 2^10-1 = 1023 and
- * the maximum counter value is 2^12-1 = 4093. So the maximum TSIDs that can be
- * generated per millisecond per node is 4096.
+ * The random component settings depend on the node bits. If the node bits are
+ * 10, the counter bits are limited to 12. In this example, the maximum node
+ * value is 2^10-1 = 1023 and the maximum counter value is 2^12-1 = 4093. So the
+ * maximum TSIDs that can be generated per millisecond per node is 4096.
  * 
  * If a system property `tsidcreator.node` or environment variable
  * `TSIDCREATOR_NODE` is defined, it's value is used as node identifier.
@@ -80,21 +81,18 @@ public final class TsidFactory {
 
 	private final int node;
 
+	private final int nodeBits;
+	private final int counterBits;
+
 	private final int nodeMask;
 	private final int counterMask;
-
-	private final int nodeBitLength;
-	private final int counterBitLength;
 
 	private final long customEpoch;
 	private final IntFunction<byte[]> randomFunction;
 
-	private static final int RANDOM_MASK = 0x003fffff;
-	private static final int RANDOM_BIT_LENGTH = 22;
-
-	public static final int NODE_BIT_LENGTH_256 = 8;
-	public static final int NODE_BIT_LENGTH_1024 = 10;
-	public static final int NODE_BIT_LENGTH_4096 = 12;
+	public static final int NODE_BITS_256 = 8;
+	public static final int NODE_BITS_1024 = 10;
+	public static final int NODE_BITS_4096 = 12;
 
 	/**
 	 * It builds a generator with a RANDOM node identifier from 0 to 1,023.
@@ -127,7 +125,7 @@ public final class TsidFactory {
 	 * @return {@link TsidFactory}
 	 */
 	public static TsidFactory newInstance256() {
-		return TsidFactory.builder().withNodeBitLength(NODE_BIT_LENGTH_256).build();
+		return TsidFactory.builder().withNodeBits(NODE_BITS_256).build();
 	}
 
 	/**
@@ -137,7 +135,7 @@ public final class TsidFactory {
 	 * @return {@link TsidFactory}
 	 */
 	public static TsidFactory newInstance256(int node) {
-		return TsidFactory.builder().withNodeBitLength(NODE_BIT_LENGTH_256).withNode(node).build();
+		return TsidFactory.builder().withNodeBits(NODE_BITS_256).withNode(node).build();
 	}
 
 	/**
@@ -148,7 +146,7 @@ public final class TsidFactory {
 	 * @return {@link TsidFactory}
 	 */
 	public static TsidFactory newInstance1024() {
-		return TsidFactory.builder().withNodeBitLength(NODE_BIT_LENGTH_1024).build();
+		return TsidFactory.builder().withNodeBits(NODE_BITS_1024).build();
 	}
 
 	/**
@@ -160,7 +158,7 @@ public final class TsidFactory {
 	 * @return {@link TsidFactory}
 	 */
 	public static TsidFactory newInstance1024(int node) {
-		return TsidFactory.builder().withNodeBitLength(NODE_BIT_LENGTH_1024).withNode(node).build();
+		return TsidFactory.builder().withNodeBits(NODE_BITS_1024).withNode(node).build();
 	}
 
 	/**
@@ -169,7 +167,7 @@ public final class TsidFactory {
 	 * @return {@link TsidFactory}
 	 */
 	public static TsidFactory newInstance4096() {
-		return TsidFactory.builder().withNodeBitLength(NODE_BIT_LENGTH_4096).build();
+		return TsidFactory.builder().withNodeBits(NODE_BITS_4096).build();
 	}
 
 	/**
@@ -179,7 +177,7 @@ public final class TsidFactory {
 	 * @return {@link TsidFactory}
 	 */
 	public static TsidFactory newInstance4096(int node) {
-		return TsidFactory.builder().withNodeBitLength(NODE_BIT_LENGTH_4096).withNode(node).build();
+		return TsidFactory.builder().withNodeBits(NODE_BITS_4096).withNode(node).build();
 	}
 
 	/**
@@ -190,30 +188,42 @@ public final class TsidFactory {
 	private TsidFactory(Builder builder) {
 
 		// setup the random generator
-		this.randomFunction = builder.randomFunction != null ? builder.randomFunction
-				: getRandomFunction(new SecureRandom());
-
-		// setup the random and custom epoch
-		this.customEpoch = builder.customEpoch != null ? builder.customEpoch : TSID_EPOCH_MILLISECONDS;
-
-		// setup the node bit length
-		this.nodeBitLength = builder.nodeBitLength != null ? builder.nodeBitLength : NODE_BIT_LENGTH_1024;
-		if (nodeBitLength < 0 || nodeBitLength > 20) {
-			throw new IllegalArgumentException("The node identifier bit length is out of the permited range: [0, 20]");
+		if (builder.randomFunction != null) {
+			this.randomFunction = builder.randomFunction;
+		} else {
+			this.randomFunction = getRandomFunction(new SecureRandom());
 		}
 
-		// setup constants that depend on the bit length
-		this.counterBitLength = RANDOM_BIT_LENGTH - nodeBitLength;
-		this.counterMask = RANDOM_MASK >>> nodeBitLength;
-		this.nodeMask = RANDOM_MASK >>> counterBitLength;
+		// setup the random and custom epoch
+		if (builder.customEpoch != null) {
+			this.customEpoch = builder.customEpoch;
+		} else {
+			this.customEpoch = TSID_EPOCH; // 2020-01-01
+		}
+
+		// setup the node bits
+		if (builder.nodeBits != null) {
+			// check the node bits
+			if (builder.nodeBits < 0 || builder.nodeBits > 20) {
+				throw new IllegalArgumentException("Node bits out of range: [0, 20]");
+			}
+			this.nodeBits = builder.nodeBits;
+		} else {
+			this.nodeBits = NODE_BITS_1024; // 10 bits
+		}
+
+		// setup constants that depend on node bits
+		this.counterBits = RANDOM_BITS - nodeBits;
+		this.counterMask = RANDOM_MASK >>> nodeBits;
+		this.nodeMask = RANDOM_MASK >>> counterBits;
 
 		// finally, setup the node identifier
 		if (builder.node != null) {
 			// use the node id given by builder
 			this.node = builder.node & this.nodeMask;
-		} else if (SettingsUtil.getNodeIdentifier() != null) {
+		} else if (SettingsUtil.getNode() != null) {
 			// use the node id given by system property or environment variable
-			this.node = SettingsUtil.getNodeIdentifier() & this.nodeMask;
+			this.node = SettingsUtil.getNode() & this.nodeMask;
 		} else {
 			// use a random node id from 0 to 0x3fffff (2^22 = 4,194,304).
 			final byte[] bytes = randomFunction.apply(3);
@@ -228,8 +238,8 @@ public final class TsidFactory {
 	 */
 	public synchronized Tsid create() {
 
-		final long _time = getTime() << RANDOM_BIT_LENGTH;
-		final long _node = (long) this.node << this.counterBitLength;
+		final long _time = getTime() << RANDOM_BITS;
+		final long _node = (long) this.node << this.counterBits;
 		final long _counter = (long) this.counter & this.counterMask;
 
 		return new Tsid(_time | _node | _counter);
@@ -241,8 +251,8 @@ public final class TsidFactory {
 	 * If the current time is equal to the previous time, the counter is incremented
 	 * by one. Otherwise the counter is reset to a random value.
 	 * 
-	 * The maximum increment operation depends on the counter bit length. For
-	 * example, if the counter bit length is 12, the maximum number of increment
+	 * The maximum number of increment operations depend on the counter bits. For
+	 * example, if the counter bits is 12, the maximum number of increment
 	 * operations is 2^12 = 4096.
 	 * 
 	 * @return the current time
@@ -265,7 +275,7 @@ public final class TsidFactory {
 	}
 
 	/**
-	 * Stall the creator until the system clock catches up.
+	 * Stall the factory until the system clock catches up.
 	 */
 	private synchronized long nextTime(long time) {
 		while (time == this.lastTime) {
@@ -281,22 +291,22 @@ public final class TsidFactory {
 		// update the counter with a random value
 		this.counter = this.getRandomCounter() & this.counterMask;
 
-		// update the maximum incrementing value
-		this.counterMax = this.counter | (0x00000001 << this.counterBitLength);
+		// update the maximum increment value
+		this.counterMax = this.counter | (0x00000001 << this.counterBits);
 	}
 
 	/**
 	 * Returns a random counter value from 0 to 0x3fffff (2^22 = 4,194,304).
 	 * 
-	 * The counter maximum value depends on the node identifier bit length.
+	 * The counter maximum value depends on the node identifier bits.
 	 * 
 	 * @return a number
 	 */
 	private synchronized int getRandomCounter() {
-		if (this.counterBitLength <= 8) {
+		if (this.counterBits <= 8) {
 			final byte[] bytes = randomFunction.apply(1);
 			return (bytes[0] & 0xff) & this.counterMask;
-		} else if (this.counterBitLength <= 16) {
+		} else if (this.counterBits <= 16) {
 			final byte[] bytes = randomFunction.apply(2);
 			return (((bytes[0] & 0xff) << 8) | (bytes[1] & 0xff)) & this.counterMask;
 		} else {
@@ -322,16 +332,16 @@ public final class TsidFactory {
 	public static class Builder {
 
 		private Integer node;
-		private Integer nodeBitLength;
+		private Integer nodeBits;
 		private Long customEpoch;
 		private IntFunction<byte[]> randomFunction;
 
 		/**
 		 * Set the node identifier.
 		 * 
-		 * The range is 0 to 2^nodeBitLength-1.
+		 * The range is 0 to 2^nodeBits-1.
 		 * 
-		 * @param nodeBitLength a number between 0 and 2^nodeBitLength-1.
+		 * @param nodeBits a number between 0 and 2^nodeBits-1.
 		 * @return {@link Builder}
 		 */
 		public Builder withNode(Integer node) {
@@ -340,13 +350,13 @@ public final class TsidFactory {
 		}
 
 		/**
-		 * Set the node identifier bit length within the range 0 to 20.
+		 * Set the node identifier bits within the range 0 to 20.
 		 * 
-		 * @param nodeBitLength a number between 0 and 20.
+		 * @param nodeBits a number between 0 and 20.
 		 * @return {@link Builder}
 		 */
-		public Builder withNodeBitLength(Integer nodeBitLength) {
-			this.nodeBitLength = nodeBitLength;
+		public Builder withNodeBits(Integer nodeBits) {
+			this.nodeBits = nodeBits;
 			return this;
 		}
 

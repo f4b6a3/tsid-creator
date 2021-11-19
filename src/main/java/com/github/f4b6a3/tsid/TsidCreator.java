@@ -48,9 +48,9 @@ public final class TsidCreator {
 	 * 
 	 * ## Random component settings:
 	 * 
-	 * - Node bit length: 8
+	 * - Node bits: 8
 	 * 
-	 * - Counter bit length: 14
+	 * - Counter bits: 14
 	 * 
 	 * - Maximum node: 256 (2^8)
 	 * 
@@ -76,9 +76,9 @@ public final class TsidCreator {
 	 * 
 	 * ## Random component settings:
 	 * 
-	 * - Node bit length: 10
+	 * - Node bits: 10
 	 * 
-	 * - Counter bit length: 12
+	 * - Counter bits: 12
 	 * 
 	 * - Maximum node: 1,024 (2^10)
 	 * 
@@ -104,9 +104,9 @@ public final class TsidCreator {
 	 * 
 	 * ## Random component settings:
 	 * 
-	 * - Node bit length: 12
+	 * - Node bits: 12
 	 * 
-	 * - Counter bit length: 10
+	 * - Counter bits: 10
 	 * 
 	 * - Maximum node: 4,096 (2^12)
 	 * 

@@ -20,7 +20,7 @@ import com.github.f4b6a3.tsid.TsidCreator;
 
 @Fork(1)
 @Threads(1)
-@State(Scope.Thread)
+@State(Scope.Benchmark)
 @Warmup(iterations = 3)
 @Measurement(iterations = 5)
 @BenchmarkMode(Mode.Throughput)

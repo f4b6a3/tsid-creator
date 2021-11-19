@@ -28,8 +28,8 @@ public class SettingsUtilTest {
 	public void testSetNodeIdentifier() {
 		for (int i = 0; i < 100; i++) {
 			int number = this.random.nextInt();
-			SettingsUtil.setNodeIdentifier(number);
-			long result = SettingsUtil.getNodeIdentifier();
+			SettingsUtil.setNode(number);
+			long result = SettingsUtil.getNode();
 			assertEquals(number, result);
 		}
 	}
@@ -40,7 +40,7 @@ public class SettingsUtilTest {
 			long number = random.nextInt();
 			String string = Long.toString(number);
 			SettingsUtil.setProperty(SettingsUtil.PROPERTY_NODE, string);
-			long result = SettingsUtil.getNodeIdentifier();
+			long result = SettingsUtil.getNode();
 			assertEquals(number, result);
 		}
 	}
@@ -49,27 +49,27 @@ public class SettingsUtilTest {
 	public void testSetPropertyInvalid() {
 		String string = "0xx11223344"; // typo
 		SettingsUtil.setProperty(SettingsUtil.PROPERTY_NODE, string);
-		Integer result = SettingsUtil.getNodeIdentifier();
+		Integer result = SettingsUtil.getNode();
 		assertNull(result);
 
 		string = " 0x11223344"; // space
 		SettingsUtil.setProperty(SettingsUtil.PROPERTY_NODE, string);
-		result = SettingsUtil.getNodeIdentifier();
+		result = SettingsUtil.getNode();
 		assertNull(result);
 
 		string = " 0x112233zz"; // non hexadecimal
 		SettingsUtil.setProperty(SettingsUtil.PROPERTY_NODE, string);
-		result = SettingsUtil.getNodeIdentifier();
+		result = SettingsUtil.getNode();
 		assertNull(result);
 
 		string = ""; // empty
 		SettingsUtil.setProperty(SettingsUtil.PROPERTY_NODE, string);
-		result = SettingsUtil.getNodeIdentifier();
+		result = SettingsUtil.getNode();
 		assertNull(result);
 
 		string = " "; // blank
 		SettingsUtil.setProperty(SettingsUtil.PROPERTY_NODE, string);
-		result = SettingsUtil.getNodeIdentifier();
+		result = SettingsUtil.getNode();
 		assertNull(result);
 	}
 }

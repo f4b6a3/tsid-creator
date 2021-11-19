@@ -198,13 +198,13 @@ TsidFactory factory = new TsidFactory(node);
 Tsid tsid = factory.create();
 ```
 
-Use a `TsidFactory` instance with a FIXED node identifier and a CUSTOM node bit length to generate TSIDs:
+Use a `TsidFactory` instance with a FIXED node identifier and CUSTOM node bits to generate TSIDs:
 
 ```java
 // setup a factory for up to 64 nodes and 65536 ID/ms.
 TsidFactory factory = TsidFactory.builder()
-    .withNodeBitLength(6) // max: 20
-    .withNode(63)         // max: 2^nodeBitLength
+    .withNodeBits(6)      // max: 20
+    .withNode(63)         // max: 2^nodeBits
     .build();
 
 // use the factory
@@ -276,9 +276,9 @@ The Random component has 2 sub-parts:
 *   Node ID (0 to 20 bits)
 *   Counter (2 to 22 bits)
 
-The counter bit length depends on the node identifier bit length. If the node identifier bit length is 10, the counter bit length is limited to 12. In this example, the maximum node identifier value is 2^10-1 = 1023 and the maximum counter value is 2^12-1 = 4095. So the maximum TSIDs that can be generated per millisecond is 4096.
+The counter bits depend on the node bits. If the node bits are 10, the counter bits are limited to 12. In this example, the maximum node value is 2^10-1 = 1023 and the maximum counter value is 2^12-1 = 4095. So the maximum TSIDs that can be generated per millisecond is 4096.
 
-The node identifier uses 10 bits of the random component by default in the `TsidFactory`. It's possible to adjust the node bit length to a value between 0 and 20. The counter bit length is affected by the node bit length.
+The node identifier uses 10 bits of the random component by default in the `TsidFactory`. It's possible to adjust the node bits to a value between 0 and 20. The counter bits are affected by the node bits.
 
 This is the default TSID structure:
 
@@ -290,12 +290,12 @@ This is the default TSID structure:
                 42 bits                       10 bits     12 bits
 
 - time:    2^42 = ~139 years (with adjustable epoch)
-- node:    2^10 = 1,024 (with adjustable bit length)
+- node:    2^10 = 1,024 (with adjustable bits)
 - counter: 2^12 = 4,096 (initially random)
 
 Notes:
-The node id is adjustable from 0 to 20 bits.
-The node id bit length affects the counter bit length.
+The node is adjustable from 0 to 20 bits.
+The node bits affect the counter bits.
 The time component can be used for ~69 years if stored in a SIGNED 64 bits integer field.
 ```
 

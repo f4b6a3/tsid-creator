@@ -5,7 +5,7 @@ REM go to the parent folder
 CD .\..
 
 REM compile the parent project
-CALL mvn clean install
+CALL mvn clean install -DskipTests
 
 REM create a copy with the expected name
 XCOPY /Y target\tsid-creator-*-SNAPSHOT.jar target\tsid-creator-0.0.1-BENCHMARK.jar*

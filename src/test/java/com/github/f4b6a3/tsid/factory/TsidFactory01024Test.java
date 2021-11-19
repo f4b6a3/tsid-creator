@@ -19,9 +19,9 @@ public class TsidFactory01024Test {
 
 	private static final int TSID_LENGTH = 13;
 
-	private static final int NODE_LENGTH = 10;
-	private static final int COUNTER_LENGTH = 12;
-	private static final int COUNTER_MAX = (int) Math.pow(2, COUNTER_LENGTH);
+	private static final int NODE_BITS = 10;
+	private static final int COUNTER_BITS = 12;
+	private static final int COUNTER_MAX = (int) Math.pow(2, COUNTER_BITS);
 
 	private static Random random = new Random();
 
@@ -34,7 +34,7 @@ public class TsidFactory01024Test {
 
 		long startTime = System.currentTimeMillis();
 
-		TsidFactory factory = TsidFactory.builder().withNodeBitLength(NODE_LENGTH).withRandom(random).build();
+		TsidFactory factory = TsidFactory.builder().withNodeBits(NODE_BITS).withRandom(random).build();
 
 		long[] list = new long[COUNTER_MAX];
 		for (int i = 0; i < COUNTER_MAX; i++) {
@@ -54,8 +54,7 @@ public class TsidFactory01024Test {
 		long startTime = System.currentTimeMillis();
 
 		int node = random.nextInt();
-		TsidFactory factory = TsidFactory.builder().withNode(node).withNodeBitLength(NODE_LENGTH).withRandom(random)
-				.build();
+		TsidFactory factory = TsidFactory.builder().withNode(node).withNodeBits(NODE_BITS).withRandom(random).build();
 
 		long[] list = new long[COUNTER_MAX];
 		for (int i = 0; i < COUNTER_MAX; i++) {
@@ -74,7 +73,7 @@ public class TsidFactory01024Test {
 
 		long startTime = System.currentTimeMillis();
 
-		TsidFactory factory = TsidFactory.builder().withNodeBitLength(NODE_LENGTH).withRandom(random).build();
+		TsidFactory factory = TsidFactory.builder().withNodeBits(NODE_BITS).withRandom(random).build();
 
 		String[] list = new String[COUNTER_MAX];
 		for (int i = 0; i < COUNTER_MAX; i++) {
@@ -94,8 +93,7 @@ public class TsidFactory01024Test {
 		long startTime = System.currentTimeMillis();
 
 		int node = random.nextInt();
-		TsidFactory factory = TsidFactory.builder().withNode(node).withNodeBitLength(NODE_LENGTH).withRandom(random)
-				.build();
+		TsidFactory factory = TsidFactory.builder().withNode(node).withNodeBits(NODE_BITS).withRandom(random).build();
 
 		String[] list = new String[COUNTER_MAX];
 		for (int i = 0; i < COUNTER_MAX; i++) {
@@ -117,8 +115,7 @@ public class TsidFactory01024Test {
 
 		// Instantiate and start many threads
 		for (int i = 0; i < THREAD_TOTAL; i++) {
-			TsidFactory factory = TsidFactory.builder().withNode(i).withNodeBitLength(NODE_LENGTH).withRandom(random)
-					.build();
+			TsidFactory factory = TsidFactory.builder().withNode(i).withNodeBits(NODE_BITS).withRandom(random).build();
 			threads[i] = new TestThread(factory, COUNTER_MAX);
 			threads[i].start();
 		}

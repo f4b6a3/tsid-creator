@@ -50,10 +50,10 @@ public final class SettingsUtil {
 	 * 
 	 * @return a node id
 	 */
-	public static Integer getNodeIdentifier() {
+	public static Integer getNode() {
 		String value = getProperty(PROPERTY_NODE);
 
-		if (value == null || value.isEmpty()) {
+		if (value == null) {
 			return null;
 		}
 
@@ -64,8 +64,8 @@ public final class SettingsUtil {
 		}
 	}
 
-	public static void setNodeIdentifier(Integer nodeid) {
-		String value = Integer.toString(nodeid);
+	public static void setNode(Integer node) {
+		String value = Integer.toString(node);
 		setProperty(PROPERTY_NODE, value);
 	}
 

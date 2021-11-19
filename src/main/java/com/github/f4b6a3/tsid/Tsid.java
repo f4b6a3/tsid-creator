@@ -40,15 +40,14 @@ import java.time.Instant;
  * 
  * The Random component has 2 sub-parts:
  * 
- * - Node ID (0 to 20 bits)
+ * - Node (0 to 20 bits)
  * 
  * - Counter (2 to 22 bits)
  * 
- * The random component settings depend on the node identifier bit length. If
- * the node identifier bit length is 10, the counter bit length is limited to
- * 12. In this example, the maximum node identifier value is 2^10-1 = 1023 and
- * the maximum counter value is 2^12-1 = 4093. So the maximum TSIDs that can be
- * generated per millisecond per node is 4096.
+ * The random component settings depend on the node bits. If the node bits are
+ * 10, the counter bits are limited to 12. In this example, the maximum node
+ * value is 2^10-1 = 1023 and the maximum counter value is 2^12-1 = 4093. So the
+ * maximum TSIDs that can be generated per millisecond per node is 4096.
  * 
  * Instances of this class are immutable.
  */
@@ -58,13 +57,13 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 
 	private final long number;
 
-	public static final int TSID_CHARS = 13;
 	public static final int TSID_BYTES = 8;
+	public static final int TSID_CHARS = 13;
 
-	private static final int RANDOM_BITS_LENGTH = 22;
-	private static final int RANDOM_BITS_MASK = 0x003fffff;
+	private static final int RANDOM_BITS = 22;
+	private static final int RANDOM_MASK = 0x003fffff;
 
-	public static final long TSID_EPOCH_MILLISECONDS = Instant.parse("2020-01-01T00:00:00.000Z").toEpochMilli();
+	public static final long TSID_EPOCH = Instant.parse("2020-01-01T00:00:00.000Z").toEpochMilli();
 
 	private static final char[] ALPHABET_UPPERCASE = //
 			{ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', //
@@ -305,7 +304,7 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 * @return {@link Instant}
 	 */
 	public Instant getInstant() {
-		return Instant.ofEpochMilli(this.getTime() + TSID_EPOCH_MILLISECONDS);
+		return Instant.ofEpochMilli(this.getTime() + TSID_EPOCH);
 	}
 
 	/**
@@ -328,7 +327,7 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 * @return a number of milliseconds.
 	 */
 	public long getTime() {
-		return this.number >>> RANDOM_BITS_LENGTH;
+		return this.number >>> RANDOM_BITS;
 	}
 
 	/**
@@ -339,7 +338,7 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 * @return a number
 	 */
 	public long getRandom() {
-		return this.number & RANDOM_BITS_MASK;
+		return this.number & RANDOM_MASK;
 	}
 
 	/**
