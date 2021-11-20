@@ -1,3 +1,4 @@
+
 TSID Creator
 ======================================================
 
@@ -48,7 +49,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>tsid-creator</artifactId>
-  <version>4.1.2</version>
+  <version>4.1.3</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator).
@@ -60,7 +61,7 @@ Module and bundle names are the same as the root package name.
 *   JPMS module name: `com.github.f4b6a3.tsid`
 *   OSGi symbolic name: `com.github.f4b6a3.tsid`
 
-### TSID as number
+### TSID as Long
 
 This section shows how to create TSID numbers.
 
@@ -106,7 +107,7 @@ Sequence of TSIDs:
    time   random
 ```
 
-### TSID as string
+### TSID as String
 
 This section shows how to create TSID strings.
 
@@ -152,6 +153,68 @@ Sequence of TSID strings:
    time random
 ```
 
+### TSID Structure
+
+The term TSID stands for (roughly) Time Sortable ID. A TSID is a number that is formed by the creation time along with random bits.
+
+The TSID has 2 components:
+
+*   Time component (42 bits)
+*   Random component (22 bits)
+
+The time component is the count of milliseconds since 2020-01-01 00:00:00 UTC.
+
+The Random component has 2 sub-parts:
+
+*   Node ID (0 to 20 bits)
+*   Counter (2 to 22 bits)
+
+The counter bits depend on the node bits. If the node bits are 10, the counter bits are limited to 12. In this example, the maximum node value is 2^10-1 = 1023 and the maximum counter value is 2^12-1 = 4095. So the maximum TSIDs that can be generated per millisecond is 4096.
+
+The node identifier uses 10 bits of the random component by default in the `TsidFactory`. It's possible to adjust the node bits to a value between 0 and 20. The counter bits are affected by the node bits.
+
+This is the default TSID structure:
+
+```
+                                            adjustable
+                                           <---------->
+|------------------------------------------|----------|------------|
+       time (msecs since 2020-01-01)           node       counter
+                42 bits                       10 bits     12 bits
+
+- time:    2^42 = ~139 years (with adjustable epoch)
+- node:    2^10 = 1,024 (with adjustable bits)
+- counter: 2^12 = 4,096 (initially random)
+
+Notes:
+The node is adjustable from 0 to 20 bits.
+The node bits affect the counter bits.
+The time component can be used for ~69 years if stored in a SIGNED 64 bits integer field.
+```
+
+The node identifier is a random number from 0 to 1023 (default). It can be replaced by a value given to the `TsidFactory` constructor or method factory.
+
+Another way to replace the random node is by using a system property `tsidcreator.node` or a environment variable `TSIDCREATOR_NODE`.
+
+#### Node identifier
+
+The node identifier can be given to the `TsidFactory` by defining a system property `tsidcreator.node` or a environment variable `TSIDCREATOR_NODE`. If this property or variable exists, the node identifier is its value. Otherwise, the node identifier is random number.
+
+The simplest way to avoid collisions is to ensure that each generator has its exclusive node identifier.
+
+*   Using system property:
+
+```bash
+// append to VM arguments
+-Dtsidcreator.node="755"
+```
+
+*   Using environment variable:
+
+```bash
+# append to /etc/environment or ~/.profile
+export TSIDCREATOR_NODE="492"
+```
 ### Other usage examples
 
 Create a TSID from a canonical string (13 chars):
@@ -262,67 +325,56 @@ TsidFactory factory = TsidFactory.builder()
 Tsid tsid = factory.create();
 ```
 
-### TSID structure
+Use a `TsidFactory` that creates TSIDs similar to [Twitter Snowflakes](https://github.com/twitter-archive/snowflake):
 
-The term TSID stands for (roughly) Time Sortable ID. A TSID is a number that is formed by the creation time along with random bits.
+```java
+// Twitter Snowflakes have 5 bits for datacenter ID and 5 bits for worker ID
+int datacenter = 1; // max: 2^5-1 = 31
+int worker = 1;     // max: 2^5-1 = 31
+int node = (datacenter << 5 | worker); // max: 2^10-1 = 1023
 
-The TSID has 2 components:
+// Twitter Epoch is fixed in 1288834974657 (2010-11-04T01:42:54.657Z)
+Instant customEpoch = Instant.ofEpochMilli(1288834974657L);
 
-*   Time component (42 bits)
-*   Random component (22 bits)
+// a function that returns an array with ZEROS, making the factory
+// to RESET the counter to ZERO when the millisecond changes
+IntFunction<byte[]> randomFunction = (x) -> new byte[x];
 
-The time component is the count of milliseconds since 2020-01-01 00:00:00 UTC.
+// a factory that returns TSIDs similar to Twitter Snowflakes
+TsidFactory factory = TsidFactory.builder()
+		.withRandomFunction(randomFunction)
+		.withCustomEpoch(customEpoch)
+		.withNode(node)
+		.build();
 
-The Random component has 2 sub-parts:
-
-*   Node ID (0 to 20 bits)
-*   Counter (2 to 22 bits)
-
-The counter bits depend on the node bits. If the node bits are 10, the counter bits are limited to 12. In this example, the maximum node value is 2^10-1 = 1023 and the maximum counter value is 2^12-1 = 4095. So the maximum TSIDs that can be generated per millisecond is 4096.
-
-The node identifier uses 10 bits of the random component by default in the `TsidFactory`. It's possible to adjust the node bits to a value between 0 and 20. The counter bits are affected by the node bits.
-
-This is the default TSID structure:
-
-```
-                                            adjustable
-                                           <---------->
-|------------------------------------------|----------|------------|
-       time (msecs since 2020-01-01)           node       counter
-                42 bits                       10 bits     12 bits
-
-- time:    2^42 = ~139 years (with adjustable epoch)
-- node:    2^10 = 1,024 (with adjustable bits)
-- counter: 2^12 = 4,096 (initially random)
-
-Notes:
-The node is adjustable from 0 to 20 bits.
-The node bits affect the counter bits.
-The time component can be used for ~69 years if stored in a SIGNED 64 bits integer field.
+// use the factory
+Tsid tsid = factory.create();
 ```
 
-The node identifier is a random number from 0 to 1023 (default). It can be replaced by a value given to the `TsidFactory` constructor or method factory.
+Use a `TsidFactory` that creates TSIDs similar to [Discord Snowflakes](https://discord.com/developers/docs/reference#snowflakes):
 
-Another way to replace the random node is by using a system property `tsidcreator.node` or a environment variable `TSIDCREATOR_NODE`.
+```java
+// Discord Snowflakes have 5 bits for worker ID and 5 bits for process ID
+int worker = 1;  // max: 2^5-1 = 31
+int process = 1; // max: 2^5-1 = 31
+int node = (worker << 5 | process); // max: 2^10-1 = 1023
 
-#### Node identifier
+// Discord Epoch starts in the first millisecond of 2015
+Instant customEpoch = Instant.parse("2015-01-01T00:00:00.000Z");
 
-The node identifier can be given to the `TsidFactory` by defining a system property `tsidcreator.node` or a environment variable `TSIDCREATOR_NODE`. If this property or variable exists, the node identifier is its value. Otherwise, the node identifier is random number.
+// a function that returns NULL, making the factory to
+// INCREMENT the counter when the millisecond changes
+IntFunction<byte[]> randomFunction = (x) -> null;
 
-The simplest way to avoid collisions is to ensure that each generator has its exclusive node identifier.
+// a factory that returns TSIDs similar to Discord Snowflakes
+TsidFactory factory = TsidFactory.builder()
+		.withRandomFunction(randomFunction)
+		.withCustomEpoch(customEpoch)
+		.withNode(node)
+		.build();
 
-*   Using system property:
-
-```bash
-// append to VM arguments
--Dtsidcreator.node="755"
-```
-
-*   Using environment variable:
-
-```bash
-# append to /etc/environment or ~/.profile
-export TSIDCREATOR_NODE="492"
+// use the factory
+Tsid tsid = factory.create();
 ```
 
 Benchmark

@@ -13,13 +13,14 @@ import com.github.f4b6a3.tsid.internal.SettingsUtilTest;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+	TsidTest.class,
+	TsidFactoryTest.class,
 	TsidFactory00001Test.class,
 	TsidFactory00064Test.class,
 	TsidFactory00256Test.class,
 	TsidFactory01024Test.class,
 	TsidFactory04096Test.class,
 	TsidFactory16384Test.class,
-	TsidTest.class,
 	SettingsUtilTest.class,
 })
 

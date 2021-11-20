@@ -90,6 +90,8 @@ public final class TsidFactory {
 	private final long customEpoch;
 	private final IntFunction<byte[]> randomFunction;
 
+	private final int randomFunctionInput;
+
 	public static final int NODE_BITS_256 = 8;
 	public static final int NODE_BITS_1024 = 10;
 	public static final int NODE_BITS_4096 = 12;
@@ -217,6 +219,9 @@ public final class TsidFactory {
 		this.counterMask = RANDOM_MASK >>> nodeBits;
 		this.nodeMask = RANDOM_MASK >>> counterBits;
 
+		// setup how many bytes to get from random function
+		this.randomFunctionInput = ((this.counterBits - 1) / 8) + 1;
+
 		// finally, setup the node identifier
 		if (builder.node != null) {
 			// use the node id given by builder
@@ -227,7 +232,11 @@ public final class TsidFactory {
 		} else {
 			// use a random node id from 0 to 0x3fffff (2^22 = 4,194,304).
 			final byte[] bytes = randomFunction.apply(3);
-			this.node = (((bytes[0] & 0x3f) << 16) | ((bytes[1] & 0xff) << 8) | (bytes[2] & 0xff)) & this.nodeMask;
+			if (bytes != null && bytes.length == 3) {
+				this.node = (((bytes[0] & 0x3f) << 16) | ((bytes[1] & 0xff) << 8) | (bytes[2] & 0xff)) & this.nodeMask;
+			} else {
+				this.node = (new SecureRandom()).nextInt() & this.nodeMask;
+			}
 		}
 	}
 
@@ -289,7 +298,7 @@ public final class TsidFactory {
 	 */
 	private synchronized void reset() {
 		// update the counter with a random value
-		this.counter = this.getRandomCounter() & this.counterMask;
+		this.counter = this.getRandomCounter();
 
 		// update the maximum increment value
 		this.counterMax = this.counter | (0x00000001 << this.counterBits);
@@ -300,19 +309,30 @@ public final class TsidFactory {
 	 * 
 	 * The counter maximum value depends on the node identifier bits.
 	 * 
+	 * The counter is just incremented if the random function returns NULL or EMPTY.
+	 * 
 	 * @return a number
 	 */
 	private synchronized int getRandomCounter() {
-		if (this.counterBits <= 8) {
-			final byte[] bytes = randomFunction.apply(1);
-			return (bytes[0] & 0xff) & this.counterMask;
-		} else if (this.counterBits <= 16) {
-			final byte[] bytes = randomFunction.apply(2);
-			return (((bytes[0] & 0xff) << 8) | (bytes[1] & 0xff)) & this.counterMask;
-		} else {
-			final byte[] bytes = randomFunction.apply(3);
-			return (((bytes[0] & 0x3f) << 16) | ((bytes[1] & 0xff) << 8) | (bytes[2] & 0xff)) & this.counterMask;
+
+		final byte[] bytes = randomFunction.apply(this.randomFunctionInput);
+
+		if (bytes != null) {
+			switch (bytes.length) {
+			case 0:
+				break; // EMPTY!
+			case 1:
+				return (bytes[0] & 0xff) & this.counterMask;
+			case 2:
+				return (((bytes[0] & 0xff) << 8) | (bytes[1] & 0xff)) & this.counterMask;
+			default:
+				return (((bytes[0] & 0x3f) << 16) | ((bytes[1] & 0xff) << 8) | (bytes[2] & 0xff)) & this.counterMask;
+			}
 		}
+
+		// NULL or EMPTY:
+		// ignore function and increment counter
+		return ++this.counter & this.counterMask;
 	}
 
 	/**
@@ -341,7 +361,7 @@ public final class TsidFactory {
 		 * 
 		 * The range is 0 to 2^nodeBits-1.
 		 * 
-		 * @param nodeBits a number between 0 and 2^nodeBits-1.
+		 * @param node a number between 0 and 2^nodeBits-1.
 		 * @return {@link Builder}
 		 */
 		public Builder withNode(Integer node) {
@@ -374,6 +394,9 @@ public final class TsidFactory {
 		/**
 		 * Set the random generator.
 		 * 
+		 * The random generator is used to create a random function that is used to
+		 * reset the counter when the millisecond changes.
+		 * 
 		 * @param random a {@link Random} generator
 		 * @return {@link Builder}
 		 */
@@ -386,6 +409,19 @@ public final class TsidFactory {
 		 * Set the random function.
 		 * 
 		 * The random function must return a byte array of a given length.
+		 * 
+		 * The random function is used to reset the counter when the millisecond
+		 * changes.
+		 * 
+		 * Despite its name, the random function MAY return a fixed value, for example,
+		 * if your app requires the counter to be reset to ZERO whenever the millisecond
+		 * changes, like Twitter Snowflakes, this function should return an array filled
+		 * with ZEROS.
+		 * 
+		 * If the returned value is NULL or EMPTY, the factory ignores it and just
+		 * increments the counter when the millisecond changes, for example, when your
+		 * app requires the counter to always be incremented, no matter if the
+		 * millisecond has changed or not, like Discord Snowflakes.
 		 * 
 		 * @param randomFunction a random function that returns a byte array
 		 * @return {@link Builder}

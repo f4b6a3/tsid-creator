@@ -18,8 +18,8 @@ public class TsidTest {
 	private static final int RANDOM_BITS = 22;
 	private static final int DEFAULT_LOOP_MAX = 1_000;
 
-	protected static final char[] ALPHABET_CROCKFORD = "0123456789ABCDEFGHJKMNPQRSTVWXYZ".toCharArray();
-	protected static final char[] ALPHABET_JAVA = "0123456789abcdefghijklmnopqrstuv".toCharArray(); // Long.parseUnsignedLong()
+	private static final char[] ALPHABET_CROCKFORD = "0123456789ABCDEFGHJKMNPQRSTVWXYZ".toCharArray();
+	private static final char[] ALPHABET_JAVA = "0123456789abcdefghijklmnopqrstuv".toCharArray(); // Long.parseUnsignedLong()
 
 	@Test
 	public void testFromBytes() {
@@ -147,20 +147,6 @@ public class TsidTest {
 	}
 
 	@Test
-	public void testGetUnixMillisecondsWithCustomEpoch() {
-
-		Instant customEpoch = Instant.parse("1984-01-01T00:00:00Z");
-
-		long start = System.currentTimeMillis();
-		Tsid tsid = TsidFactory.builder().withCustomEpoch(customEpoch).build().create();
-		long middle = tsid.getInstant(customEpoch).toEpochMilli();
-		long end = System.currentTimeMillis();
-
-		assertTrue(start <= middle);
-		assertTrue(middle <= end);
-	}
-
-	@Test
 	public void testGetInstant() {
 
 		Instant start = Instant.now();
@@ -198,20 +184,6 @@ public class TsidTest {
 
 			assertEquals(random0, random1);
 		}
-	}
-
-	@Test
-	public void testGetInstantWithCustomEpoch() {
-
-		Instant customEpoch = Instant.parse("2015-10-23T00:00:00Z");
-
-		Instant start = Instant.now();
-		Tsid tsid = TsidFactory.builder().withCustomEpoch(customEpoch).build().create();
-		Instant middle = tsid.getInstant(customEpoch);
-		Instant end = Instant.now();
-
-		assertTrue(start.toEpochMilli() <= middle.toEpochMilli());
-		assertTrue(middle.toEpochMilli() <= end.toEpochMilli());
 	}
 
 	@Test
