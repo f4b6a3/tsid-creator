@@ -267,7 +267,7 @@ public class KeyGenerator {
 }
 ```
 ```java
-    String key = KeyGenerator.next();
+String key = KeyGenerator.next();
 ```
 
 Use a `TsidFactory` instance with a FIXED node identifier to generate TSIDs:
