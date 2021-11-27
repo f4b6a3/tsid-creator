@@ -253,7 +253,7 @@ Get the random component of a TSID:
 long random = tsid.getRandom(); // 305516
 ```
 
-A key generator that makes substitution easy if necessary:
+Use a key generator that makes substitution easy if necessary:
 
 ```java
 package com.example;
