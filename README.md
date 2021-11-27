@@ -253,6 +253,23 @@ Get the random component of a TSID:
 long random = tsid.getRandom(); // 305516
 ```
 
+A key generator that makes substitution easy if necessary:
+
+```java
+package com.example;
+
+import com.github.f4b6a3.tsid.TsidCreator;
+
+public class KeyGenerator {
+    public static String next() {
+        return TsidCreator.getTsid1024().toString();
+    }
+}
+```
+```java
+    String key = KeyGenerator.next();
+```
+
 Use a `TsidFactory` instance with a FIXED node identifier to generate TSIDs:
 
 ```java
