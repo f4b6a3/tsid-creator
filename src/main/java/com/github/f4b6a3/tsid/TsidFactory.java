@@ -31,7 +31,6 @@ import java.util.function.IntFunction;
 
 import com.github.f4b6a3.tsid.internal.SettingsUtil;
 
-import static com.github.f4b6a3.tsid.Tsid.TSID_EPOCH;
 import static com.github.f4b6a3.tsid.Tsid.RANDOM_BITS;
 import static com.github.f4b6a3.tsid.Tsid.RANDOM_MASK;
 
@@ -88,9 +87,9 @@ public final class TsidFactory {
 	private final int counterMask;
 
 	private final long customEpoch;
-	private final IntFunction<byte[]> randomFunction;
 
-	private final int randomFunctionInput;
+	private final int randomBytes;
+	private final IntFunction<byte[]> randomFunction;
 
 	public static final int NODE_BITS_256 = 8;
 	public static final int NODE_BITS_1024 = 10;
@@ -119,6 +118,30 @@ public final class TsidFactory {
 	 */
 	public TsidFactory(int node) {
 		this(builder().withNode(node));
+	}
+
+	/**
+	 * It builds a generator with the given builder.
+	 * 
+	 * @param builder a builder instance
+	 */
+	private TsidFactory(Builder builder) {
+
+		// setup node bits, custom epoch and random function
+		this.nodeBits = builder.getNodeBits();
+		this.customEpoch = builder.getCustomEpoch();
+		this.randomFunction = builder.getRandomFunction();
+
+		// setup constants that depend on node bits
+		this.counterBits = RANDOM_BITS - nodeBits;
+		this.counterMask = RANDOM_MASK >>> nodeBits;
+		this.nodeMask = RANDOM_MASK >>> counterBits;
+
+		// setup how many bytes to get from the random function
+		this.randomBytes = ((this.counterBits - 1) / 8) + 1;
+
+		// finally, setup the node identifier
+		this.node = builder.getNode() & nodeMask;
 	}
 
 	/**
@@ -180,64 +203,6 @@ public final class TsidFactory {
 	 */
 	public static TsidFactory newInstance4096(int node) {
 		return TsidFactory.builder().withNodeBits(NODE_BITS_4096).withNode(node).build();
-	}
-
-	/**
-	 * It builds a generator with the given builder settings.
-	 * 
-	 * @param builder a builder instance
-	 */
-	private TsidFactory(Builder builder) {
-
-		// setup the random generator
-		if (builder.randomFunction != null) {
-			this.randomFunction = builder.randomFunction;
-		} else {
-			this.randomFunction = getRandomFunction(new SecureRandom());
-		}
-
-		// setup the random and custom epoch
-		if (builder.customEpoch != null) {
-			this.customEpoch = builder.customEpoch;
-		} else {
-			this.customEpoch = TSID_EPOCH; // 2020-01-01
-		}
-
-		// setup the node bits
-		if (builder.nodeBits != null) {
-			// check the node bits
-			if (builder.nodeBits < 0 || builder.nodeBits > 20) {
-				throw new IllegalArgumentException("Node bits out of range: [0, 20]");
-			}
-			this.nodeBits = builder.nodeBits;
-		} else {
-			this.nodeBits = NODE_BITS_1024; // 10 bits
-		}
-
-		// setup constants that depend on node bits
-		this.counterBits = RANDOM_BITS - nodeBits;
-		this.counterMask = RANDOM_MASK >>> nodeBits;
-		this.nodeMask = RANDOM_MASK >>> counterBits;
-
-		// setup how many bytes to get from random function
-		this.randomFunctionInput = ((this.counterBits - 1) / 8) + 1;
-
-		// finally, setup the node identifier
-		if (builder.node != null) {
-			// use the node id given by builder
-			this.node = builder.node & this.nodeMask;
-		} else if (SettingsUtil.getNode() != null) {
-			// use the node id given by system property or environment variable
-			this.node = SettingsUtil.getNode() & this.nodeMask;
-		} else {
-			// use a random node id from 0 to 0x3fffff (2^22 = 4,194,304).
-			final byte[] bytes = randomFunction.apply(3);
-			if (bytes != null && bytes.length == 3) {
-				this.node = (((bytes[0] & 0x3f) << 16) | ((bytes[1] & 0xff) << 8) | (bytes[2] & 0xff)) & this.nodeMask;
-			} else {
-				this.node = (new SecureRandom()).nextInt() & this.nodeMask;
-			}
-		}
 	}
 
 	/**
@@ -315,7 +280,7 @@ public final class TsidFactory {
 	 */
 	private synchronized int getRandomCounter() {
 
-		final byte[] bytes = randomFunction.apply(this.randomFunctionInput);
+		final byte[] bytes = randomFunction.apply(this.randomBytes);
 
 		if (bytes != null) {
 			switch (bytes.length) {
@@ -376,6 +341,9 @@ public final class TsidFactory {
 		 * @return {@link Builder}
 		 */
 		public Builder withNodeBits(Integer nodeBits) {
+			if (nodeBits < 0 || nodeBits > 20) {
+				throw new IllegalArgumentException("Node bits out of range: [0, 20]");
+			}
 			this.nodeBits = nodeBits;
 			return this;
 		}
@@ -401,7 +369,11 @@ public final class TsidFactory {
 		 * @return {@link Builder}
 		 */
 		public Builder withRandom(Random random) {
-			this.randomFunction = getRandomFunction(random);
+			this.randomFunction = (final int length) -> {
+				final byte[] bytes = new byte[length];
+				random.nextBytes(bytes);
+				return bytes;
+			};
 			return this;
 		}
 
@@ -431,6 +403,51 @@ public final class TsidFactory {
 			return this;
 		}
 
+		public Integer getNode() {
+
+			// 2^22 - 1 = 4,194,303
+			final int mask = 0x3fffff;
+
+			if (this.node == null) {
+				if (SettingsUtil.getNode() != null) {
+					// use system property and environment variable
+					this.node = SettingsUtil.getNode();
+				} else {
+					// use random node id from 0 to 4,194,303
+					final byte[] bytes = this.getRandomFunction().apply(3);
+					if (bytes != null && bytes.length == 3) {
+						this.node = ((bytes[0] & 0xff) << 16) | ((bytes[1] & 0xff) << 8) | (bytes[2] & 0xff);
+					} else {
+						// use fallback random generator
+						this.node = (new SecureRandom()).nextInt();
+					}
+				}
+			}
+
+			return this.node & mask;
+		}
+
+		public Integer getNodeBits() {
+			if (this.nodeBits == null) {
+				this.nodeBits = TsidFactory.NODE_BITS_1024; // 10 bits
+			}
+			return this.nodeBits;
+		}
+
+		public Long getCustomEpoch() {
+			if (this.customEpoch == null) {
+				this.customEpoch = Tsid.TSID_EPOCH; // 2020-01-01
+			}
+			return this.customEpoch;
+		}
+
+		public IntFunction<byte[]> getRandomFunction() {
+			if (this.randomFunction == null) {
+				this.withRandom(new SecureRandom());
+			}
+			return this.randomFunction;
+		}
+
 		/**
 		 * Returns a custom TSID factory with the builder settings.
 		 * 
@@ -439,19 +456,5 @@ public final class TsidFactory {
 		public TsidFactory build() {
 			return new TsidFactory(this);
 		}
-	}
-
-	/**
-	 * It instantiates a function that returns a byte array of a given length.
-	 * 
-	 * @param random a {@link Random} generator
-	 * @return a random function that returns a byte array of a given length
-	 */
-	protected static IntFunction<byte[]> getRandomFunction(Random random) {
-		return (final int length) -> {
-			final byte[] bytes = new byte[length];
-			random.nextBytes(bytes);
-			return bytes;
-		};
 	}
 }

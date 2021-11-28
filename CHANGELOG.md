@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased
 
+## [4.1.4] - 2021-11-28
+
+Regular maintenance.
+
 ## [4.1.3] - 2021-11-20
 
 Increment the counter when the random function returns null or empty.
@@ -334,8 +338,9 @@ Project created as an alternative Java implementation for Twitter's Snowflake.
 -   Added `LICENSE`
 -   Added test cases
 
-[unreleased]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.1.3...HEAD
-[4.1.2]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.1.2...tsid-creator-4.1.3
+[unreleased]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.1.4...HEAD
+[4.1.4]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.1.3...tsid-creator-4.1.4
+[4.1.3]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.1.2...tsid-creator-4.1.3
 [4.1.2]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.1.1...tsid-creator-4.1.2
 [4.1.1]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.1.0...tsid-creator-4.1.1
 [4.1.0]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.0.0...tsid-creator-4.1.0

@@ -49,7 +49,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>tsid-creator</artifactId>
-  <version>4.1.3</version>
+  <version>4.1.4</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator).
@@ -422,6 +422,9 @@ To execute the benchmark, run `./benchmark/run.sh`.
 
 Other identifier generators
 ------------------------------------------------------
+
+Check out the other ID generators.
+
 *   [UUID Creator](https://github.com/f4b6a3/uuid-creator)
 *   [ULID Creator](https://github.com/f4b6a3/ulid-creator)
 *   [KSUID Creator](https://github.com/f4b6a3/ksuid-creator)
