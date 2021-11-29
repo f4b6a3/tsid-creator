@@ -223,11 +223,15 @@ Create a TSID from a canonical string (13 chars):
 Tsid tsid = Tsid.from("0123456789ABC");
 ```
 
+---
+
 Convert a TSID into a canonical string in lower case:
 
 ```java
 String string = tsid.toLowerCase(); // 0123456789abc
 ```
+
+---
 
 Convert a TSID into a byte array:
 
@@ -235,22 +239,12 @@ Convert a TSID into a byte array:
 byte[] bytes = tsid.toBytes(); // 8 bytes (64 bits)
 ```
 
+---
+
 Get the creation instant of a TSID:
 
 ```java
 Instant instant = tsid.getInstant(); // 2020-04-15T22:31:02.458Z
-```
-
-Get the time component of a TSID:
-
-```java
-long time = tsid.getTime(); // 9153062458
-```
-
-Get the random component of a TSID:
-
-```java
-long random = tsid.getRandom(); // 305516
 ```
 
 ---
@@ -326,21 +320,6 @@ Tsid tsid = factory.create();
 
 ---
 
-Use a `TsidFactory` with a random generator of your choice inside of an `IntFunction<byte[]>`:
-
-```java
-// use a random function that returns an array of bytes with a given length
-AwesomeRandom awesomeRandom = new AwesomeRandom(); // a hypothetical RNG
-TsidFactory factory = TsidFactory.builder()
-    .withRandomFunction(length -> awesomeRandom.nextBytes(length))
-    .build();
-
-// use the factory
-Tsid tsid = factory.create();
-```
-
----
-
 Use a `TsidFactory` with `ThreadLocalRandom` inside of an `IntFunction<byte[]>`:
 
 ```java
@@ -354,6 +333,52 @@ TsidFactory factory = TsidFactory.builder()
 
 // use the factory
 Tsid tsid = factory.create();
+```
+
+---
+
+A less-blocking factory that wraps an array of factories to generate more than 4 million TSIDs per second:
+
+```java
+package com.example;
+
+import com.github.f4b6a3.tsid.Tsid;
+import com.github.f4b6a3.tsid.TsidFactory;
+
+/**
+ * A less-blocking factory that wraps an array of factories.
+ * 
+ * It can be used to generate TSIDs with less thread contention.
+ * 
+ * It can generate more than 4 million TSIDs per second.
+ */
+public class LessBlockingFactory {
+
+    private final TsidFactory[] factories;
+
+    public LessBlockingFactory(int[] nodes) {
+        factories = new TsidFactory[nodes.length];
+        for (int i = 0; i < factories.length; i++) {
+            factories[i] = new TsidFactory(nodes[i]);
+        }
+    }
+
+    public Tsid create() {
+        // calculate the factory index given the current thread ID
+        final int index = (int) Thread.currentThread().getId() % factories.length;
+        return factories[index].create();
+    }
+}
+```
+```java
+// instantiate an array of 8 UNIQUE node identifiers to be used
+int[] nodes = { 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008 };
+
+// instantiate a less-blocking factory with an array of 8 factories
+LessBlockingFactory factory = new LessBlockingFactory(nodes);
+    
+// use the less-blocking factory
+TSID tsid = factory.create();
 ```
 
 ---
@@ -413,50 +438,6 @@ Tsid tsid = factory.create();
 ```
 
 ---
-
-A less-blocking factory that wraps an array of factories to generate more than 4 million TSIDs per second:
-
-```java
-package com.example;
-
-import com.github.f4b6a3.tsid.Tsid;
-import com.github.f4b6a3.tsid.TsidFactory;
-
-/**
- * A less-blocking factory that wraps an array of factories.
- * 
- * It can be used to generate TSIDs with less thread contention.
- * 
- * It can generate more than 4 million TSIDs per second.
- */
-public class LessBlockingFactory {
-
-    private final TsidFactory[] factories;
-
-    public LessBlockingFactory(int[] nodes) {
-        factories = new TsidFactory[nodes.length];
-        for (int i = 0; i < factories.length; i++) {
-            factories[i] = new TsidFactory(nodes[i]);
-        }
-    }
-
-    public Tsid create() {
-        // calculate the factory index given the current thread ID
-        final int index = (int) Thread.currentThread().getId() % factories.length;
-        return factories[index].create();
-    }
-}
-```
-```java
-// instantiate an array of 8 UNIQUE node identifiers to be used
-int[] nodes = { 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008 };
-
-// instantiate a less-blocking factory with an array of 8 factories
-LessBlockingFactory factory = new LessBlockingFactory(nodes);
-    
-// use the less-blocking factory
-TSID tsid = factory.create();
-```
 
 Benchmark
 ------------------------------------------------------
