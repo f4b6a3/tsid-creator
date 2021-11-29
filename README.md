@@ -249,7 +249,7 @@ Instant instant = tsid.getInstant(); // 2020-04-15T22:31:02.458Z
 
 ---
 
-Use a key generator that makes substitution easy if necessary:
+A key generator that makes substitution easy if necessary:
 
 ```java
 package com.example;
@@ -268,7 +268,7 @@ String key = KeyGenerator.next();
 
 ---
 
-Use a `TsidFactory` instance with a FIXED node identifier to generate TSIDs:
+A `TsidFactory` with a FIXED node identifier:
 
 ```java
 int node = 256; // max: 2^10
@@ -280,7 +280,7 @@ Tsid tsid = factory.create();
 
 ---
 
-Use a `TsidFactory` instance with a FIXED node identifier and CUSTOM node bits to generate TSIDs:
+A `TsidFactory` with a FIXED node identifier and CUSTOM node bits:
 
 ```java
 // setup a factory for up to 64 nodes and 65536 ID/ms.
@@ -295,7 +295,7 @@ Tsid tsid = factory.create();
 
 ---
 
-Use a `TsidFactory` instance with a CUSTOM epoch to generate TSIDs:
+A `TsidFactory` with a CUSTOM epoch:
 
 ```java
 // use a CUSTOM epoch that starts from the fall of the Berlin Wall
@@ -308,7 +308,7 @@ Tsid tsid = factory.create();
 
 ---
 
-Use a `TsidFactory` with `java.util.Random`:
+A `TsidFactory` with `java.util.Random`:
 
 ```java
 // use a `java.util.Random` instance for fast generation
@@ -320,7 +320,7 @@ Tsid tsid = factory.create();
 
 ---
 
-Use a `TsidFactory` with `ThreadLocalRandom` inside of an `IntFunction<byte[]>`:
+A `TsidFactory` with `ThreadLocalRandom` inside of an `IntFunction<byte[]>`:
 
 ```java
 // use a random function that returns an array of bytes with a given length
@@ -383,7 +383,7 @@ TSID tsid = factory.create();
 
 ---
 
-Use a `TsidFactory` that creates TSIDs similar to [Twitter Snowflakes](https://github.com/twitter-archive/snowflake):
+A `TsidFactory` that creates TSIDs similar to [Twitter Snowflakes](https://github.com/twitter-archive/snowflake):
 
 ```java
 // Twitter Snowflakes have 5 bits for datacenter ID and 5 bits for worker ID
@@ -411,7 +411,7 @@ Tsid tsid = factory.create();
 
 ---
 
-Use a `TsidFactory` that creates TSIDs similar to [Discord Snowflakes](https://discord.com/developers/docs/reference#snowflakes):
+A `TsidFactory` that creates TSIDs similar to [Discord Snowflakes](https://discord.com/developers/docs/reference#snowflakes):
 
 ```java
 // Discord Snowflakes have 5 bits for worker ID and 5 bits for process ID
