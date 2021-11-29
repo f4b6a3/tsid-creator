@@ -233,14 +233,6 @@ String string = tsid.toLowerCase(); // 0123456789abc
 
 ---
 
-Convert a TSID into a byte array:
-
-```java
-byte[] bytes = tsid.toBytes(); // 8 bytes (64 bits)
-```
-
----
-
 Get the creation instant of a TSID:
 
 ```java
