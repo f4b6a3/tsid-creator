@@ -215,7 +215,7 @@ The simplest way to avoid collisions is to ensure that each generator has its ex
 # append to /etc/environment or ~/.profile
 export TSIDCREATOR_NODE="492"
 ```
-### Other usage examples
+### More Examples
 
 Create a TSID from a canonical string (13 chars):
 
@@ -253,6 +253,8 @@ Get the random component of a TSID:
 long random = tsid.getRandom(); // 305516
 ```
 
+---
+
 Use a key generator that makes substitution easy if necessary:
 
 ```java
@@ -270,6 +272,8 @@ public class KeyGenerator {
 String key = KeyGenerator.next();
 ```
 
+---
+
 Use a `TsidFactory` instance with a FIXED node identifier to generate TSIDs:
 
 ```java
@@ -279,6 +283,8 @@ TsidFactory factory = new TsidFactory(node);
 // use the factory
 Tsid tsid = factory.create();
 ```
+
+---
 
 Use a `TsidFactory` instance with a FIXED node identifier and CUSTOM node bits to generate TSIDs:
 
@@ -293,6 +299,8 @@ TsidFactory factory = TsidFactory.builder()
 Tsid tsid = factory.create();
 ```
 
+---
+
 Use a `TsidFactory` instance with a CUSTOM epoch to generate TSIDs:
 
 ```java
@@ -304,6 +312,8 @@ TsidFactory factory = TsidFactory.builder().withCustomEpoch(customEpoch).build()
 Tsid tsid = factory.create();
 ```
 
+---
+
 Use a `TsidFactory` with `java.util.Random`:
 
 ```java
@@ -313,6 +323,8 @@ TsidFactory factory = TsidFactory.builder().withRandom(new Random()).build();
 // use the factory
 Tsid tsid = factory.create();
 ```
+
+---
 
 Use a `TsidFactory` with a random generator of your choice inside of an `IntFunction<byte[]>`:
 
@@ -326,6 +338,8 @@ TsidFactory factory = TsidFactory.builder()
 // use the factory
 Tsid tsid = factory.create();
 ```
+
+---
 
 Use a `TsidFactory` with `ThreadLocalRandom` inside of an `IntFunction<byte[]>`:
 
@@ -341,6 +355,8 @@ TsidFactory factory = TsidFactory.builder()
 // use the factory
 Tsid tsid = factory.create();
 ```
+
+---
 
 Use a `TsidFactory` that creates TSIDs similar to [Twitter Snowflakes](https://github.com/twitter-archive/snowflake):
 
@@ -368,6 +384,8 @@ TsidFactory factory = TsidFactory.builder()
 Tsid tsid = factory.create();
 ```
 
+---
+
 Use a `TsidFactory` that creates TSIDs similar to [Discord Snowflakes](https://discord.com/developers/docs/reference#snowflakes):
 
 ```java
@@ -392,6 +410,52 @@ TsidFactory factory = TsidFactory.builder()
 
 // use the factory
 Tsid tsid = factory.create();
+```
+
+---
+
+A less-blocking factory that wraps an array of factories to generate more than 4 million TSIDs per second:
+
+```java
+package com.example;
+
+import com.github.f4b6a3.tsid.Tsid;
+import com.github.f4b6a3.tsid.TsidFactory;
+
+/**
+ * A less-blocking factory that wraps an array of factories.
+ * 
+ * It can be used to generate TSIDs with less thread contention.
+ * 
+ * It can generate more than 4 million TSIDs per second.
+ */
+public class LessBlockingFactory {
+
+    private final TsidFactory[] factories;
+
+    public LessBlockingFactory(int[] nodes) {
+        factories = new TsidFactory[nodes.length];
+        for (int i = 0; i < factories.length; i++) {
+            factories[i] = new TsidFactory(nodes[i]);
+        }
+    }
+
+    public Tsid create() {
+        // calculate the factory index given the current thread ID
+        final int index = (int) Thread.currentThread().getId() % factories.length;
+        return factories[index].create();
+    }
+}
+```
+```java
+// instantiate an array of 8 UNIQUE node identifiers to be used
+int[] nodes = { 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008 };
+
+// instantiate a less-blocking factory with an array of 8 factories
+LessBlockingFactory factory = new LessBlockingFactory(nodes);
+    
+// use the less-blocking factory
+TSID tsid = factory.create();
 ```
 
 Benchmark
