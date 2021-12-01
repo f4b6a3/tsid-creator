@@ -239,10 +239,6 @@ Get the creation instant of a TSID:
 Instant instant = tsid.getInstant(); // 2020-04-15T22:31:02.458Z
 ```
 
-```java
-// static method
-Instant instant = Tsid.getInstant("0123456789ABC"); // 2020-04-15T22:31:02.458Z
-```
 ---
 
 A key generator that makes substitution easy if necessary:
