@@ -2,16 +2,18 @@
 TSID Creator
 ======================================================
 
-A Java library for generating TSIDs (Time Sortable Identifier).
+This is a Java library for Time Sortable Identifier.
 
-It brings together some ideas from [Twitter's Snowflake](https://github.com/twitter-archive/snowflake/tree/snowflake-2010) and [ULID Spec](https://github.com/ulid/spec).
+It brings together ideas from [Twitter's Snowflake](https://github.com/twitter-archive/snowflake/tree/snowflake-2010) and [ULID Spec](https://github.com/ulid/spec).
 
-*   Generated in lexicographical order;
+In summary:
+
+*   Sorted by generation time;
 *   Can be stored as an integer of 64 bits;
 *   Can be stored as a string of 13 chars;
 *   String format is encoded to [Crockford's base32](https://www.crockford.com/base32.html);
-*   String format is URL safe and case insensitive;
-*   It is shorter than UUID, ULID and KSUID.
+*   String format is URL safe, is case insensitive, and has no hyphens;
+*   Shorter than UUID, ULID and KSUID.
 
 Read [Snowflake ID](https://en.wikipedia.org/wiki/Snowflake_ID) on Wikipedia.
 
@@ -442,10 +444,13 @@ THROUGHPUT (operations/msec)            Mode  Cnt      Score     Error   Units
 --------------------------------------------------------------------------------
 UUID_randomUUID                        thrpt    5   2062,642 ±  34,230  ops/ms
 UUID_randomUUID_toString               thrpt    5   1166,183 ±  16,001  ops/ms
+-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 TsidCreator_getTsid256                 thrpt    5  16075,867 ± 274,681  ops/ms
 TsidCreator_getTsid256_toString        thrpt    5  15379,666 ± 167,178  ops/ms
+-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 TsidCreator_getTsid1024                thrpt    5   4093,735 ±   0,272  ops/ms
 TsidCreator_getTsid1024_toString       thrpt    5   4076,510 ±   2,437  ops/ms
+-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 TsidCreator_getTsid4096                thrpt    5   1024,009 ±   0,252  ops/ms
 TsidCreator_getTsid4096_toString       thrpt    5   1023,653 ±   0,379  ops/ms
 --------------------------------------------------------------------------------
@@ -460,8 +465,13 @@ To execute the benchmark, run `./benchmark/run.sh`.
 Other identifier generators
 ------------------------------------------------------
 
-Check out the other ID generators.
+Check out the other ID generators from the same family:
 
-*   [UUID Creator](https://github.com/f4b6a3/uuid-creator)
-*   [ULID Creator](https://github.com/f4b6a3/ulid-creator)
-*   [KSUID Creator](https://github.com/f4b6a3/ksuid-creator)
+* [UUID Creator](https://github.com/f4b6a3/uuid-creator): Universally Unique Identifiers
+* [ULID Creator](https://github.com/f4b6a3/ulid-creator): Universally Unique Lexicographically Sortable Identifiers
+* [KSUID Creator](https://github.com/f4b6a3/ksuid-creator): K-Sortable Globally Unique Identifiers
+
+License
+------------------------------------------------------
+
+This library is Open Source software released under the [MIT license](https://opensource.org/licenses/MIT).
