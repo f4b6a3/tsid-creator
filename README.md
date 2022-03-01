@@ -15,6 +15,8 @@ In summary:
 *   String format is URL safe, is case insensitive, and has no hyphens;
 *   Shorter than UUID, ULID and KSUID.
 
+This library contains a good amount of [unit tests](https://github.com/f4b6a3/tsid-creator/tree/master/src/test/java/com/github/f4b6a3/tsid). It also has a [micro benchmark](https://github.com/f4b6a3/tsid-creator/tree/master/benchmark) for you to check if the performance is good enough.
+
 Read [Snowflake ID](https://en.wikipedia.org/wiki/Snowflake_ID) on Wikipedia.
 
 How to Use
