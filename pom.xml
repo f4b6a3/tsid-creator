@@ -3,7 +3,7 @@
 
 	<groupId>com.github.f4b6a3</groupId>
 	<artifactId>tsid-creator</artifactId>
-	<version>4.2.0</version>
+	<version>4.2.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>tsid-creator</name>
@@ -45,7 +45,7 @@
 		<url>https://github.com/f4b6a3/tsid-creator</url>
 		<connection>scm:git:ssh://git@github.com/f4b6a3/tsid-creator.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/f4b6a3/tsid-creator.git</developerConnection>
-		<tag>tsid-creator-4.2.0</tag>
+		<tag>tsid-creator-3.0.2</tag>
 	</scm>
 
 	<distributionManagement>
