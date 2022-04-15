@@ -6,7 +6,7 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.Test;
 
@@ -16,17 +16,16 @@ public class TsidTest {
 
 	private static final int TIME_BITS = 42;
 	private static final int RANDOM_BITS = 22;
-	private static final int DEFAULT_LOOP_MAX = 1_000;
+	private static final int LOOP_MAX = 1_000;
 
 	private static final char[] ALPHABET_CROCKFORD = "0123456789ABCDEFGHJKMNPQRSTVWXYZ".toCharArray();
 	private static final char[] ALPHABET_JAVA = "0123456789abcdefghijklmnopqrstuv".toCharArray(); // Long.parseUnsignedLong()
 
 	@Test
 	public void testFromBytes() {
-		Random random = new Random();
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+		for (int i = 0; i < LOOP_MAX; i++) {
 
-			final long number0 = random.nextLong();
+			final long number0 = ThreadLocalRandom.current().nextLong();
 			final ByteBuffer buffer = ByteBuffer.allocate(8);
 			buffer.putLong(number0);
 			byte[] bytes = buffer.array();
@@ -38,10 +37,9 @@ public class TsidTest {
 
 	@Test
 	public void testToBytes() {
-		Random random = new Random();
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+		for (int i = 0; i < LOOP_MAX; i++) {
 
-			final long number = random.nextLong();
+			final long number = ThreadLocalRandom.current().nextLong();
 			final ByteBuffer buffer = ByteBuffer.allocate(8);
 			buffer.putLong(number);
 			byte[] bytes0 = buffer.array();
@@ -54,9 +52,8 @@ public class TsidTest {
 
 	@Test
 	public void testFromString() {
-		Random random = new Random();
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			final long number0 = random.nextLong();
+		for (int i = 0; i < LOOP_MAX; i++) {
+			final long number0 = ThreadLocalRandom.current().nextLong();
 			final String string0 = toString(number0);
 			final long number1 = Tsid.from(string0).toLong();
 			assertEquals(number0, number1);
@@ -65,9 +62,8 @@ public class TsidTest {
 
 	@Test
 	public void testToString() {
-		Random random = new Random();
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			final long number = random.nextLong();
+		for (int i = 0; i < LOOP_MAX; i++) {
+			final long number = ThreadLocalRandom.current().nextLong();
 			final String string0 = toString(number);
 			final String string1 = Tsid.from(number).toString();
 			assertEquals(string0, string1);
@@ -76,9 +72,8 @@ public class TsidTest {
 
 	@Test
 	public void testToLowerCase() {
-		Random random = new Random();
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			final long number = random.nextLong();
+		for (int i = 0; i < LOOP_MAX; i++) {
+			final long number = ThreadLocalRandom.current().nextLong();
 			final String string0 = toString(number).toLowerCase();
 			final String string1 = Tsid.from(number).toLowerCase();
 			assertEquals(string0, string1);
@@ -139,11 +134,41 @@ public class TsidTest {
 
 		long start = System.currentTimeMillis();
 		Tsid tsid = TsidCreator.getTsid1024();
-		long middle = tsid.getInstant().toEpochMilli();
+		long middle = tsid.getUnixMilliseconds();
 		long end = System.currentTimeMillis();
 
 		assertTrue(start <= middle);
-		assertTrue(middle <= end);
+		assertTrue(middle <= end + TsidFactory.CLOCK_DRIFT_TOLERANCE);
+	}
+
+	@Test
+	public void testGetUnixMillisecondsMinimum() {
+
+		// 2020-01-01T00:00:00.000Z
+		long expected = Tsid.TSID_EPOCH;
+
+		long time1 = 0; // the same as 2^42
+		long tsid1 = time1 << TsidTest.RANDOM_BITS;
+		assertEquals(expected, Tsid.from(tsid1).getUnixMilliseconds());
+
+		long time2 = (long) Math.pow(2, 42);
+		long tsid2 = time2 << TsidTest.RANDOM_BITS;
+		assertEquals(expected, Tsid.from(tsid2).getUnixMilliseconds());
+	}
+
+	@Test
+	public void testGetUnixMillisecondsMaximum() {
+
+		// 2159-05-15T07:35:11.103Z
+		long expected = Tsid.TSID_EPOCH + (long) Math.pow(2, 42) - 1;
+
+		long time1 = (long) Math.pow(2, 42) - 1;
+		long tsid1 = time1 << TsidTest.RANDOM_BITS;
+		assertEquals(expected, Tsid.from(tsid1).getUnixMilliseconds());
+
+		long time2 = -1; // the same as 2^42-1
+		long tsid2 = time2 << TsidTest.RANDOM_BITS;
+		assertEquals(expected, Tsid.from(tsid2).getUnixMilliseconds());
 	}
 
 	@Test
@@ -155,14 +180,41 @@ public class TsidTest {
 		Instant end = Instant.now();
 
 		assertTrue(start.toEpochMilli() <= middle.toEpochMilli());
-		assertTrue(middle.toEpochMilli() <= end.toEpochMilli());
+		assertTrue(middle.toEpochMilli() <= end.toEpochMilli() + TsidFactory.CLOCK_DRIFT_TOLERANCE);
+	}
+
+	@Test
+	public void testGetInstantMinimum() {
+
+		Instant expected = Instant.parse("2020-01-01T00:00:00.000Z");
+
+		long time1 = 0; // the same as 2^42
+		long tsid1 = time1 << TsidTest.RANDOM_BITS;
+		assertEquals(expected, Tsid.from(tsid1).getInstant());
+
+		long time2 = (long) Math.pow(2, 42);
+		long tsid2 = time2 << TsidTest.RANDOM_BITS;
+		assertEquals(expected, Tsid.from(tsid2).getInstant());
+	}
+
+	@Test
+	public void testGetInstantMaximum() {
+
+		Instant expected = Instant.parse("2159-05-15T07:35:11.103Z");
+
+		long time1 = (long) Math.pow(2, 42) - 1;
+		long tsid1 = time1 << TsidTest.RANDOM_BITS;
+		assertEquals(expected, Tsid.from(tsid1).getInstant());
+
+		long time2 = -1; // the same as 2^42-1
+		long tsid2 = time2 << TsidTest.RANDOM_BITS;
+		assertEquals(expected, Tsid.from(tsid2).getInstant());
 	}
 
 	@Test
 	public void testGetTime() {
-		Random random = new Random();
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			final long number = random.nextLong();
+		for (int i = 0; i < LOOP_MAX; i++) {
+			final long number = ThreadLocalRandom.current().nextLong();
 			Tsid tsid = Tsid.from(number);
 
 			long time0 = number >>> RANDOM_BITS;
@@ -174,9 +226,8 @@ public class TsidTest {
 
 	@Test
 	public void testGetRandom() {
-		Random random = new Random();
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			final long number = random.nextLong();
+		for (int i = 0; i < LOOP_MAX; i++) {
+			final long number = ThreadLocalRandom.current().nextLong();
 			Tsid tsid = Tsid.from(number);
 
 			long random0 = number << TIME_BITS >>> TIME_BITS;
@@ -233,7 +284,7 @@ public class TsidTest {
 			// Success
 		}
 
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+		for (int i = 0; i < LOOP_MAX; i++) {
 			String string = TsidCreator.getTsid1024().toString();
 			assertTrue(Tsid.isValid(string));
 		}
@@ -294,12 +345,11 @@ public class TsidTest {
 	@Test
 	public void testEquals() {
 
-		Random random = new Random();
 		byte[] bytes = new byte[Tsid.TSID_BYTES];
 
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+		for (int i = 0; i < LOOP_MAX; i++) {
 
-			random.nextBytes(bytes);
+			ThreadLocalRandom.current().nextBytes(bytes);
 			Tsid tsid1 = Tsid.from(bytes);
 			Tsid tsid2 = Tsid.from(bytes);
 			assertEquals(tsid1, tsid2);
@@ -319,15 +369,14 @@ public class TsidTest {
 
 	@Test
 	public void testCompareTo() {
-		Random random = new Random();
 		byte[] bytes = new byte[Tsid.TSID_BYTES];
 
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			random.nextBytes(bytes);
+		for (int i = 0; i < LOOP_MAX; i++) {
+			ThreadLocalRandom.current().nextBytes(bytes);
 			Tsid tsid1 = Tsid.from(bytes);
 			BigInteger number1 = new BigInteger(1, bytes);
 
-			random.nextBytes(bytes);
+			ThreadLocalRandom.current().nextBytes(bytes);
 			Tsid tsid2 = Tsid.from(bytes);
 			Tsid tsid3 = Tsid.from(bytes);
 			BigInteger number2 = new BigInteger(1, bytes);
@@ -347,10 +396,9 @@ public class TsidTest {
 
 	@Test
 	public void testHashCode() {
-		Random random = new Random();
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+		for (int i = 0; i < LOOP_MAX; i++) {
 
-			long number = random.nextLong();
+			long number = ThreadLocalRandom.current().nextLong();
 			Tsid tsid1 = Tsid.from(number);
 			Tsid tsid2 = Tsid.from(number);
 

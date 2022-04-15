@@ -2,7 +2,7 @@ package com.github.f4b6a3.tsid.internal;
 
 import static org.junit.Assert.*;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -11,8 +11,6 @@ import org.junit.Test;
 import com.github.f4b6a3.tsid.internal.SettingsUtil;
 
 public class SettingsUtilTest {
-
-	Random random = new Random();
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -27,7 +25,7 @@ public class SettingsUtilTest {
 	@Test
 	public void testSetNodeIdentifier() {
 		for (int i = 0; i < 100; i++) {
-			int number = this.random.nextInt();
+			int number = ThreadLocalRandom.current().nextInt();
 			SettingsUtil.setNode(number);
 			long result = SettingsUtil.getNode();
 			assertEquals(number, result);
@@ -37,7 +35,7 @@ public class SettingsUtilTest {
 	@Test
 	public void testSetProperty() {
 		for (int i = 0; i < 100; i++) {
-			long number = random.nextInt();
+			long number = ThreadLocalRandom.current().nextInt();
 			String string = Long.toString(number);
 			SettingsUtil.setProperty(SettingsUtil.PROPERTY_NODE, string);
 			long result = SettingsUtil.getNode();

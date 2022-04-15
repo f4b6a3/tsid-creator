@@ -3,12 +3,6 @@ package com.github.f4b6a3.tsid;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-import com.github.f4b6a3.tsid.factory.TsidFactory00001Test;
-import com.github.f4b6a3.tsid.factory.TsidFactory00064Test;
-import com.github.f4b6a3.tsid.factory.TsidFactory00256Test;
-import com.github.f4b6a3.tsid.factory.TsidFactory01024Test;
-import com.github.f4b6a3.tsid.factory.TsidFactory04096Test;
-import com.github.f4b6a3.tsid.factory.TsidFactory16384Test;
 import com.github.f4b6a3.tsid.internal.SettingsUtilTest;
 
 @RunWith(Suite.class)

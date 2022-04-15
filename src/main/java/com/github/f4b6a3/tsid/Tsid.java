@@ -304,7 +304,7 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 * @return {@link Instant}
 	 */
 	public Instant getInstant() {
-		return Instant.ofEpochMilli(this.getTime() + TSID_EPOCH);
+		return Instant.ofEpochMilli(getUnixMilliseconds());
 	}
 
 	/**
@@ -316,7 +316,30 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 * @return {@link Instant}
 	 */
 	public Instant getInstant(final Instant customEpoch) {
-		return Instant.ofEpochMilli(this.getTime() + customEpoch.toEpochMilli());
+		return Instant.ofEpochMilli(getUnixMilliseconds(customEpoch.toEpochMilli()));
+	}
+
+	/**
+	 * Returns the time of creation in milliseconds since 1970-01-01.
+	 * 
+	 * The time of creation is extracted from the time component.
+	 * 
+	 * @return the number of milliseconds since 1970-01-01
+	 */
+	public long getUnixMilliseconds() {
+		return this.getTime() + TSID_EPOCH;
+	}
+
+	/**
+	 * Returns the time of creation in milliseconds since 1970-01-01.
+	 * 
+	 * The time of creation is extracted from the time component.
+	 * 
+	 * @param customEpoch the custom epoch in milliseconds since 1970-01-01
+	 * @return the number of milliseconds since 1970-01-01
+	 */
+	public long getUnixMilliseconds(final long customEpoch) {
+		return this.getTime() + customEpoch;
 	}
 
 	/**
@@ -326,7 +349,7 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 * 
 	 * @return a number of milliseconds.
 	 */
-	public long getTime() {
+	protected long getTime() {
 		return this.number >>> RANDOM_BITS;
 	}
 
@@ -337,7 +360,7 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 * 
 	 * @return a number
 	 */
-	public long getRandom() {
+	protected long getRandom() {
 		return this.number & RANDOM_MASK;
 	}
 

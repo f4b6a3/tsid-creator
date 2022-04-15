@@ -53,7 +53,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>tsid-creator</artifactId>
-  <version>4.1.4</version>
+  <version>4.2.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator).
@@ -442,25 +442,25 @@ This section shows benchmarks comparing `TsidCreator` to `java.util.UUID`.
 
 ```
 --------------------------------------------------------------------------------
-THROUGHPUT (operations/msec)            Mode  Cnt      Score     Error   Units
+THROUGHPUT (operations/msec)            Mode  Cnt      Score      Error   Units
 --------------------------------------------------------------------------------
-UUID_randomUUID                        thrpt    5   2062,642 ±  34,230  ops/ms
-UUID_randomUUID_toString               thrpt    5   1166,183 ±  16,001  ops/ms
+UUID_randomUUID                        thrpt    5   1553,462 ±   11,498  ops/ms
+UUID_randomUUID_toString               thrpt    5   1494,101 ±   68,152  ops/ms
 -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-TsidCreator_getTsid256                 thrpt    5  16075,867 ± 274,681  ops/ms
-TsidCreator_getTsid256_toString        thrpt    5  15379,666 ± 167,178  ops/ms
+TsidCreator_getTsid256                 thrpt    5  30129,077 ± 1662,864  ops/ms
+TsidCreator_getTsid256_toString        thrpt    5  20767,554 ± 1805,132  ops/ms
 -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-TsidCreator_getTsid1024                thrpt    5   4093,735 ±   0,272  ops/ms
-TsidCreator_getTsid1024_toString       thrpt    5   4076,510 ±   2,437  ops/ms
+TsidCreator_getTsid1024                thrpt    5  35184,678 ± 1169,413  ops/ms
+TsidCreator_getTsid1024_toString       thrpt    5  21490,361 ± 1034,860  ops/ms
 -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-TsidCreator_getTsid4096                thrpt    5   1024,009 ±   0,252  ops/ms
-TsidCreator_getTsid4096_toString       thrpt    5   1023,653 ±   0,379  ops/ms
+TsidCreator_getTsid4096                thrpt    5  30022,974 ± 1788,476  ops/ms
+TsidCreator_getTsid4096_toString       thrpt    5  21194,520 ± 1247,149  ops/ms
 --------------------------------------------------------------------------------
-Total time: 00:10:40
+Total time: 00:10:41
 --------------------------------------------------------------------------------
 ```
 
-System: JVM 8, Ubuntu 20.04, CPU i5-3330, 8G RAM.
+System: JVM 11, Ubuntu 20.04, CPU i7, 16G RAM.
 
 To execute the benchmark, run `./benchmark/run.sh`.
 

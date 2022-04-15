@@ -25,6 +25,7 @@
 package com.github.f4b6a3.tsid;
 
 import java.security.SecureRandom;
+import java.time.Clock;
 import java.time.Instant;
 import java.util.Random;
 import java.util.function.IntFunction;
@@ -73,10 +74,8 @@ import static com.github.f4b6a3.tsid.Tsid.RANDOM_MASK;
  */
 public final class TsidFactory {
 
-	private long lastTime = -1;
-
-	private int counter;
-	private int counterMax;
+	private int counter = 0;
+	private long lastTime = 0;
 
 	private final int node;
 
@@ -94,6 +93,14 @@ public final class TsidFactory {
 	public static final int NODE_BITS_256 = 8;
 	public static final int NODE_BITS_1024 = 10;
 	public static final int NODE_BITS_4096 = 12;
+
+	// Used to preserve monotonicity when the system clock is
+	// adjusted by NTP after a small clock drift or when the
+	// system clock jumps back by 1 second due to leap second.
+	protected static final int CLOCK_DRIFT_TOLERANCE = 10_000;
+
+	protected final Clock clock; // for tests
+	protected static final Clock DEFAULT_CLOCK = Clock.systemUTC();
 
 	/**
 	 * It builds a generator with a RANDOM node identifier from 0 to 1,023.
@@ -131,6 +138,7 @@ public final class TsidFactory {
 		this.nodeBits = builder.getNodeBits();
 		this.customEpoch = builder.getCustomEpoch();
 		this.randomFunction = builder.getRandomFunction();
+		this.clock = builder.getClock();
 
 		// setup constants that depend on node bits
 		this.counterBits = RANDOM_BITS - nodeBits;
@@ -233,48 +241,38 @@ public final class TsidFactory {
 	 */
 	private synchronized long getTime() {
 
-		long time = System.currentTimeMillis();
+		long time = clock.millis();
 
-		if (time == this.lastTime) {
-			if (++this.counter >= this.counterMax) {
-				time = nextTime(time);
-				this.reset();
-			}
+		// Check if the current time is the same as the previous time or has moved
+		// backwards after a small system clock adjustment or after a leap second.
+		// Drift tolerance = (previous_time - 10s) < current_time <= previous_time
+		if ((time > this.lastTime - CLOCK_DRIFT_TOLERANCE) && (time <= this.lastTime)) {
+			this.counter++;
+			// Carry is 1 if an overflow occurs after ++.
+			int carry = this.counter >>> this.counterBits;
+			this.counter = this.counter & this.counterMask;
+			time = this.lastTime + carry; // increment time
 		} else {
-			this.reset();
+			// If the system clock has advanced as expected,
+			// simply reset the counter to a new random value.
+			this.counter = this.getRandomCounter();
 		}
 
+		// save current time
 		this.lastTime = time;
+
+		// adjust to the custom epoch
 		return time - this.customEpoch;
 	}
 
 	/**
-	 * Stall the factory until the system clock catches up.
-	 */
-	private synchronized long nextTime(long time) {
-		while (time == this.lastTime) {
-			time = System.currentTimeMillis();
-		}
-		return time;
-	}
-
-	/**
-	 * Resets the internal counter.
-	 */
-	private synchronized void reset() {
-		// update the counter with a random value
-		this.counter = this.getRandomCounter();
-
-		// update the maximum increment value
-		this.counterMax = this.counter | (0x00000001 << this.counterBits);
-	}
-
-	/**
-	 * Returns a random counter value from 0 to 0x3fffff (2^22 = 4,194,304).
+	 * Returns a random counter value from 0 to 0x3fffff (2^22-1 = 4,194,303).
 	 * 
-	 * The counter maximum value depends on the node identifier bits.
+	 * The counter maximum value depends on the node identifier bits. For example,
+	 * if the node identifier has 10 bits, the counter has 12 bits.
 	 * 
-	 * The counter is just incremented if the random function returns NULL or EMPTY.
+	 * If the random function returns NULL or EMPTY, the counter is simply
+	 * incremented and returned.
 	 * 
 	 * @return a number
 	 */
@@ -282,22 +280,20 @@ public final class TsidFactory {
 
 		final byte[] bytes = randomFunction.apply(this.randomBytes);
 
-		if (bytes != null) {
-			switch (bytes.length) {
-			case 0:
-				break; // EMPTY!
-			case 1:
-				return (bytes[0] & 0xff) & this.counterMask;
-			case 2:
-				return (((bytes[0] & 0xff) << 8) | (bytes[1] & 0xff)) & this.counterMask;
-			default:
-				return (((bytes[0] & 0x3f) << 16) | ((bytes[1] & 0xff) << 8) | (bytes[2] & 0xff)) & this.counterMask;
-			}
+		if (bytes == null || bytes.length == 0) {
+			// if the function return is NULL or EMPTY:
+			// simply increment and return the counter
+			return ++this.counter & this.counterMask;
 		}
 
-		// NULL or EMPTY:
-		// ignore function and increment counter
-		return ++this.counter & this.counterMask;
+		switch (bytes.length) {
+		case 1:
+			return (bytes[0] & 0xff) & this.counterMask;
+		case 2:
+			return (((bytes[0] & 0xff) << 8) | (bytes[1] & 0xff)) & this.counterMask;
+		default:
+			return (((bytes[0] & 0xff) << 16) | ((bytes[1] & 0xff) << 8) | (bytes[2] & 0xff)) & this.counterMask;
+		}
 	}
 
 	/**
@@ -320,6 +316,7 @@ public final class TsidFactory {
 		private Integer nodeBits;
 		private Long customEpoch;
 		private IntFunction<byte[]> randomFunction;
+		private Clock clock;
 
 		/**
 		 * Set the node identifier.
@@ -403,6 +400,17 @@ public final class TsidFactory {
 			return this;
 		}
 
+		/**
+		 * Set the clock to be used in tests.
+		 * 
+		 * @param clock a clock
+		 * @return {@link Builder}
+		 */
+		public Builder withClock(Clock clock) {
+			this.clock = clock;
+			return this;
+		}
+
 		public Integer getNode() {
 
 			// 2^22 - 1 = 4,194,303
@@ -446,6 +454,13 @@ public final class TsidFactory {
 				this.withRandom(new SecureRandom());
 			}
 			return this.randomFunction;
+		}
+
+		public Clock getClock() {
+			if (this.clock == null) {
+				this.withClock(DEFAULT_CLOCK);
+			}
+			return this.clock;
 		}
 
 		/**
