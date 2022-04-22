@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2020-2021 Fabio Lima
+ * Copyright (c) 2020-2022 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -74,8 +74,8 @@ import static com.github.f4b6a3.tsid.Tsid.RANDOM_MASK;
  */
 public final class TsidFactory {
 
-	private int counter = 0;
-	private long lastTime = 0;
+	private int counter;
+	private long lastTime;
 
 	private final int node;
 
@@ -148,8 +148,12 @@ public final class TsidFactory {
 		// setup how many bytes to get from the random function
 		this.randomBytes = ((this.counterBits - 1) / 8) + 1;
 
-		// finally, setup the node identifier
+		// setup the node identifier
 		this.node = builder.getNode() & nodeMask;
+
+		// finally, initialize internal state
+		this.counter = getRandomCounter();
+		this.lastTime = DEFAULT_CLOCK.millis();
 	}
 
 	/**

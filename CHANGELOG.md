@@ -6,9 +6,13 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased
 
+## [4.2.1] - 2021-04-21
+
+Handle clock drift #14
+
 ## [4.2.0] - 2021-04-14
 
-feat: handle clock drift #14
+Handle clock drift #14
 
 ## [4.1.4] - 2021-11-28
 
@@ -342,7 +346,8 @@ Project created as an alternative Java implementation for Twitter's Snowflake.
 -   Added `LICENSE`
 -   Added test cases
 
-[unreleased]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.2.0...HEAD
+[unreleased]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.2.1...HEAD
+[4.2.1]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.2.0...tsid-creator-4.2.1
 [4.2.0]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.1.4...tsid-creator-4.2.0
 [4.1.4]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.1.3...tsid-creator-4.1.4
 [4.1.3]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.1.2...tsid-creator-4.1.3

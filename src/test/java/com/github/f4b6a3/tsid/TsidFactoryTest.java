@@ -175,10 +175,10 @@ public class TsidFactoryTest {
 
 		// test it 5 times, waiting 1ms each time
 		for (int i = 0; i < 5; i++) {
+			Thread.sleep(1); // wait 1ms
 			long expected = 0;
 			long counter = factory.create().getRandom() & mask;
 			assertEquals("The counter should be equal to ZERO when the ms changes", expected, counter);
-			Thread.sleep(1); // wait 1ms
 		}
 	}
 
@@ -195,10 +195,10 @@ public class TsidFactoryTest {
 
 		// test it 5 times, waiting 1ms each time
 		for (int i = 0; i < 5; i++) {
+			Thread.sleep(1); // wait 1ms
 			long expected = fixed[2];
 			long counter = factory.create().getRandom() & mask;
 			assertEquals("The counter should be equal to a fixed value when the ms changes", expected, counter);
-			Thread.sleep(1); // wait 1ms
 		}
 	}
 
