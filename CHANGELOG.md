@@ -6,11 +6,15 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased
 
-## [4.2.1] - 2021-04-21
+## [5.0.0] - 2022-07-09
+
+Add support for RandomGenerator in Java 17. #15
+
+## [4.2.1] - 2022-04-21
 
 Handle clock drift #14
 
-## [4.2.0] - 2021-04-14
+## [4.2.0] - 2022-04-14
 
 Handle clock drift #14
 
@@ -20,7 +24,7 @@ Regular maintenance.
 
 ## [4.1.3] - 2021-11-20
 
-Increment the counter when the random function returns null or empty.
+Increment the counter when the random function returns null or empty. (undone in v5.0.0)
 
 ## [4.1.2] - 2021-11-19
 
@@ -346,7 +350,8 @@ Project created as an alternative Java implementation for Twitter's Snowflake.
 -   Added `LICENSE`
 -   Added test cases
 
-[unreleased]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.2.1...HEAD
+[unreleased]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.0.0...HEAD
+[5.0.0]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.2.1...tsid-creator-5.0.0
 [4.2.1]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.2.0...tsid-creator-4.2.1
 [4.2.0]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.1.4...tsid-creator-4.2.0
 [4.1.4]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.1.3...tsid-creator-4.1.4

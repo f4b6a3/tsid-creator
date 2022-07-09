@@ -2,34 +2,23 @@ package com.github.f4b6a3.tsid;
 
 import static org.junit.Assert.*;
 
+import java.nio.ByteBuffer;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.Arrays;
+import java.util.Random;
+import java.util.SplittableRandom;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.IntFunction;
+import java.util.function.IntSupplier;
 
 import org.junit.Test;
-
-import com.github.f4b6a3.tsid.Tsid;
 
 public class TsidFactoryTest {
 
 	private static final int LOOP_MAX = 1_000;
-
-	@Test
-	public void testWithNodeBits() {
-		final int randomBits = 22;
-		// test all allowed values of node bits
-		for (int i = 0; i <= 20; i++) {
-			final int nodeBits = i;
-			final int counterBits = randomBits - nodeBits;
-			final int node = (1 << nodeBits) - 1; // max: 2^nodeBits - 1
-			Tsid tsid = TsidFactory.builder().withNodeBits(nodeBits).withNode(node).build().create();
-			int actual = (int) tsid.getRandom() >>> counterBits;
-			assertEquals(node, actual);
-		}
-	}
 
 	@Test
 	public void testGetInstant() {
@@ -122,44 +111,114 @@ public class TsidFactoryTest {
 	}
 
 	@Test
-	public void testWithRandomFunctionReturningNull() throws InterruptedException {
-
-		// a random function that returns NULL
-		IntFunction<byte[]> randomFunction = (x) -> null;
-
-		TsidFactory factory = TsidFactory.builder().withRandomFunction(randomFunction).build();
-
-		final long mask = 0b111111111111; // counter bits: 12
-		long lastCounter = factory.create().getRandom() & mask;
-
-		// test it 5 times, waiting 1ms each time
-		for (int i = 0; i < 5; i++) {
-			long expected = (lastCounter + 1) & mask;
-			long counter = factory.create().getRandom() & mask;
-			assertEquals("The counter should be incremented when the ms changes", expected, counter);
-			lastCounter = counter;
-			Thread.sleep(1); // wait 1ms
+	public void testWithNode() {
+		{
+			for (int i = 0; i <= 20; i++) {
+				int bits = TsidFactory.NODE_BITS_1024;
+				int shif = Tsid.RANDOM_BITS - bits;
+				int mask = (1 << bits - 1);
+				int node = ThreadLocalRandom.current().nextInt() & mask;
+				TsidFactory factory = new TsidFactory(node);
+				assertEquals(node, (factory.create().getRandom() >>> shif) & mask);
+			}
+		}
+		{
+			for (int i = 0; i <= 20; i++) {
+				int bits = TsidFactory.NODE_BITS_1024;
+				int shif = Tsid.RANDOM_BITS - bits;
+				int mask = (1 << bits - 1);
+				int node = ThreadLocalRandom.current().nextInt() & mask;
+				TsidFactory factory = TsidFactory.builder().withNode(node).build();
+				assertEquals(node, (factory.create().getRandom() >>> shif) & mask);
+			}
+		}
+		{
+			for (int i = 0; i <= 20; i++) {
+				int bits = TsidFactory.NODE_BITS_256;
+				int shif = Tsid.RANDOM_BITS - bits;
+				int mask = (1 << bits - 1);
+				int node = ThreadLocalRandom.current().nextInt() & mask;
+				TsidFactory factory = TsidFactory.newInstance256(node);
+				assertEquals(node, (factory.create().getRandom() >>> shif) & mask);
+			}
+		}
+		{
+			for (int i = 0; i <= 20; i++) {
+				int bits = TsidFactory.NODE_BITS_1024;
+				int shif = Tsid.RANDOM_BITS - bits;
+				int mask = (1 << bits - 1);
+				int node = ThreadLocalRandom.current().nextInt() & mask;
+				TsidFactory factory = TsidFactory.newInstance1024(node);
+				assertEquals(node, (factory.create().getRandom() >>> shif) & mask);
+			}
+		}
+		{
+			for (int i = 0; i <= 20; i++) {
+				int bits = TsidFactory.NODE_BITS_4096;
+				int shif = Tsid.RANDOM_BITS - bits;
+				int mask = (1 << bits - 1);
+				int node = ThreadLocalRandom.current().nextInt() & mask;
+				TsidFactory factory = TsidFactory.newInstance4096(node);
+				assertEquals(node, (factory.create().getRandom() >>> shif) & mask);
+			}
 		}
 	}
 
 	@Test
-	public void testWithRandomFunctionReturningEmpty() throws InterruptedException {
+	public void testWithNodeBits() {
+		final int randomBits = 22;
+		// test all allowed values of node bits
+		for (int i = 0; i <= 20; i++) {
+			final int nodeBits = i;
+			final int counterBits = randomBits - nodeBits;
+			final int node = (1 << nodeBits) - 1; // max: 2^nodeBits - 1
+			Tsid tsid = TsidFactory.builder().withNodeBits(nodeBits).withNode(node).build().create();
+			int actual = (int) tsid.getRandom() >>> counterBits;
+			assertEquals(node, actual);
+		}
+	}
 
-		// a random function that returns EMPTY (length = 0)
-		IntFunction<byte[]> randomFunction = (x) -> new byte[0];
+	@Test
+	public void testWithRandom() {
+		Random random = new Random();
+		TsidFactory factory = TsidFactory.builder().withRandom(random).build();
+		assertNotNull(factory.create());
+	}
 
-		TsidFactory factory = TsidFactory.builder().withRandomFunction(randomFunction).build();
+	@Test
+	public void testWithRandomNull() {
+		TsidFactory factory = TsidFactory.builder().withRandom(null).build();
+		assertNotNull(factory.create());
+	}
 
-		final long mask = 0b111111111111; // counter bits: 12
-		long lastCounter = factory.create().getRandom() & mask;
+	@Test
+	public void testWithRandomFunction() {
+		{
+			SplittableRandom random = new SplittableRandom();
+			IntSupplier function = () -> random.nextInt();
+			TsidFactory factory = TsidFactory.builder().withRandomFunction(function).build();
+			assertNotNull(factory.create());
+		}
+		{
+			IntFunction<byte[]> function = (length) -> {
+				byte[] bytes = new byte[length];
+				ThreadLocalRandom.current().nextBytes(bytes);
+				return bytes;
+			};
+			TsidFactory factory = TsidFactory.builder().withRandomFunction(function).build();
+			assertNotNull(factory.create());
+		}
+	}
 
-		// test it 5 times, waiting 1ms each time
-		for (int i = 0; i < 5; i++) {
-			long expected = (lastCounter + 1) & mask;
-			long counter = factory.create().getRandom() & mask;
-			assertEquals("The counter should be incremented when the ms changes", expected, counter);
-			lastCounter = counter;
-			Thread.sleep(1); // wait 1ms
+	@Test
+	public void testWithRandomFunctionNull() {
+		{
+			TsidFactory factory = TsidFactory.builder().withRandomFunction((IntSupplier) null).build();
+			assertNotNull(factory.create());
+		}
+		{
+			TsidFactory factory = TsidFactory.builder().withRandomFunction((IntFunction<byte[]>) null).build();
+			assertNotNull(factory.create());
 		}
 	}
 
@@ -186,7 +245,7 @@ public class TsidFactoryTest {
 	public void testWithRandomFunctionReturningNonZero() throws InterruptedException {
 
 		// a random function that returns a fixed array
-		byte[] fixed = { 0, 0, 127 };
+		byte[] fixed = { 0, 0, 0, 0, 0, 0, 0, 127 };
 		IntFunction<byte[]> randomFunction = (x) -> fixed;
 
 		TsidFactory factory = TsidFactory.builder().withRandomFunction(randomFunction).build();
@@ -207,7 +266,7 @@ public class TsidFactoryTest {
 
 		long diff = TsidFactory.CLOCK_DRIFT_TOLERANCE;
 		long time = Instant.parse("2021-12-31T23:59:59.000Z").toEpochMilli();
-		long times[] = { time, time + 0, time + 1, time + 2, time + 3 - diff, time + 4 - diff, time + 5 };
+		long times[] = { -1, time, time + 0, time + 1, time + 2, time + 3 - diff, time + 4 - diff, time + 5 };
 
 		Clock clock = new Clock() {
 			private int i;
@@ -293,5 +352,132 @@ public class TsidFactoryTest {
 		long ms2 = factory.create().getUnixMilliseconds(); // leap second
 
 		assertEquals(ms1, ms2); // LEAP SECOND! DON'T MOVE BACKWARDS!
+	}
+
+	@Test
+	public void testByteRandomNextInt() {
+
+		for (int i = 0; i < 10; i++) {
+			byte[] bytes = new byte[Integer.BYTES];
+			(new Random()).nextBytes(bytes);
+			int number = ByteBuffer.wrap(bytes).getInt();
+			TsidFactory.IRandom random = new TsidFactory.ByteRandom((x) -> bytes);
+			assertEquals(number, random.nextInt());
+		}
+
+		for (int i = 0; i < 10; i++) {
+
+			int ints = 10;
+			int size = Integer.BYTES * ints;
+
+			byte[] bytes = new byte[size];
+			(new Random()).nextBytes(bytes);
+			ByteBuffer buffer1 = ByteBuffer.wrap(bytes);
+			ByteBuffer buffer2 = ByteBuffer.wrap(bytes);
+
+			TsidFactory.IRandom random = new TsidFactory.ByteRandom((x) -> {
+				byte[] octects = new byte[x];
+				buffer1.get(octects);
+				return octects;
+			});
+
+			for (int j = 0; j < ints; j++) {
+				assertEquals(buffer2.getInt(), random.nextInt());
+			}
+		}
+	}
+
+	@Test
+	public void testByteRandomNextBytes() {
+
+		for (int i = 0; i < 10; i++) {
+			byte[] bytes = new byte[Integer.BYTES];
+			(new Random()).nextBytes(bytes);
+			TsidFactory.IRandom random = new TsidFactory.ByteRandom((x) -> bytes);
+			assertEquals(Arrays.toString(bytes), Arrays.toString(random.nextBytes(Integer.BYTES)));
+		}
+
+		for (int i = 0; i < 10; i++) {
+
+			int ints = 10;
+			int size = Integer.BYTES * ints;
+
+			byte[] bytes = new byte[size];
+			(new Random()).nextBytes(bytes);
+			ByteBuffer buffer1 = ByteBuffer.wrap(bytes);
+			ByteBuffer buffer2 = ByteBuffer.wrap(bytes);
+
+			TsidFactory.IRandom random = new TsidFactory.ByteRandom((x) -> {
+				byte[] octects = new byte[x];
+				buffer1.get(octects);
+				return octects;
+			});
+
+			for (int j = 0; j < ints; j++) {
+				byte[] octects = new byte[Integer.BYTES];
+				buffer2.get(octects);
+				assertEquals(Arrays.toString(octects), Arrays.toString(random.nextBytes(Integer.BYTES)));
+			}
+		}
+	}
+
+	@Test
+	public void testLogRandomNextInt() {
+
+		for (int i = 0; i < 10; i++) {
+			byte[] bytes = new byte[Integer.BYTES];
+			(new Random()).nextBytes(bytes);
+			int number = ByteBuffer.wrap(bytes).getInt();
+			TsidFactory.IRandom random = new TsidFactory.IntRandom(() -> number);
+			assertEquals(number, random.nextInt());
+		}
+
+		for (int i = 0; i < 10; i++) {
+
+			int ints = 10;
+			int size = Integer.BYTES * ints;
+
+			byte[] bytes = new byte[size];
+			(new Random()).nextBytes(bytes);
+			ByteBuffer buffer1 = ByteBuffer.wrap(bytes);
+			ByteBuffer buffer2 = ByteBuffer.wrap(bytes);
+
+			TsidFactory.IRandom random = new TsidFactory.IntRandom(() -> buffer1.getInt());
+
+			for (int j = 0; j < ints; j++) {
+				assertEquals(buffer2.getInt(), random.nextInt());
+			}
+		}
+	}
+
+	@Test
+	public void testLogRandomNextBytes() {
+
+		for (int i = 0; i < 10; i++) {
+			byte[] bytes = new byte[Integer.BYTES];
+			(new Random()).nextBytes(bytes);
+			int number = ByteBuffer.wrap(bytes).getInt();
+			TsidFactory.IRandom random = new TsidFactory.IntRandom(() -> number);
+			assertEquals(Arrays.toString(bytes), Arrays.toString(random.nextBytes(Integer.BYTES)));
+		}
+
+		for (int i = 0; i < 10; i++) {
+
+			int ints = 10;
+			int size = Integer.BYTES * ints;
+
+			byte[] bytes = new byte[size];
+			(new Random()).nextBytes(bytes);
+			ByteBuffer buffer1 = ByteBuffer.wrap(bytes);
+			ByteBuffer buffer2 = ByteBuffer.wrap(bytes);
+
+			TsidFactory.IRandom random = new TsidFactory.IntRandom(() -> buffer1.getInt());
+
+			for (int j = 0; j < ints; j++) {
+				byte[] octects = new byte[Integer.BYTES];
+				buffer2.get(octects);
+				assertEquals(Arrays.toString(octects), Arrays.toString(random.nextBytes(Integer.BYTES)));
+			}
+		}
 	}
 }

@@ -5,8 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.tsid.TsidFactory;
-
 public class TsidFactory00256Test extends TsidFactory00000Test {
 
 	private static final int NODE_BITS = 8;

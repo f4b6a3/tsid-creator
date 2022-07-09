@@ -53,7 +53,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>tsid-creator</artifactId>
-  <version>4.2.1</version>
+  <version>5.0.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator).
@@ -316,7 +316,37 @@ Tsid tsid = factory.create();
 
 ---
 
-A `TsidFactory` with `ThreadLocalRandom` inside of an `IntFunction<byte[]>`:
+A `TsidFactory` with `SplittableRandom`:
+
+```java
+// use a random function that returns an int value
+SplittableRandom random = new SplittableRandom();
+TsidFactory factory = TsidFactory.builder()
+    .withRandomFunction(() -> random.nextInt())
+    .build();
+
+// use the factory
+Tsid tsid = factory.create();
+```
+
+---
+
+A `TsidFactory` with `RandomGenerator` (JDK 17+):
+
+```java
+// use a random function that returns an int value
+RandomGenerator random = RandomGenerator.getDefault();
+TsidFactory factory = TsidFactory.builder()
+    .withRandomFunction(() -> random.nextInt())
+    .build();
+
+// use the factory
+Tsid tsid = factory.create();
+```
+
+---
+
+A `TsidFactory` with `ThreadLocalRandom`:
 
 ```java
 // use a random function that returns an array of bytes with a given length
@@ -329,52 +359,6 @@ TsidFactory factory = TsidFactory.builder()
 
 // use the factory
 Tsid tsid = factory.create();
-```
-
----
-
-A less-blocking factory that wraps an array of factories to generate more than 4 million TSIDs per second:
-
-```java
-package com.example;
-
-import com.github.f4b6a3.tsid.Tsid;
-import com.github.f4b6a3.tsid.TsidFactory;
-
-/**
- * A less-blocking factory that wraps an array of factories.
- * 
- * It can be used to generate TSIDs with less thread contention.
- * 
- * It can generate more than 4 million TSIDs per second.
- */
-public class LessBlockingFactory {
-
-    private final TsidFactory[] factories;
-
-    public LessBlockingFactory(int[] nodes) {
-        factories = new TsidFactory[nodes.length];
-        for (int i = 0; i < factories.length; i++) {
-            factories[i] = new TsidFactory(nodes[i]);
-        }
-    }
-
-    public Tsid create() {
-        // calculate the factory index given the current thread ID
-        final int index = (int) Thread.currentThread().getId() % factories.length;
-        return factories[index].create();
-    }
-}
-```
-```java
-// instantiate an array of 8 UNIQUE node identifiers to be used
-int[] nodes = { 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008 };
-
-// instantiate a less-blocking factory with an array of 8 factories
-LessBlockingFactory factory = new LessBlockingFactory(nodes);
-    
-// use the less-blocking factory
-TSID tsid = factory.create();
 ```
 
 ---
@@ -418,13 +402,8 @@ int node = (worker << 5 | process); // max: 2^10-1 = 1023
 // Discord Epoch starts in the first millisecond of 2015
 Instant customEpoch = Instant.parse("2015-01-01T00:00:00.000Z");
 
-// a function that returns NULL, making the factory to
-// INCREMENT the counter when the millisecond changes
-IntFunction<byte[]> randomFunction = (x) -> null;
-
 // a factory that returns TSIDs similar to Discord Snowflakes
 TsidFactory factory = TsidFactory.builder()
-		.withRandomFunction(randomFunction)
 		.withCustomEpoch(customEpoch)
 		.withNode(node)
 		.build();

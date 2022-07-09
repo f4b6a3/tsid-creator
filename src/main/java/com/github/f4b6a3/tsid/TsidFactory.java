@@ -29,6 +29,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.Random;
 import java.util.function.IntFunction;
+import java.util.function.IntSupplier;
 
 import com.github.f4b6a3.tsid.internal.SettingsUtil;
 
@@ -85,10 +86,11 @@ public final class TsidFactory {
 	private final int nodeMask;
 	private final int counterMask;
 
+	private final Clock clock;
 	private final long customEpoch;
 
+	private final IRandom random;
 	private final int randomBytes;
-	private final IntFunction<byte[]> randomFunction;
 
 	public static final int NODE_BITS_256 = 8;
 	public static final int NODE_BITS_1024 = 10;
@@ -98,9 +100,6 @@ public final class TsidFactory {
 	// adjusted by NTP after a small clock drift or when the
 	// system clock jumps back by 1 second due to leap second.
 	protected static final int CLOCK_DRIFT_TOLERANCE = 10_000;
-
-	protected final Clock clock; // for tests
-	protected static final Clock DEFAULT_CLOCK = Clock.systemUTC();
 
 	/**
 	 * It builds a generator with a RANDOM node identifier from 0 to 1,023.
@@ -137,7 +136,7 @@ public final class TsidFactory {
 		// setup node bits, custom epoch and random function
 		this.nodeBits = builder.getNodeBits();
 		this.customEpoch = builder.getCustomEpoch();
-		this.randomFunction = builder.getRandomFunction();
+		this.random = builder.getRandom();
 		this.clock = builder.getClock();
 
 		// setup constants that depend on node bits
@@ -152,8 +151,8 @@ public final class TsidFactory {
 		this.node = builder.getNode() & nodeMask;
 
 		// finally, initialize internal state
+		this.lastTime = clock.millis();
 		this.counter = getRandomCounter();
-		this.lastTime = DEFAULT_CLOCK.millis();
 	}
 
 	/**
@@ -275,28 +274,25 @@ public final class TsidFactory {
 	 * The counter maximum value depends on the node identifier bits. For example,
 	 * if the node identifier has 10 bits, the counter has 12 bits.
 	 * 
-	 * If the random function returns NULL or EMPTY, the counter is simply
-	 * incremented and returned.
-	 * 
 	 * @return a number
 	 */
 	private synchronized int getRandomCounter() {
 
-		final byte[] bytes = randomFunction.apply(this.randomBytes);
+		if (random instanceof ByteRandom) {
 
-		if (bytes == null || bytes.length == 0) {
-			// if the function return is NULL or EMPTY:
-			// simply increment and return the counter
-			return ++this.counter & this.counterMask;
-		}
+			final byte[] bytes = random.nextBytes(this.randomBytes);
 
-		switch (bytes.length) {
-		case 1:
-			return (bytes[0] & 0xff) & this.counterMask;
-		case 2:
-			return (((bytes[0] & 0xff) << 8) | (bytes[1] & 0xff)) & this.counterMask;
-		default:
-			return (((bytes[0] & 0xff) << 16) | ((bytes[1] & 0xff) << 8) | (bytes[2] & 0xff)) & this.counterMask;
+			switch (bytes.length) {
+			case 1:
+				return (bytes[0] & 0xff) & this.counterMask;
+			case 2:
+				return (((bytes[0] & 0xff) << 8) | (bytes[1] & 0xff)) & this.counterMask;
+			default:
+				return (((bytes[0] & 0xff) << 16) | ((bytes[1] & 0xff) << 8) | (bytes[2] & 0xff)) & this.counterMask;
+			}
+
+		} else {
+			return random.nextInt() & this.counterMask;
 		}
 	}
 
@@ -319,7 +315,7 @@ public final class TsidFactory {
 		private Integer node;
 		private Integer nodeBits;
 		private Long customEpoch;
-		private IntFunction<byte[]> randomFunction;
+		private IRandom random;
 		private Clock clock;
 
 		/**
@@ -370,11 +366,27 @@ public final class TsidFactory {
 		 * @return {@link Builder}
 		 */
 		public Builder withRandom(Random random) {
-			this.randomFunction = (final int length) -> {
-				final byte[] bytes = new byte[length];
-				random.nextBytes(bytes);
-				return bytes;
-			};
+			if (random != null) {
+				if (random instanceof SecureRandom) {
+					this.random = new ByteRandom(random);
+				} else {
+					this.random = new IntRandom(random);
+				}
+			}
+			return this;
+		}
+
+		/**
+		 * Set the random function.
+		 * 
+		 * The random function is used to reset the counter when the millisecond
+		 * changes.
+		 * 
+		 * @param randomFunction a random function that returns a integer value
+		 * @return {@link Builder}
+		 */
+		public Builder withRandomFunction(IntSupplier randomFunction) {
+			this.random = new IntRandom(randomFunction);
 			return this;
 		}
 
@@ -400,7 +412,7 @@ public final class TsidFactory {
 		 * @return {@link Builder}
 		 */
 		public Builder withRandomFunction(IntFunction<byte[]> randomFunction) {
-			this.randomFunction = randomFunction;
+			this.random = new ByteRandom(randomFunction);
 			return this;
 		}
 
@@ -415,54 +427,48 @@ public final class TsidFactory {
 			return this;
 		}
 
-		public Integer getNode() {
+		protected Integer getNode() {
 
 			// 2^22 - 1 = 4,194,303
 			final int mask = 0x3fffff;
 
 			if (this.node == null) {
 				if (SettingsUtil.getNode() != null) {
-					// use system property and environment variable
+					// use system property or variable
 					this.node = SettingsUtil.getNode();
 				} else {
-					// use random node id from 0 to 4,194,303
-					final byte[] bytes = this.getRandomFunction().apply(3);
-					if (bytes != null && bytes.length == 3) {
-						this.node = ((bytes[0] & 0xff) << 16) | ((bytes[1] & 0xff) << 8) | (bytes[2] & 0xff);
-					} else {
-						// use fallback random generator
-						this.node = (new SecureRandom()).nextInt();
-					}
+					// use random node identifier
+					this.node = this.random.nextInt();
 				}
 			}
 
 			return this.node & mask;
 		}
 
-		public Integer getNodeBits() {
+		protected Integer getNodeBits() {
 			if (this.nodeBits == null) {
 				this.nodeBits = TsidFactory.NODE_BITS_1024; // 10 bits
 			}
 			return this.nodeBits;
 		}
 
-		public Long getCustomEpoch() {
+		protected Long getCustomEpoch() {
 			if (this.customEpoch == null) {
 				this.customEpoch = Tsid.TSID_EPOCH; // 2020-01-01
 			}
 			return this.customEpoch;
 		}
 
-		public IntFunction<byte[]> getRandomFunction() {
-			if (this.randomFunction == null) {
+		protected IRandom getRandom() {
+			if (this.random == null) {
 				this.withRandom(new SecureRandom());
 			}
-			return this.randomFunction;
+			return this.random;
 		}
 
-		public Clock getClock() {
+		protected Clock getClock() {
 			if (this.clock == null) {
-				this.withClock(DEFAULT_CLOCK);
+				this.withClock(Clock.systemUTC());
 			}
 			return this.clock;
 		}
@@ -474,6 +480,100 @@ public final class TsidFactory {
 		 */
 		public TsidFactory build() {
 			return new TsidFactory(this);
+		}
+	}
+
+	protected static interface IRandom {
+
+		public int nextInt();
+
+		public byte[] nextBytes(int length);
+	}
+
+	protected static class IntRandom implements IRandom {
+
+		private final IntSupplier randomFunction;
+
+		public IntRandom() {
+			this(newRandomFunction(null));
+		}
+
+		public IntRandom(Random random) {
+			this(newRandomFunction(random));
+		}
+
+		public IntRandom(IntSupplier randomFunction) {
+			this.randomFunction = randomFunction != null ? randomFunction : newRandomFunction(null);
+		}
+
+		@Override
+		public int nextInt() {
+			return randomFunction.getAsInt();
+		}
+
+		@Override
+		public byte[] nextBytes(int length) {
+
+			int shift = 0;
+			long random = 0;
+			final byte[] bytes = new byte[length];
+
+			for (int i = 0; i < length; i++) {
+				if (shift < Byte.SIZE) {
+					shift = Integer.SIZE;
+					random = randomFunction.getAsInt();
+				}
+				shift -= Byte.SIZE; // 56, 48, 42...
+				bytes[i] = (byte) (random >>> shift);
+			}
+
+			return bytes;
+		}
+
+		protected static IntSupplier newRandomFunction(Random random) {
+			final Random entropy = random != null ? random : new SecureRandom();
+			return entropy::nextInt;
+		}
+	}
+
+	protected static class ByteRandom implements IRandom {
+
+		private final IntFunction<byte[]> randomFunction;
+
+		public ByteRandom() {
+			this(newRandomFunction(null));
+		}
+
+		public ByteRandom(Random random) {
+			this(newRandomFunction(random));
+		}
+
+		public ByteRandom(IntFunction<byte[]> randomFunction) {
+			this.randomFunction = randomFunction != null ? randomFunction : newRandomFunction(null);
+		}
+
+		@Override
+		public int nextInt() {
+			int number = 0;
+			byte[] bytes = this.randomFunction.apply(Integer.BYTES);
+			for (int i = 0; i < Integer.BYTES; i++) {
+				number = (number << 8) | (bytes[i] & 0xff);
+			}
+			return number;
+		}
+
+		@Override
+		public byte[] nextBytes(int length) {
+			return this.randomFunction.apply(length);
+		}
+
+		protected static IntFunction<byte[]> newRandomFunction(Random random) {
+			final Random entropy = random != null ? random : new SecureRandom();
+			return (final int length) -> {
+				final byte[] bytes = new byte[length];
+				entropy.nextBytes(bytes);
+				return bytes;
+			};
 		}
 	}
 }

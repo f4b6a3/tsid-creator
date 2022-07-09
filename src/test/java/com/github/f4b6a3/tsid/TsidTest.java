@@ -10,8 +10,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.tsid.Tsid;
-
 public class TsidTest {
 
 	private static final int TIME_BITS = 42;

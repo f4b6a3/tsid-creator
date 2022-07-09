@@ -1,7 +1,10 @@
-package com.github.f4b6a3.tsid;
+package com.github.f4b6a3.tsid.uniq;
 
 import java.util.HashSet;
 import java.util.Random;
+
+import com.github.f4b6a3.tsid.TestSuite;
+import com.github.f4b6a3.tsid.TsidFactory;
 
 /**
  * This is is not included in the {@link TestSuite} because it may take a long

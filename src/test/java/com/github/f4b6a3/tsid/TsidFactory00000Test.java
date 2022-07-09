@@ -13,9 +13,6 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-import com.github.f4b6a3.tsid.Tsid;
-import com.github.f4b6a3.tsid.TsidFactory;
-
 public abstract class TsidFactory00000Test {
 
 	protected static final int TSID_LENGTH = 13;
