@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased
 
+## [5.0.1] - 2022-08-21
+
+Optimized comparison and hash. #16
+
 ## [5.0.0] - 2022-07-09
 
 Add support for RandomGenerator in Java 17. #15
@@ -350,7 +354,8 @@ Project created as an alternative Java implementation for Twitter's Snowflake.
 -   Added `LICENSE`
 -   Added test cases
 
-[unreleased]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.0.0...HEAD
+[unreleased]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.0.1...HEAD
+[5.0.1]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.0.0...tsid-creator-5.0.1
 [5.0.0]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.2.1...tsid-creator-5.0.0
 [4.2.1]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.2.0...tsid-creator-4.2.1
 [4.2.0]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.1.4...tsid-creator-4.2.0

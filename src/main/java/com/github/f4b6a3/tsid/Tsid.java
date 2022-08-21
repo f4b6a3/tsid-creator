@@ -380,44 +380,35 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	}
 
 	@Override
-	public int compareTo(Tsid other) {
+	public int compareTo(Tsid that) {
 
-		final long mask = 0xffffffffL;
+		// used to compare as UNSIGNED longs
+		final long min = 0x8000000000000000L;
 
-		// compare as unsigned integers
-		if ((this.number >>> 32) > (other.number >>> 32)) {
+		final long a = this.number + min;
+		final long b = that.number + min;
+
+		if (a > b)
 			return 1;
-		} else if ((this.number >>> 32) < (other.number >>> 32)) {
+		else if (a < b)
 			return -1;
-		} else if ((this.number & mask) > (other.number & mask)) {
-			return 1;
-		} else if ((this.number & mask) < (other.number & mask)) {
-			return -1;
-		}
 
 		return 0;
 	}
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (int) (number ^ (number >>> 32));
-		return result;
+		return (int) (number ^ (number >>> 32));
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (obj.getClass() != Tsid.class)
 			return false;
-		Tsid other = (Tsid) obj;
-		if (number != other.number)
-			return false;
-		return true;
+		Tsid that = (Tsid) obj;
+		return (this.number == that.number);
 	}
 
 	protected String toString(final char[] alphabet) {

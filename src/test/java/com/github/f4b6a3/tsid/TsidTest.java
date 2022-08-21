@@ -394,12 +394,19 @@ public class TsidTest {
 
 	@Test
 	public void testHashCode() {
-		for (int i = 0; i < LOOP_MAX; i++) {
 
+		// invoked on the same object
+		for (int i = 0; i < LOOP_MAX; i++) {
+			long number = ThreadLocalRandom.current().nextLong();
+			Tsid tsid1 = Tsid.from(number);
+			assertEquals(tsid1.hashCode(), tsid1.hashCode());
+		}
+
+		// invoked on two equal objects
+		for (int i = 0; i < LOOP_MAX; i++) {
 			long number = ThreadLocalRandom.current().nextLong();
 			Tsid tsid1 = Tsid.from(number);
 			Tsid tsid2 = Tsid.from(number);
-
 			assertEquals(tsid1.hashCode(), tsid2.hashCode());
 		}
 	}

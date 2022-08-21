@@ -21,8 +21,8 @@ import com.github.f4b6a3.tsid.TsidCreator;
 @Fork(1)
 @Threads(1)
 @State(Scope.Benchmark)
-@Warmup(iterations = 3)
-@Measurement(iterations = 5)
+@Warmup(iterations = 5, time = 1)
+@Measurement(iterations = 5, time = 3)
 @BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class Throughput {
