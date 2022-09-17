@@ -21,21 +21,21 @@ import com.github.f4b6a3.tsid.TsidCreator;
 @Fork(1)
 @Threads(1)
 @State(Scope.Benchmark)
+@BenchmarkMode(Mode.Throughput)
 @Warmup(iterations = 5, time = 1)
 @Measurement(iterations = 5, time = 3)
-@BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class Throughput {
 
-	@Benchmark
-	public UUID UUID_randomUUID() {
-		return UUID.randomUUID();
-	}
-
-	@Benchmark
-	public String UUID_randomUUID_toString() {
-		return UUID.randomUUID().toString();
-	}
+//	@Benchmark
+//	public UUID UUID_randomUUID() {
+//		return UUID.randomUUID();
+//	}
+//
+//	@Benchmark
+//	public String UUID_randomUUID_toString() {
+//		return UUID.randomUUID().toString();
+//	}
 
 	@Benchmark
 	public Tsid TsidCreator_getTsid256() {

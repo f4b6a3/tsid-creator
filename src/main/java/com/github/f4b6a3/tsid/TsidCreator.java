@@ -25,9 +25,7 @@
 package com.github.f4b6a3.tsid;
 
 /**
- * A class that generates TSIDs (Time Sortable Identifier).
- * 
- * A TSID is formed by the creation time followed by random bits.
+ * A class that generates Time Sortable Identifiers (TSID).
  */
 public final class TsidCreator {
 
@@ -36,25 +34,26 @@ public final class TsidCreator {
 
 	/**
 	 * Returns a TSID.
-	 * 
-	 * The node identifier is RANDOM.
-	 * 
+	 * <p>
 	 * It supports up to 256 nodes.
-	 * 
+	 * <p>
 	 * It can generate up to 16,384 TSIDs per millisecond per node.
-	 * 
-	 * The system property `tsidcreator.node` and environment variable
-	 * `TSIDCREATOR_NODE` can be used to replace the random node identifier.
-	 * 
-	 * ## Random component settings:
-	 * 
-	 * - Node bits: 8
-	 * 
-	 * - Counter bits: 14
-	 * 
-	 * - Maximum node: 256 (2^8)
-	 * 
-	 * - Maximum counter: 16,384 (2^14)
+	 * <p>
+	 * The time component can be 1 ms or more ahead of the system time when
+	 * necessary to maintain monotonicity and generation speed.
+	 * <p>
+	 * The node identifier is <b>random</b>, unless there's a system property
+	 * `tsidcreator.node` or an environment variable `TSIDCREATOR_NODE` is defined.
+	 * One of them <b>should</b> be used to embed a machine ID in the generated TSID
+	 * in order to avoid TSID collisions.
+	 * <p>
+	 * Random component settings:
+	 * <ul>
+	 * <li>Node bits: 8
+	 * <li>Counter bits: 14
+	 * <li>Maximum node: 256 (2^8)
+	 * <li>Maximum counter: 16,384 (2^14)
+	 * </ul>
 	 * 
 	 * @return a TSID
 	 */
@@ -64,25 +63,26 @@ public final class TsidCreator {
 
 	/**
 	 * Returns a TSID.
-	 * 
-	 * The node identifier is RANDOM.
-	 * 
+	 * <p>
 	 * It supports up to 1,024 nodes.
-	 * 
+	 * <p>
 	 * It can generate up to 4,096 TSIDs per millisecond per node.
-	 * 
-	 * The system property `tsidcreator.node` and environment variable
-	 * `TSIDCREATOR_NODE` can be used to replace the random node identifier.
-	 * 
-	 * ## Random component settings:
-	 * 
-	 * - Node bits: 10
-	 * 
-	 * - Counter bits: 12
-	 * 
-	 * - Maximum node: 1,024 (2^10)
-	 * 
-	 * - Maximum counter: 4,096 (2^12)
+	 * <p>
+	 * The time component can be 1 ms or more ahead of the system time when
+	 * necessary to maintain monotonicity and generation speed.
+	 * <p>
+	 * The node identifier is <b>random</b>, unless there's a system property
+	 * `tsidcreator.node` or an environment variable `TSIDCREATOR_NODE` is defined.
+	 * One of them <b>should</b> be used to embed a machine ID in the generated TSID
+	 * in order to avoid TSID collisions.
+	 * <p>
+	 * Random component settings:
+	 * <ul>
+	 * <li>Node bits: 10
+	 * <li>Counter bits: 12
+	 * <li>Maximum node: 1,024 (2^10)
+	 * <li>Maximum counter: 4,096 (2^12)
+	 * </ul>
 	 * 
 	 * @return a TSID
 	 */
@@ -92,25 +92,26 @@ public final class TsidCreator {
 
 	/**
 	 * Returns a TSID.
-	 * 
-	 * The node identifier is RANDOM.
-	 * 
+	 * <p>
 	 * It supports up to 4,096 nodes.
-	 * 
+	 * <p>
 	 * It can generate up to 1,024 TSIDs per millisecond per node.
-	 * 
-	 * The system property `tsidcreator.node` and environment variable
-	 * `TSIDCREATOR_NODE` can be used to replace the random node identifier.
-	 * 
-	 * ## Random component settings:
-	 * 
-	 * - Node bits: 12
-	 * 
-	 * - Counter bits: 10
-	 * 
-	 * - Maximum node: 4,096 (2^12)
-	 * 
-	 * - Maximum counter: 1,024 (2^10)
+	 * <p>
+	 * The time component can be 1 ms or more ahead of the system time when
+	 * necessary to maintain monotonicity and generation speed.
+	 * <p>
+	 * The node identifier is <b>random</b>, unless there's a system property
+	 * `tsidcreator.node` or an environment variable `TSIDCREATOR_NODE` is defined.
+	 * One of them <b>should</b> be used to embed a machine ID in the generated TSID
+	 * in order to avoid TSID collisions.
+	 * <p>
+	 * Random component settings:
+	 * <ul>
+	 * <li>Node bits: 12
+	 * <li>Counter bits: 10
+	 * <li>Maximum node: 4,096 (2^12)
+	 * <li>Maximum counter: 1,024 (2^10)
+	 * </ul>
 	 * 
 	 * @return a TSID number
 	 */

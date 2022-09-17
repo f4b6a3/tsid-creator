@@ -2,7 +2,7 @@
 TSID Creator
 ======================================================
 
-This is a Java library for Time Sortable Identifier.
+This is a Java library for Time Sortable Identifier (TSID).
 
 It brings together ideas from [Twitter's Snowflake](https://github.com/twitter-archive/snowflake/tree/snowflake-2010) and [ULID Spec](https://github.com/ulid/spec).
 
@@ -15,9 +15,13 @@ In summary:
 *   String format is URL safe, is case insensitive, and has no hyphens;
 *   Shorter than UUID, ULID and KSUID.
 
-This library contains a good amount of [unit tests](https://github.com/f4b6a3/tsid-creator/tree/master/src/test/java/com/github/f4b6a3/tsid). It also has a [micro benchmark](https://github.com/f4b6a3/tsid-creator/tree/master/benchmark) for you to check if the performance is good enough.
+This project contains a [micro benchmark](https://github.com/f4b6a3/tsid-creator/tree/master/benchmark) and a good amount of [unit tests](https://github.com/f4b6a3/tsid-creator/tree/master/src/test/java/com/github/f4b6a3/tsid).
 
-Read [Snowflake ID](https://en.wikipedia.org/wiki/Snowflake_ID) on Wikipedia.
+The jar file can be downloaded directly from [maven.org](https://repo1.maven.org/maven2/com/github/f4b6a3/tsid-creator/).
+
+Read the [Javadocs](https://javadoc.io/doc/com.github.f4b6a3/tsid-creator).
+
+Also read the entry [Snowflake ID](https://en.wikipedia.org/wiki/Snowflake_ID) on Wikipedia.
 
 How to Use
 ------------------------------------------------------
@@ -53,7 +57,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>tsid-creator</artifactId>
-  <version>5.0.1</version>
+  <version>5.0.2</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator).
@@ -196,9 +200,11 @@ The node bits affect the counter bits.
 The time component can be used for ~69 years if stored in a SIGNED 64 bits integer field.
 ```
 
+The time component can be 1 ms or more ahead of the system time when necessary to maintain monotonicity and generation speed.
+
 The node identifier is a random number from 0 to 1023 (default). It can be replaced by a value given to the `TsidFactory` constructor or method factory.
 
-Another way to replace the random node is by using a system property `tsidcreator.node` or a environment variable `TSIDCREATOR_NODE`.
+The recommended way to define the node identifier is by using a system property `tsidcreator.node` or a environment variable `TSIDCREATOR_NODE`.
 
 #### Node identifier
 
@@ -420,26 +426,26 @@ Benchmark
 This section shows benchmarks comparing `TsidCreator` to `java.util.UUID`.
 
 ```
---------------------------------------------------------------------------------
-THROUGHPUT (operations/msec)            Mode  Cnt      Score      Error   Units
---------------------------------------------------------------------------------
-UUID_randomUUID                        thrpt    5   1553,462 ±   11,498  ops/ms
-UUID_randomUUID_toString               thrpt    5   1494,101 ±   68,152  ops/ms
--  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-TsidCreator_getTsid256                 thrpt    5  30129,077 ± 1662,864  ops/ms
-TsidCreator_getTsid256_toString        thrpt    5  20767,554 ± 1805,132  ops/ms
--  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-TsidCreator_getTsid1024                thrpt    5  35184,678 ± 1169,413  ops/ms
-TsidCreator_getTsid1024_toString       thrpt    5  21490,361 ± 1034,860  ops/ms
--  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-TsidCreator_getTsid4096                thrpt    5  30022,974 ± 1788,476  ops/ms
-TsidCreator_getTsid4096_toString       thrpt    5  21194,520 ± 1247,149  ops/ms
---------------------------------------------------------------------------------
-Total time: 00:10:41
---------------------------------------------------------------------------------
+---------------------------------------------------------------------------
+THROUGHPUT (operations/msec)       Mode  Cnt      Score      Error   Units
+---------------------------------------------------------------------------
+UUID_randomUUID                   thrpt    5   3264,286 ±   30,637  ops/ms
+UUID_randomUUID_toString          thrpt    5   2904,448 ±   15,118  ops/ms
+-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  - 
+TsidCreator_getTsid256            thrpt    5  34340,563 ± 2635,310  ops/ms
+TsidCreator_getTsid256_toString   thrpt    5  22583,686 ± 6753,069  ops/ms
+-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  - 
+TsidCreator_getTsid1024           thrpt    5  35278,645 ± 1553,635  ops/ms
+TsidCreator_getTsid1024_toString  thrpt    5  22356,842 ±  574,642  ops/ms
+-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  - 
+TsidCreator_getTsid4096           thrpt    5  34244,278 ± 5090,903  ops/ms
+TsidCreator_getTsid4096_toString  thrpt    5  21171,762 ±  552,435  ops/ms
+---------------------------------------------------------------------------
+Total time: 00:02:41
+---------------------------------------------------------------------------
 ```
 
-System: JVM 11, Ubuntu 20.04, CPU i7, 16G RAM.
+System: CPU i7-8565U, 16G RAM, Ubuntu 22.04, JVM 11, rng-tools installed.
 
 To execute the benchmark, run `./benchmark/run.sh`.
 

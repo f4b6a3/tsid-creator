@@ -26,30 +26,23 @@ package com.github.f4b6a3.tsid.internal;
 
 /**
  * Reads system properties and environment variables.
- * 
+ * <p>
  * The system properties has prevalence over environment variables.
- * 
+ * <p>
  * Available properties and variables:
- * 
- * - tsidcreator.node
- * 
- * - TSIDCREATOR_NODE
+ * <ul>
+ * <li>tsidcreator.node
+ * <li>TSIDCREATOR_NODE
+ * </ul>
  */
 public final class SettingsUtil {
 
-	protected static final String PROPERTY_PREFIX = "tsidcreator";
-	protected static final String PROPERTY_NODE = "node";
+	static final String PROPERTY_PREFIX = "tsidcreator";
+	static final String PROPERTY_NODE = "node";
 
 	protected SettingsUtil() {
 	}
 
-	/**
-	 * Returns the node ID.
-	 * 
-	 * Returns null if not found, empty or invalid.
-	 * 
-	 * @return a node id
-	 */
 	public static Integer getNode() {
 		String value = getProperty(PROPERTY_NODE);
 
@@ -69,7 +62,7 @@ public final class SettingsUtil {
 		setProperty(PROPERTY_NODE, value);
 	}
 
-	protected static String getProperty(String name) {
+	static String getProperty(String name) {
 
 		String fullName = getPropertyName(name);
 		String value = System.getProperty(fullName);
@@ -86,19 +79,19 @@ public final class SettingsUtil {
 		return null;
 	}
 
-	protected static void setProperty(String key, String value) {
+	static void setProperty(String key, String value) {
 		System.setProperty(getPropertyName(key), value);
 	}
 
-	protected static void clearProperty(String key) {
+	static void clearProperty(String key) {
 		System.clearProperty(getPropertyName(key));
 	}
 
-	protected static String getPropertyName(String key) {
+	static String getPropertyName(String key) {
 		return String.join(".", PROPERTY_PREFIX, key);
 	}
 
-	protected static String getEnvinronmentName(String key) {
+	static String getEnvinronmentName(String key) {
 		return String.join("_", PROPERTY_PREFIX, key).toUpperCase().replace(".", "_");
 	}
 
