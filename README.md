@@ -19,9 +19,9 @@ This project contains a [micro benchmark](https://github.com/f4b6a3/tsid-creator
 
 The jar file can be downloaded directly from [maven.org](https://repo1.maven.org/maven2/com/github/f4b6a3/tsid-creator/).
 
-Read the [Javadocs](https://javadoc.io/doc/com.github.f4b6a3/tsid-creator).
+Read the [Javadocs](https://javadoc.io/doc/com.github.f4b6a3/tsid-creator). Also read the entry [Snowflake ID](https://en.wikipedia.org/wiki/Snowflake_ID) on Wikipedia.
 
-Also read the entry [Snowflake ID](https://en.wikipedia.org/wiki/Snowflake_ID) on Wikipedia.
+And if you have questions, read the [FAQ wiki page](https://github.com/f4b6a3/tsid-creator/wiki).
 
 How to Use
 ------------------------------------------------------
@@ -190,7 +190,7 @@ This is the default TSID structure:
        time (msecs since 2020-01-01)           node       counter
                 42 bits                       10 bits     12 bits
 
-- time:    2^42 = ~139 years (with adjustable epoch)
+- time:    2^42 = ~69 years or ~139 years (with adjustable epoch)
 - node:    2^10 = 1,024 (with adjustable bits)
 - counter: 2^12 = 4,096 (initially random)
 
@@ -198,6 +198,7 @@ Notes:
 The node is adjustable from 0 to 20 bits.
 The node bits affect the counter bits.
 The time component can be used for ~69 years if stored in a SIGNED 64 bits integer field.
+The time component can be used for ~139 years if stored in a UNSIGNED 64 bits integer field.
 ```
 
 The time component can be 1 ms or more ahead of the system time when necessary to maintain monotonicity and generation speed.
