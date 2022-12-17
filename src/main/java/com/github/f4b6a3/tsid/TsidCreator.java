@@ -25,7 +25,12 @@
 package com.github.f4b6a3.tsid;
 
 /**
- * A class that generates Time Sortable Identifiers (TSID).
+ * A singleton that generates Time-Sorted Unique Identifiers (TSID).
+ * <p>
+ * It is <b>highly recommended</b> to use this class in conjunction with the
+ * "tsidcreator.node" system property or the "TSIDCREATOR_NODE" environment
+ * variable. This is the simplest mechanism to avoid collisions between
+ * identifiers produced by more than one machine or application instance.
  */
 public final class TsidCreator {
 
@@ -33,19 +38,60 @@ public final class TsidCreator {
 	}
 
 	/**
-	 * Returns a TSID.
+	 * Returns a new TSID.
+	 * <p>
+	 * The amount of nodes is adjustable.
+	 * <p>
+	 * The maximum number of TSIDs that can be generated per millisecond per node
+	 * depends on the given amount of nodes.
+	 * <p>
+	 * The node ID is is set by defining the system property "tsidcreator.node" or
+	 * the environment variable "TSIDCREATOR_NODE". One of them <b>should</b> be
+	 * used to embed a machine ID in the generated TSID in order to avoid TSID
+	 * collisions. If that property or variable is not defined, the node ID is
+	 * chosen randomly.
+	 * <p>
+	 * The amount of nodes can be set by defining the system property
+	 * "tsidcreator.node.count" or the environment variable
+	 * "TSIDCREATOR_NODE_COUNT". That property or variable is used to adjust the
+	 * minimum amount of bits to accommodate the node ID. If that property or
+	 * variable is not defined, the default amount of nodes is 1024, which takes 10
+	 * bits.
+	 * <p>
+	 * The amount of bits needed to accommodate the node ID is calculated by this
+	 * pseudo-code formula: {@code node_bits = ceil(log(node_count)/log(2))}.
+	 * <p>
+	 * Random component settings:
+	 * <ul>
+	 * <li>Node bits: node_bits
+	 * <li>Counter bits: 22-node_bits
+	 * <li>Maximum node: 2^node_bits
+	 * <li>Maximum counter: 2^(22-node_bits)
+	 * </ul>
+	 * <p>
+	 * The time component can be 1 ms or more ahead of the system time when
+	 * necessary to maintain monotonicity and generation speed.
+	 * 
+	 * @return a TSID
+	 * @since 5.1.0
+	 */
+	public static Tsid getTsid() {
+		return FactoryHolder.INSTANCE.create();
+	}
+
+	/**
+	 * Returns a new TSID.
 	 * <p>
 	 * It supports up to 256 nodes.
 	 * <p>
 	 * It can generate up to 16,384 TSIDs per millisecond per node.
 	 * <p>
-	 * The time component can be 1 ms or more ahead of the system time when
-	 * necessary to maintain monotonicity and generation speed.
-	 * <p>
-	 * The node identifier is <b>random</b>, unless there's a system property
-	 * `tsidcreator.node` or an environment variable `TSIDCREATOR_NODE` is defined.
-	 * One of them <b>should</b> be used to embed a machine ID in the generated TSID
-	 * in order to avoid TSID collisions.
+	 * The node ID is is set by defining the system property "tsidcreator.node" or
+	 * the environment variable "TSIDCREATOR_NODE". One of them <b>should</b> be
+	 * used to embed a machine ID in the generated TSID in order to avoid TSID
+	 * collisions. If that property or variable is not defined, the node ID is
+	 * chosen randomly.
+	 * 
 	 * <p>
 	 * Random component settings:
 	 * <ul>
@@ -54,6 +100,9 @@ public final class TsidCreator {
 	 * <li>Maximum node: 256 (2^8)
 	 * <li>Maximum counter: 16,384 (2^14)
 	 * </ul>
+	 * <p>
+	 * The time component can be 1 ms or more ahead of the system time when
+	 * necessary to maintain monotonicity and generation speed.
 	 * 
 	 * @return a TSID
 	 */
@@ -62,19 +111,17 @@ public final class TsidCreator {
 	}
 
 	/**
-	 * Returns a TSID.
+	 * Returns a new TSID.
 	 * <p>
 	 * It supports up to 1,024 nodes.
 	 * <p>
 	 * It can generate up to 4,096 TSIDs per millisecond per node.
 	 * <p>
-	 * The time component can be 1 ms or more ahead of the system time when
-	 * necessary to maintain monotonicity and generation speed.
-	 * <p>
-	 * The node identifier is <b>random</b>, unless there's a system property
-	 * `tsidcreator.node` or an environment variable `TSIDCREATOR_NODE` is defined.
-	 * One of them <b>should</b> be used to embed a machine ID in the generated TSID
-	 * in order to avoid TSID collisions.
+	 * The node ID is is set by defining the system property "tsidcreator.node" or
+	 * the environment variable "TSIDCREATOR_NODE". One of them <b>should</b> be
+	 * used to embed a machine ID in the generated TSID in order to avoid TSID
+	 * collisions. If that property or variable is not defined, the node ID is
+	 * chosen randomly.
 	 * <p>
 	 * Random component settings:
 	 * <ul>
@@ -83,6 +130,9 @@ public final class TsidCreator {
 	 * <li>Maximum node: 1,024 (2^10)
 	 * <li>Maximum counter: 4,096 (2^12)
 	 * </ul>
+	 * <p>
+	 * The time component can be 1 ms or more ahead of the system time when
+	 * necessary to maintain monotonicity and generation speed.
 	 * 
 	 * @return a TSID
 	 */
@@ -91,19 +141,17 @@ public final class TsidCreator {
 	}
 
 	/**
-	 * Returns a TSID.
+	 * Returns a new TSID.
 	 * <p>
 	 * It supports up to 4,096 nodes.
 	 * <p>
 	 * It can generate up to 1,024 TSIDs per millisecond per node.
 	 * <p>
-	 * The time component can be 1 ms or more ahead of the system time when
-	 * necessary to maintain monotonicity and generation speed.
-	 * <p>
-	 * The node identifier is <b>random</b>, unless there's a system property
-	 * `tsidcreator.node` or an environment variable `TSIDCREATOR_NODE` is defined.
-	 * One of them <b>should</b> be used to embed a machine ID in the generated TSID
-	 * in order to avoid TSID collisions.
+	 * The node ID is is set by defining the system property "tsidcreator.node" or
+	 * the environment variable "TSIDCREATOR_NODE". One of them <b>should</b> be
+	 * used to embed a machine ID in the generated TSID in order to avoid TSID
+	 * collisions. If that property or variable is not defined, the node ID is
+	 * chosen randomly.
 	 * <p>
 	 * Random component settings:
 	 * <ul>
@@ -112,11 +160,18 @@ public final class TsidCreator {
 	 * <li>Maximum node: 4,096 (2^12)
 	 * <li>Maximum counter: 1,024 (2^10)
 	 * </ul>
+	 * <p>
+	 * The time component can be 1 ms or more ahead of the system time when
+	 * necessary to maintain monotonicity and generation speed.
 	 * 
 	 * @return a TSID number
 	 */
 	public static Tsid getTsid4096() {
 		return Factory4096Holder.INSTANCE.create();
+	}
+
+	private static class FactoryHolder {
+		static final TsidFactory INSTANCE = new TsidFactory();
 	}
 
 	private static class Factory256Holder {

@@ -14,22 +14,42 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.IntFunction;
 import java.util.function.IntSupplier;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+
+import static com.github.f4b6a3.tsid.TsidFactory.Settings;
+import static com.github.f4b6a3.tsid.TsidFactory.Settings.NODE;
+import static com.github.f4b6a3.tsid.TsidFactory.Settings.NODE_COUNT;
 
 public class TsidFactoryTest {
 
 	private static final int LOOP_MAX = 1_000;
 
+	@Before
+	public void before() {
+		// clear properties
+		System.clearProperty(NODE);
+		System.clearProperty(NODE_COUNT);
+	}
+
+	@After
+	public void after() {
+		// clear properties
+		System.clearProperty(NODE);
+		System.clearProperty(NODE_COUNT);
+	}
+
 	@Test
 	public void testGetInstant() {
 
 		Instant start = Instant.now();
-		Tsid tsid = (new TsidFactory()).create();
+		Tsid tsid = TsidCreator.getTsid();
 		Instant middle = tsid.getInstant();
 		Instant end = Instant.now();
 
 		assertTrue(start.toEpochMilli() <= middle.toEpochMilli());
-		assertTrue(middle.toEpochMilli() <= end.toEpochMilli());
+		assertTrue(middle.toEpochMilli() <= end.toEpochMilli() + 1);
 	}
 
 	@Test
@@ -41,7 +61,7 @@ public class TsidFactoryTest {
 		long end = System.currentTimeMillis();
 
 		assertTrue(start <= middle);
-		assertTrue(middle <= end);
+		assertTrue(middle <= end + 1);
 	}
 
 	@Test
@@ -116,7 +136,7 @@ public class TsidFactoryTest {
 			for (int i = 0; i <= 20; i++) {
 				int bits = TsidFactory.NODE_BITS_1024;
 				int shif = Tsid.RANDOM_BITS - bits;
-				int mask = (1 << bits - 1);
+				int mask = ((1 << bits) - 1);
 				int node = ThreadLocalRandom.current().nextInt() & mask;
 				TsidFactory factory = new TsidFactory(node);
 				assertEquals(node, (factory.create().getRandom() >>> shif) & mask);
@@ -126,7 +146,18 @@ public class TsidFactoryTest {
 			for (int i = 0; i <= 20; i++) {
 				int bits = TsidFactory.NODE_BITS_1024;
 				int shif = Tsid.RANDOM_BITS - bits;
-				int mask = (1 << bits - 1);
+				int mask = ((1 << bits) - 1);
+				int node = ThreadLocalRandom.current().nextInt() & mask;
+				System.setProperty(NODE, String.valueOf(node));
+				TsidFactory factory = new TsidFactory();
+				assertEquals(node, (factory.create().getRandom() >>> shif) & mask);
+			}
+		}
+		{
+			for (int i = 0; i <= 20; i++) {
+				int bits = TsidFactory.NODE_BITS_1024;
+				int shif = Tsid.RANDOM_BITS - bits;
+				int mask = ((1 << bits) - 1);
 				int node = ThreadLocalRandom.current().nextInt() & mask;
 				TsidFactory factory = TsidFactory.builder().withNode(node).build();
 				assertEquals(node, (factory.create().getRandom() >>> shif) & mask);
@@ -136,7 +167,7 @@ public class TsidFactoryTest {
 			for (int i = 0; i <= 20; i++) {
 				int bits = TsidFactory.NODE_BITS_256;
 				int shif = Tsid.RANDOM_BITS - bits;
-				int mask = (1 << bits - 1);
+				int mask = ((1 << bits) - 1);
 				int node = ThreadLocalRandom.current().nextInt() & mask;
 				TsidFactory factory = TsidFactory.newInstance256(node);
 				assertEquals(node, (factory.create().getRandom() >>> shif) & mask);
@@ -146,7 +177,7 @@ public class TsidFactoryTest {
 			for (int i = 0; i <= 20; i++) {
 				int bits = TsidFactory.NODE_BITS_1024;
 				int shif = Tsid.RANDOM_BITS - bits;
-				int mask = (1 << bits - 1);
+				int mask = ((1 << bits) - 1);
 				int node = ThreadLocalRandom.current().nextInt() & mask;
 				TsidFactory factory = TsidFactory.newInstance1024(node);
 				assertEquals(node, (factory.create().getRandom() >>> shif) & mask);
@@ -156,7 +187,7 @@ public class TsidFactoryTest {
 			for (int i = 0; i <= 20; i++) {
 				int bits = TsidFactory.NODE_BITS_4096;
 				int shif = Tsid.RANDOM_BITS - bits;
-				int mask = (1 << bits - 1);
+				int mask = ((1 << bits) - 1);
 				int node = ThreadLocalRandom.current().nextInt() & mask;
 				TsidFactory factory = TsidFactory.newInstance4096(node);
 				assertEquals(node, (factory.create().getRandom() >>> shif) & mask);
@@ -173,6 +204,22 @@ public class TsidFactoryTest {
 			final int counterBits = randomBits - nodeBits;
 			final int node = (1 << nodeBits) - 1; // max: 2^nodeBits - 1
 			Tsid tsid = TsidFactory.builder().withNodeBits(nodeBits).withNode(node).build().create();
+			int actual = (int) tsid.getRandom() >>> counterBits;
+			assertEquals(node, actual);
+		}
+	}
+
+	@Test
+	public void testWithNodeCount() {
+		final int randomBits = 22;
+		// test all allowed values of node bits
+		for (int i = 0; i <= 20; i++) {
+			final int nodeBits = i;
+			final int counterBits = randomBits - nodeBits;
+			final int node = (1 << nodeBits) - 1; // max: 2^nodeBits - 1
+			final int nodeCount = (int) Math.pow(2, nodeBits);
+			System.setProperty(NODE_COUNT, String.valueOf(nodeCount));
+			Tsid tsid = TsidFactory.builder().withNode(node).build().create();
 			int actual = (int) tsid.getRandom() >>> counterBits;
 			assertEquals(node, actual);
 		}
@@ -479,5 +526,81 @@ public class TsidFactoryTest {
 				assertEquals(Arrays.toString(octects), Arrays.toString(random.nextBytes(Integer.BYTES)));
 			}
 		}
+	}
+
+	@Test
+	public void testSettingsGetNode() {
+		for (int i = 0; i < 100; i++) {
+			int number = ThreadLocalRandom.current().nextInt();
+			System.setProperty(NODE, String.valueOf(number));
+			long result = Settings.getNode();
+			assertEquals(number, result);
+		}
+	}
+
+	@Test
+	public void testSettingsGetNodeCount() {
+		for (int i = 0; i < 100; i++) {
+			int number = ThreadLocalRandom.current().nextInt();
+			System.setProperty(NODE_COUNT, String.valueOf(number));
+			long result = Settings.getNodeCount();
+			assertEquals(number, result);
+		}
+	}
+
+	@Test
+	public void testSettingsGetNodeInvalid() {
+		String string = "0xx11223344"; // typo
+		System.setProperty(NODE, string);
+		Integer result = Settings.getNode();
+		assertNull(result);
+
+		string = " 0x11223344"; // space
+		System.setProperty(NODE, string);
+		result = Settings.getNode();
+		assertNull(result);
+
+		string = "0x112233zz"; // non hexadecimal
+		System.setProperty(NODE, string);
+		result = Settings.getNode();
+		assertNull(result);
+
+		string = ""; // empty
+		System.setProperty(NODE, string);
+		result = Settings.getNode();
+		assertNull(result);
+
+		string = " "; // blank
+		System.setProperty(NODE, string);
+		result = Settings.getNode();
+		assertNull(result);
+	}
+
+	@Test
+	public void testSettingsGetNodeCountInvalid() {
+		String string = "0xx11223344"; // typo
+		System.setProperty(NODE_COUNT, string);
+		Integer result = Settings.getNodeCount();
+		assertNull(result);
+
+		string = " 0x11223344"; // space
+		System.setProperty(NODE_COUNT, string);
+		result = Settings.getNodeCount();
+		assertNull(result);
+
+		string = "0x112233zz"; // non hexadecimal
+		System.setProperty(NODE_COUNT, string);
+		result = Settings.getNodeCount();
+		assertNull(result);
+
+		string = ""; // empty
+		System.setProperty(NODE_COUNT, string);
+		result = Settings.getNodeCount();
+		assertNull(result);
+
+		string = " "; // blank
+		System.setProperty(NODE_COUNT, string);
+		result = Settings.getNodeCount();
+		assertNull(result);
 	}
 }

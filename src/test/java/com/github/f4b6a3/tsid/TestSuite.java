@@ -3,8 +3,6 @@ package com.github.f4b6a3.tsid;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-import com.github.f4b6a3.tsid.internal.SettingsUtilTest;
-
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	TsidTest.class,
@@ -15,7 +13,6 @@ import com.github.f4b6a3.tsid.internal.SettingsUtilTest;
 	TsidFactory01024Test.class,
 	TsidFactory04096Test.class,
 	TsidFactory16384Test.class,
-	SettingsUtilTest.class,
 })
 
 /**

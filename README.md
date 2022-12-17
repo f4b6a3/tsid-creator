@@ -2,7 +2,7 @@
 TSID Creator
 ======================================================
 
-This is a Java library for Time Sortable Identifier (TSID).
+A Java library for generating Time-Sorted Unique Identifiers (TSID).
 
 It brings together ideas from [Twitter's Snowflake](https://github.com/twitter-archive/snowflake/tree/snowflake-2010) and [ULID Spec](https://github.com/ulid/spec).
 
@@ -19,36 +19,34 @@ This project contains a [micro benchmark](https://github.com/f4b6a3/tsid-creator
 
 The jar file can be downloaded directly from [maven.org](https://repo1.maven.org/maven2/com/github/f4b6a3/tsid-creator/).
 
-Read the [Javadocs](https://javadoc.io/doc/com.github.f4b6a3/tsid-creator). Also read the entry [Snowflake ID](https://en.wikipedia.org/wiki/Snowflake_ID) on Wikipedia.
+If you have questions, read the [FAQ wiki page](https://github.com/f4b6a3/tsid-creator/wiki).
 
-And if you have questions, read the [FAQ wiki page](https://github.com/f4b6a3/tsid-creator/wiki).
+Also read the [Javadocs](https://javadoc.io/doc/com.github.f4b6a3/tsid-creator).
 
-How to Use
+Usage
 ------------------------------------------------------
 
 Create a TSID:
 
 ```java
-Tsid tsid = TsidCreator.getTsid1024();
+Tsid tsid = TsidCreator.getTsid();
 ```
 
-Create a TSID number:
+Create a TSID as `long`:
 
 ```java
-long number = TsidCreator.getTsid1024().toLong(); // 38352658567418872
+long number = TsidCreator.getTsid().toLong(); // 38352658567418872
 ```
 
-Create a TSID string:
+Create a TSID as `String`:
 
 ```java
-String string = TsidCreator.getTsid1024().toString(); // 01226N0640J7Q
+String string = TsidCreator.getTsid().toString(); // 01226N0640J7Q
 ```
-
-There are three predefined node ranges: 256, 1024 and 4096.
 
 The TSID generator is [thread-safe](https://en.wikipedia.org/wiki/Thread_safety).
 
-### Maven dependency
+### Dependency
 
 Add these lines to your `pom.xml`:
 
@@ -57,7 +55,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>tsid-creator</artifactId>
-  <version>5.0.2</version>
+  <version>5.1.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator).
@@ -71,23 +69,10 @@ Module and bundle names are the same as the root package name.
 
 ### TSID as Long
 
-This section shows how to create TSID numbers.
-
-The method `Tsid.toLong()` simply unwraps the internal `long` value.
+The `Tsid.toLong()` method simply unwraps the internal `long` value of a TSID.
 
 ```java
-// Create a TSID for up to 256 nodes and 16384 ID/ms
-long tsid = TsidCreator.getTsid256().toLong();
-```
-
-```java
-// Create a TSID for up to 1024 nodes and 4096 ID/ms
-long tsid = TsidCreator.getTsid1024().toLong();
-```
-
-```java
-// Create a TSID for up to 4096 nodes and 1024 ID/ms
-long tsid = TsidCreator.getTsid4096().toLong();
+long tsid = TsidCreator.getTsid().toLong();
 ```
 
 Sequence of TSIDs:
@@ -117,23 +102,10 @@ Sequence of TSIDs:
 
 ### TSID as String
 
-This section shows how to create TSID strings.
-
-The TSID string is a 13 characters long string encoded to [Crockford's base 32](https://www.crockford.com/base32.html).
+The `Tsid.toString()` method encodes a TSID to [Crockford's base 32](https://www.crockford.com/base32.html) encoding. The returned string is 13 characters long.
 
 ```java
-// Create a TSID string for up to 256 nodes and 16384 ID/ms
-String tsid = TsidCreator.getTsid256().toString();
-```
-
-```java
-// Create a TSID string for up to 1024 nodes and 4096 ID/ms
-String tsid = TsidCreator.getTsid1024().toString();
-```
-
-```java
-// Create a TSID string for up to 4096 nodes and 1024 ID/ms
-String tsid = TsidCreator.getTsid4096().toString();
+String tsid = TsidCreator.getTsid().toString();
 ```
 
 Sequence of TSID strings:
@@ -163,7 +135,7 @@ Sequence of TSID strings:
 
 ### TSID Structure
 
-The term TSID stands for (roughly) Time Sortable ID. A TSID is a number that is formed by the creation time along with random bits.
+The term TSID stands for (roughly) Time-Sorted ID. A TSID is a number that is formed by the creation time along with random bits.
 
 The TSID has 2 components:
 
@@ -203,30 +175,59 @@ The time component can be used for ~139 years if stored in a UNSIGNED 64 bits in
 
 The time component can be 1 ms or more ahead of the system time when necessary to maintain monotonicity and generation speed.
 
-The node identifier is a random number from 0 to 1023 (default). It can be replaced by a value given to the `TsidFactory` constructor or method factory.
+### Node identifier
 
-The recommended way to define the node identifier is by using a system property `tsidcreator.node` or a environment variable `TSIDCREATOR_NODE`.
+The simplest way to avoid collisions is to make sure that each generator has its exclusive node ID.
 
-#### Node identifier
+The node ID can be given to `TsidFactory` by defining the `tsidcreator.node` system property or the `TSIDCREATOR_NODE` environment variable. Otherwise, the node identifier will be chosen randomly.
 
-The node identifier can be given to the `TsidFactory` by defining a system property `tsidcreator.node` or a environment variable `TSIDCREATOR_NODE`. If this property or variable exists, the node identifier is its value. Otherwise, the node identifier is random number.
+The total number of nodes can be given to `TsidFactory` by defining the `tsidcreator.node.count` system property or the `TSIDCREATOR_NODE_COUNT` environment variable. If this property or variable is set, `TsidFactory` will adjust the amount of bits needed to fit the given node count. For example, if the value 100 is given, the number of bits reserved for the node ID is set to 7, which is the minimum number of bits needed to fit 100 nodes. Otherwise, the default number of bits is set to 10, which can accommodate 1024 nodes.
 
-The simplest way to avoid collisions is to ensure that each generator has its exclusive node identifier.
+System properties:
 
-*   Using system property:
+*   `tsidcreator.node`: the node identifier.
+*   `tsidcreator.node.count`: the total number of nodes.
+
+Environment variables:
+
+*   `TSIDCREATOR_NODE`: the node identifier.
+*   `TSIDCREATOR_NODE_COUNT`: the total number of nodes.
+
+Using system properties:
 
 ```bash
 // append to VM arguments
 -Dtsidcreator.node="755"
 ```
 
-*   Using environment variable:
+```bash
+// append to VM arguments
+-Dtsidcreator.node="42" \
+-Dtsidcreator.node.count=100"
+```
+
+Using environment variables:
 
 ```bash
-# append to /etc/environment or ~/.profile
+# append to ~/.profile
 export TSIDCREATOR_NODE="492"
 ```
+
+```bash
+# append to ~/.profile
+export TSIDCREATOR_NODE="123"
+export TSIDCREATOR_NODE_COUNT="200"
+```
+
 ### More Examples
+
+Create a quick TSID:
+
+```java
+Tsid tsid = Tsid.fast();
+```
+
+---
 
 Create a TSID from a canonical string (13 chars):
 
@@ -261,7 +262,7 @@ import com.github.f4b6a3.tsid.TsidCreator;
 
 public class KeyGenerator {
     public static String next() {
-        return TsidCreator.getTsid1024().toString();
+        return TsidCreator.getTsid().toString();
     }
 }
 ```
@@ -430,21 +431,26 @@ This section shows benchmarks comparing `TsidCreator` to `java.util.UUID`.
 ---------------------------------------------------------------------------
 THROUGHPUT (operations/msec)       Mode  Cnt      Score      Error   Units
 ---------------------------------------------------------------------------
-UUID_randomUUID                   thrpt    5   3264,286 ±   30,637  ops/ms
-UUID_randomUUID_toString          thrpt    5   2904,448 ±   15,118  ops/ms
+UUID_randomUUID                   thrpt    5   1630,938 ±  183,581  ops/ms
+UUID_randomUUID_toString          thrpt    5   1604,916 ±  189,711  ops/ms
 -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  - 
-TsidCreator_getTsid256            thrpt    5  34340,563 ± 2635,310  ops/ms
-TsidCreator_getTsid256_toString   thrpt    5  22583,686 ± 6753,069  ops/ms
+Tsid_fast                         thrpt    5  37397,739 ± 1128,756  ops/ms
+Tsid_fast_toString                thrpt    5  21144,662 ±  673,939  ops/ms
 -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  - 
-TsidCreator_getTsid1024           thrpt    5  35278,645 ± 1553,635  ops/ms
-TsidCreator_getTsid1024_toString  thrpt    5  22356,842 ±  574,642  ops/ms
+TsidCreator_getTsid256            thrpt    5  10727,236 ±  761,920  ops/ms
+TsidCreator_getTsid256_toString   thrpt    5   6813,193 ±  867,041  ops/ms
 -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  - 
-TsidCreator_getTsid4096           thrpt    5  34244,278 ± 5090,903  ops/ms
-TsidCreator_getTsid4096_toString  thrpt    5  21171,762 ±  552,435  ops/ms
+TsidCreator_getTsid1024           thrpt    5  12146,561 ± 1533,959  ops/ms
+TsidCreator_getTsid1024_toString  thrpt    5   6507,373 ±  729,444  ops/ms
+-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  - 
+TsidCreator_getTsid4096           thrpt    5  11589,976 ± 1757,076  ops/ms
+TsidCreator_getTsid4096_toString  thrpt    5   6497,042 ± 1339,480  ops/ms
 ---------------------------------------------------------------------------
-Total time: 00:02:41
+Total time: 00:03:22
 ---------------------------------------------------------------------------
 ```
+
+Number of threads used in this the benchmark: 4.
 
 System: CPU i7-8565U, 16G RAM, Ubuntu 22.04, JVM 11, rng-tools installed.
 

@@ -8,8 +8,7 @@
 
 	<name>tsid-creator</name>
 	<url>http://github.com/f4b6a3/tsid-creator</url>
-	<description>A Java library for generating TSIDs (Time Sortable Identifier)</description>
-
+	<description>A Java library for generating Time-Sorted Unique Identifiers (TSID).</description>
 
 	<licenses>
 		<license>

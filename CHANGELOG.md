@@ -8,7 +8,8 @@ Nothing unreleased
 
 ## [5.1.0] - 2022-12-17
 
-Add a fast method to generate identifiers. #18
+-   Added the system property and environment variable to configure the node count. #19
+-   Added a fast method to generate identifiers. #18
 
 ## [5.0.2] - 2022-09-17
 
