@@ -236,6 +236,32 @@ public class TsidTest {
 	}
 
 	@Test
+	public void testFastTime() {
+		for (int i = 0; i < LOOP_MAX; i++) {
+
+			final long a = System.currentTimeMillis();
+			Tsid tsid = Tsid.fast();
+			final long b = System.currentTimeMillis();
+
+			long time = tsid.getUnixMilliseconds();
+			assertTrue(time >= a);
+			assertTrue(time <= b + 1);
+		}
+	}
+
+	@Test
+	public void testFastMonotonicity() {
+		long prev = 0;
+		for (int i = 0; i < LOOP_MAX; i++) {
+			Tsid tsid = Tsid.fast();
+			// minus to ignore counter rollover
+			long next = tsid.toLong() - LOOP_MAX;
+			assertTrue(next > prev);
+			prev = next;
+		}
+	}
+
+	@Test
 	public void testIsValid() {
 
 		String tsid = null; // Null

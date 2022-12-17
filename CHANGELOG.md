@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased
 
+## [5.1.0] - 2022-12-17
+
+Add a fast method to generate identifiers. #18
+
 ## [5.0.2] - 2022-09-17
 
 Rewrite docs. #17
@@ -358,7 +362,8 @@ Project created as an alternative Java implementation for Twitter's Snowflake.
 -   Added `LICENSE`
 -   Added test cases
 
-[unreleased]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.0.2...HEAD
+[unreleased]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.1.0...HEAD
+[5.1.0]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.0.2...tsid-creator-5.1.0
 [5.0.2]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.0.1...tsid-creator-5.0.2
 [5.0.1]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.0.0...tsid-creator-5.0.1
 [5.0.0]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-4.2.1...tsid-creator-5.0.0

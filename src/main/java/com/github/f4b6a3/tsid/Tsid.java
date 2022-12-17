@@ -26,9 +26,11 @@ package com.github.f4b6a3.tsid;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.SplittableRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * A class that represents Time Sortable Identifiers (TSID).
+ * A value object that represents a Time-Sorted Unique Identifier (TSID).
  * <p>
  * TSID is a 64-bit value that has 2 components:
  * <ul>
@@ -44,6 +46,7 @@ import java.time.Instant;
  * node.
  * <li><b>Counter (2 to 22 bits)</b>: a randomly generated number that is
  * incremented whenever the time component is repeated.
+ * </ul>
  * <p>
  * The random component layout depend on the node bits. If the node bits are 10,
  * the counter bits are limited to 12. In this example, the maximum node value
@@ -246,7 +249,7 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	}
 
 	/**
-	 * Convert the TSID into a number.
+	 * Converts the TSID into a number.
 	 * <p>
 	 * This method simply unwraps the internal value.
 	 * 
@@ -257,7 +260,7 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	}
 
 	/**
-	 * Convert the TSID into a byte array.
+	 * Converts the TSID into a byte array.
 	 * 
 	 * @return an byte array.
 	 */
@@ -278,13 +281,40 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	}
 
 	/**
+	 * Returns a fast new TSID.
+	 * <p>
+	 * This static method is a quick alternative to {@link TsidCreator#getTsid()}.
+	 * <p>
+	 * It employs {@link AtomicInteger} to generate up to 2^22 (4,194,304) TSIDs per
+	 * millisecond. It can be useful, for example, for logging.
+	 * <p>
+	 * Security-sensitive applications that require a cryptographically secure
+	 * pseudo-random generator <b>should</b> use {@link TsidCreator#getTsid()}.
+	 * <p>
+	 * System property "tsidcreator.node" and environment variable
+	 * "TSIDCREATOR_NODE" are ignored by this method. Therefore, there will be
+	 * collisions if more than one process is generating TSIDs using this method. In
+	 * that case, {@link TsidCreator#getTsid()} <b>should</b> be used in conjunction
+	 * with that property or variable.
+	 * 
+	 * @return a TSID
+	 * @see {@link AtomicInteger}
+	 * @since 5.1.0
+	 */
+	public static Tsid fast() {
+		final long time = (System.currentTimeMillis() - TSID_EPOCH) << RANDOM_BITS;
+		final long tail = LazyHolder.counter.incrementAndGet() & RANDOM_MASK;
+		return new Tsid(time | tail);
+	}
+
+	/**
 	 * Converts the TSID into a canonical string in upper case.
 	 * <p>
 	 * The output string is 13 characters long and contains only characters from
 	 * Crockford's base 32 alphabet.
 	 * <p>
-	 * For lower case string, use the shorthand {@code Tsid#toLowerCase()}, instead
-	 * of {@code Tsid#toString()#toLowerCase()}.
+	 * For lower case string, use the shorthand {@code Tsid.toLowerCase()} instead
+	 * of {@code Tsid.toString().toLowerCase()}.
 	 * 
 	 * @return a TSID string
 	 * @see <a href="https://www.crockford.com/base32.html">Crockford's Base 32</a>
@@ -300,7 +330,7 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 * The output string is 13 characters long and contains only characters from
 	 * Crockford's base 32 alphabet.
 	 * <p>
-	 * It is faster shorthand for {@code Tsid#toString()#toLowerCase()}.
+	 * It is faster shorthand for {@code Tsid.toString().toLowerCase()}.
 	 * 
 	 * @return a string
 	 * @see <a href="https://www.crockford.com/base32.html">Crockford's Base 32</a>
@@ -414,7 +444,7 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	}
 
 	/**
-	 * Compares two TSIDs as unsigned 64-bit integers.
+	 * Compares two TSIDs as <b>unsigned</b> 64-bit integers.
 	 * <p>
 	 * The first of two TSIDs is greater than the second if the most significant
 	 * byte in which they differ is greater for the first TSID.
@@ -498,5 +528,9 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 			}
 		}
 		return true; // It seems to be OK.
+	}
+
+	private static class LazyHolder {
+		private static final AtomicInteger counter = new AtomicInteger((new SplittableRandom()).nextInt());
 	}
 }
