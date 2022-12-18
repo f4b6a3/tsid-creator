@@ -249,6 +249,55 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	}
 
 	/**
+	 * Converts a canonical string using a custom format into a TSID.
+	 * <p>
+	 * The custom format uses a percentage (%) placeholder that tells the position
+	 * of the TSID in the input string. Only the first occurrence of % is converted
+	 * into a TSID.
+	 * <p>
+	 * Examples:
+	 * <ul>
+	 * <li>An identifier that starts with a letter:
+	 * <ul>
+	 * <li>String: K<b>0AWE5HZP3SKTK</b>
+	 * <li>Format: K%
+	 * <li>Output: 0AWE5HZP3SKTK
+	 * </ul>
+	 * </li>
+	 * <li>A file name with a prefix and an extension:
+	 * <ul>
+	 * <li>String: DOC-<b>0AWEFCF3YZ350</b>.PDF
+	 * <li>Format: DOC-%.PDF
+	 * <li>Output: 0AWEFCF3YZ350
+	 * </ul>
+	 * </li>
+	 * </ul>
+	 * <p>
+	 * The reverse operation can be done by {@link Tsid#toString(String)} or
+	 * {@link Tsid#toLowerCase(String)}.
+	 * 
+	 * @param string a canonical string using a custom format.
+	 * @param format a custom format
+	 * @return a TSID
+	 */
+	public static Tsid from(final String string, final String format) {
+
+		if (string != null && format != null) {
+			final int i = format.indexOf("%");
+			final int length = format.length() + 12;
+			final String head = format.substring(0, i);
+			final String tail = format.substring(i + 1);
+
+			if (string.length() == length) {
+				if (string.startsWith(head) && string.endsWith(tail)) {
+					return Tsid.from(string.substring(i, i + Tsid.TSID_CHARS));
+				}
+			}
+		}
+		throw new IllegalArgumentException(String.format("Invalid custom format TSID: \"%s\"", string));
+	}
+
+	/**
 	 * Converts the TSID into a number.
 	 * <p>
 	 * This method simply unwraps the internal value.
@@ -325,6 +374,39 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	}
 
 	/**
+	 * Converts the TSID to a canonical string in upper case using a custom format.
+	 * <p>
+	 * The custom format uses a percentage (%) placeholder that will be substituted
+	 * by the TSID string. Only the first occurrence of percentage will replaced.
+	 * <p>
+	 * Examples:
+	 * <ul>
+	 * <li>An identifier that starts with a letter:
+	 * <ul>
+	 * <li>TSID: 0AWE5HZP3SKTK
+	 * <li>Format: S%
+	 * <li>Output: S<b>0AWE5HZP3SKTK</b>
+	 * </ul>
+	 * </li>
+	 * <li>A file name with a prefix and an extension:
+	 * <ul>
+	 * <li>TSID: 0AWEFCF3YZ350
+	 * <li>Format: DOC-%.PDF
+	 * <li>Output: DOC-<b>0AWEFCF3YZ350</b>.PDF
+	 * </ul>
+	 * </li>
+	 * </ul>
+	 * <p>
+	 * The reverse operation can be done by {@link Tsid#from(String, String)}.
+	 * 
+	 * @param format a custom format
+	 * @return a string
+	 */
+	public String toString(final String format) {
+		return toString(ALPHABET_UPPERCASE, format);
+	}
+
+	/**
 	 * Converts the TSID into a canonical string in lower case.
 	 * <p>
 	 * The output string is 13 characters long and contains only characters from
@@ -337,6 +419,39 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 */
 	public String toLowerCase() {
 		return toString(ALPHABET_LOWERCASE);
+	}
+
+	/**
+	 * Converts the TSID to a canonical string in lower case using a custom format.
+	 * <p>
+	 * The custom format uses a percentage (%) placeholder that will be substituted
+	 * by the TSID string. Only the first occurrence of percentage will replaced.
+	 * <p>
+	 * Examples:
+	 * <ul>
+	 * <li>An identifier that starts with a letter:
+	 * <ul>
+	 * <li>TSID: 0aweeycxcw076
+	 * <li>Format: x%
+	 * <li>Output: x<b>0aweeycxcw076</b>
+	 * </ul>
+	 * </li>
+	 * <li>A file name with a prefix and an extension:
+	 * <ul>
+	 * <li>TSID: 0awef20qmav5k
+	 * <li>Format: doc-%.pdf
+	 * <li>Output: doc-<b>0awef20qmav5k</b>.pdf
+	 * </ul>
+	 * </li>
+	 * </ul>
+	 * <p>
+	 * The reverse operation can be done by {@link Tsid#from(String, String)}.
+	 * 
+	 * @param format a custom format
+	 * @return a string
+	 */
+	public String toLowerCase(final String format) {
+		return toString(ALPHABET_LOWERCASE, format);
 	}
 
 	/**
@@ -489,6 +604,20 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 		chars[0x0c] = alphabet[(int) (number & 0b11111)];
 
 		return new String(chars);
+	}
+
+	String toString(final char[] alphabet, final String format) {
+
+		if (format != null) {
+			final int i = format.indexOf("%");
+			if (i >= 0) {
+				final String head = format.substring(0, i);
+				final String tail = format.substring(i + 1);
+				return head + toString(alphabet) + tail;
+			}
+		}
+
+		throw new IllegalArgumentException(String.format("Invalid TSID custom format: \"%s\"", format));
 	}
 
 	static char[] toCharArray(final String string) {
