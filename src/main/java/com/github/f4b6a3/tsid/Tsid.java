@@ -279,6 +279,7 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 * @param string a canonical string using a custom format
 	 * @param format a custom format
 	 * @return a TSID
+	 * @since 5.2.0
 	 */
 	public static Tsid from(final String string, final String format) {
 
@@ -405,6 +406,7 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 * 
 	 * @param format a custom format
 	 * @return a string
+	 * @since 5.2.0
 	 */
 	public String toString(final String format) {
 		return toString(ALPHABET_UPPERCASE, format);
@@ -453,6 +455,7 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 * 
 	 * @param format a custom format
 	 * @return a string
+	 * @since 5.2.0
 	 */
 	public String toLowerCase(final String format) {
 		return toString(ALPHABET_LOWERCASE, format);

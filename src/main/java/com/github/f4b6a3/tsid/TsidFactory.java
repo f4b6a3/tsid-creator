@@ -37,7 +37,7 @@ import static com.github.f4b6a3.tsid.Tsid.RANDOM_MASK;
 /**
  * A factory that actually generates Time-Sorted Unique Identifiers (TSID).
  * <p>
- * This factory is used by the {@link TsidCreator} singleton.
+ * This factory is used by the {@link TsidCreator} utility.
  * <p>
  * Most people just need {@link TsidCreator}. However, you can use this class if
  * you need to make some customizations, for example changing the default

@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-Nothing unreleased
+Add simple format methods #20
 
 ## [5.1.0] - 2022-12-17
 
