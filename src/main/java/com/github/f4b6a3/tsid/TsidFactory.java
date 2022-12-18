@@ -46,7 +46,7 @@ import static com.github.f4b6a3.tsid.Tsid.RANDOM_MASK;
  * If a system property "tsidcreator.node" or environment variable
  * "TSIDCREATOR_NODE" is defined, its value is utilized as node identifier. One
  * of them <b>should</b> be defined to embed a machine ID in the generated TSID
- * in order to avoid TSID collisions. Using such property or variable is
+ * in order to avoid TSID collisions. Using that property or variable is
  * <b>highly recommended</b>. If no property or variable is defined, a random
  * node ID is generated at initialization.
  * <p>
@@ -99,7 +99,7 @@ public final class TsidFactory {
 	 * <p>
 	 * The node identifier provided by the "tsidcreator.node" system property or the
 	 * "TSIDCREATOR_NODE" environment variable is embedded in the generated TSIDs in
-	 * order to avoid collisions. It is <b>highly recommended</b> defining such
+	 * order to avoid collisions. It is <b>highly recommended</b> defining that
 	 * property or variable. Otherwise the node identifier will be randomly chosen.
 	 * <p>
 	 * If a system property "tsidcreator.node.count" or environment variable

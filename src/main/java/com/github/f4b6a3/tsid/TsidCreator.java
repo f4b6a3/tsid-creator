@@ -25,12 +25,12 @@
 package com.github.f4b6a3.tsid;
 
 /**
- * A singleton that generates Time-Sorted Unique Identifiers (TSID).
+ * A utility that generates Time-Sorted Unique Identifiers (TSID).
  * <p>
  * It is <b>highly recommended</b> to use this class in conjunction with the
  * "tsidcreator.node" system property or the "TSIDCREATOR_NODE" environment
- * variable. This is the simplest mechanism to avoid collisions between
- * identifiers produced by more than one machine or application instance.
+ * variable. This is a simple way to avoid collisions between identifiers
+ * produced by more than one machine or application instance.
  */
 public final class TsidCreator {
 
@@ -39,11 +39,6 @@ public final class TsidCreator {
 
 	/**
 	 * Returns a new TSID.
-	 * <p>
-	 * The amount of nodes is adjustable.
-	 * <p>
-	 * The maximum number of TSIDs that can be generated per millisecond per node
-	 * depends on the given amount of nodes.
 	 * <p>
 	 * The node ID is is set by defining the system property "tsidcreator.node" or
 	 * the environment variable "TSIDCREATOR_NODE". One of them <b>should</b> be
