@@ -276,14 +276,19 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 * The reverse operation can be done by {@link Tsid#toString(String)} or
 	 * {@link Tsid#toLowerCase(String)}.
 	 * 
-	 * @param string a canonical string using a custom format.
+	 * @param string a canonical string using a custom format
 	 * @param format a custom format
 	 * @return a TSID
 	 */
 	public static Tsid from(final String string, final String format) {
 
 		if (string != null && format != null) {
+
 			final int i = format.indexOf("%");
+			if (i < 0) {
+				throw new IllegalArgumentException(String.format("Invalid TSID custom format: \"%s\"", format));
+			}
+
 			final int length = format.length() + 12;
 			final String head = format.substring(0, i);
 			final String tail = format.substring(i + 1);

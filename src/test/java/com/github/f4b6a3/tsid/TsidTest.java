@@ -159,6 +159,20 @@ public class TsidTest {
 		}
 
 		try {
+			Tsid.from("", null);
+			fail();
+		} catch (IllegalArgumentException e) {
+			// success
+		}
+
+		try {
+			Tsid.from("", "");
+			fail();
+		} catch (IllegalArgumentException e) {
+			// success
+		}
+
+		try {
 			Tsid.from("", "%");
 			fail();
 		} catch (IllegalArgumentException e) {
