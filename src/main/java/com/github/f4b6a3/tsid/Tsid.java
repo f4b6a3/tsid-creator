@@ -293,12 +293,11 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 			final String head = format.substring(0, i);
 			final String tail = format.substring(i + 1);
 
-			if (string.length() == length) {
-				if (string.startsWith(head) && string.endsWith(tail)) {
-					return Tsid.from(string.substring(i, i + Tsid.TSID_CHARS));
-				}
+			if (string.length() == length && string.startsWith(head) && string.endsWith(tail)) {
+				return Tsid.from(string.substring(i, i + Tsid.TSID_CHARS));
 			}
 		}
+
 		throw new IllegalArgumentException(String.format("Invalid custom format TSID: \"%s\"", string));
 	}
 
