@@ -25,6 +25,7 @@
 package com.github.f4b6a3.tsid;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.time.Instant;
 import java.util.SplittableRandom;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -249,60 +250,6 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	}
 
 	/**
-	 * Converts a canonical string using a custom format into a TSID.
-	 * <p>
-	 * The custom format uses a percentage (%) placeholder that tells the position
-	 * of the TSID in the input string. Only the first occurrence of % is converted
-	 * into a TSID.
-	 * <p>
-	 * Examples:
-	 * <ul>
-	 * <li>An identifier that starts with a letter:
-	 * <ul>
-	 * <li>String: K<b>0AWE5HZP3SKTK</b>
-	 * <li>Format: K%
-	 * <li>Output: 0AWE5HZP3SKTK
-	 * </ul>
-	 * </li>
-	 * <li>A file name with a prefix and an extension:
-	 * <ul>
-	 * <li>String: DOC-<b>0AWEFCF3YZ350</b>.PDF
-	 * <li>Format: DOC-%.PDF
-	 * <li>Output: 0AWEFCF3YZ350
-	 * </ul>
-	 * </li>
-	 * </ul>
-	 * <p>
-	 * The reverse operation can be done by {@link Tsid#toString(String)} or
-	 * {@link Tsid#toLowerCase(String)}.
-	 * 
-	 * @param string a canonical string using a custom format
-	 * @param format a custom format
-	 * @return a TSID
-	 * @since 5.2.0
-	 */
-	public static Tsid from(final String string, final String format) {
-
-		if (string != null && format != null) {
-
-			final int i = format.indexOf("%");
-			if (i < 0) {
-				throw new IllegalArgumentException(String.format("Invalid TSID custom format: \"%s\"", format));
-			}
-
-			final int length = format.length() + 12;
-			final String head = format.substring(0, i);
-			final String tail = format.substring(i + 1);
-
-			if (string.length() == length && string.startsWith(head) && string.endsWith(tail)) {
-				return Tsid.from(string.substring(i, i + Tsid.TSID_CHARS));
-			}
-		}
-
-		throw new IllegalArgumentException(String.format("Invalid custom format TSID: \"%s\"", string));
-	}
-
-	/**
 	 * Converts the TSID into a number.
 	 * <p>
 	 * This method simply unwraps the internal value.
@@ -379,40 +326,6 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	}
 
 	/**
-	 * Converts the TSID to a canonical string in upper case using a custom format.
-	 * <p>
-	 * The custom format uses a percentage (%) placeholder that will be substituted
-	 * by the TSID string. Only the first occurrence of percentage will replaced.
-	 * <p>
-	 * Examples:
-	 * <ul>
-	 * <li>An identifier that starts with a letter:
-	 * <ul>
-	 * <li>TSID: 0AWE5HZP3SKTK
-	 * <li>Format: S%
-	 * <li>Output: S<b>0AWE5HZP3SKTK</b>
-	 * </ul>
-	 * </li>
-	 * <li>A file name with a prefix and an extension:
-	 * <ul>
-	 * <li>TSID: 0AWEFCF3YZ350
-	 * <li>Format: DOC-%.PDF
-	 * <li>Output: DOC-<b>0AWEFCF3YZ350</b>.PDF
-	 * </ul>
-	 * </li>
-	 * </ul>
-	 * <p>
-	 * The reverse operation can be done by {@link Tsid#from(String, String)}.
-	 * 
-	 * @param format a custom format
-	 * @return a string
-	 * @since 5.2.0
-	 */
-	public String toString(final String format) {
-		return toString(ALPHABET_UPPERCASE, format);
-	}
-
-	/**
 	 * Converts the TSID into a canonical string in lower case.
 	 * <p>
 	 * The output string is 13 characters long and contains only characters from
@@ -425,40 +338,6 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 */
 	public String toLowerCase() {
 		return toString(ALPHABET_LOWERCASE);
-	}
-
-	/**
-	 * Converts the TSID to a canonical string in lower case using a custom format.
-	 * <p>
-	 * The custom format uses a percentage (%) placeholder that will be substituted
-	 * by the TSID string. Only the first occurrence of percentage will replaced.
-	 * <p>
-	 * Examples:
-	 * <ul>
-	 * <li>An identifier that starts with a letter:
-	 * <ul>
-	 * <li>TSID: 0aweeycxcw076
-	 * <li>Format: x%
-	 * <li>Output: x<b>0aweeycxcw076</b>
-	 * </ul>
-	 * </li>
-	 * <li>A file name with a prefix and an extension:
-	 * <ul>
-	 * <li>TSID: 0awef20qmav5k
-	 * <li>Format: doc-%.pdf
-	 * <li>Output: doc-<b>0awef20qmav5k</b>.pdf
-	 * </ul>
-	 * </li>
-	 * </ul>
-	 * <p>
-	 * The reverse operation can be done by {@link Tsid#from(String, String)}.
-	 * 
-	 * @param format a custom format
-	 * @return a string
-	 * @since 5.2.0
-	 */
-	public String toLowerCase(final String format) {
-		return toString(ALPHABET_LOWERCASE, format);
 	}
 
 	/**
@@ -613,24 +492,134 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 		return new String(chars);
 	}
 
-	String toString(final char[] alphabet, final String format) {
-
+	/**
+	 * Converts the TSID to a string using a custom format.
+	 * <p>
+	 * The custom format uses a "format specifier" as a placeholder that will be
+	 * substituted by the TSID string. Only the first occurrence of a format
+	 * specifier will replaced.
+	 * <p>
+	 * Format specifiers:
+	 * <ul>
+	 * <li>%S: canonical string in upper case
+	 * <li>%s: canonical string in lower case
+	 * <li>%X: hexadecimal in upper case
+	 * <li>%x: hexadecimal in lower case
+	 * <li>%d: base-10
+	 * <li>%z: base-62
+	 * </ul>
+	 * <p>
+	 * Examples:
+	 * <ul>
+	 * <li>An key that starts with a letter:
+	 * <ul>
+	 * <li>TSID: 0AWE5HZP3SKTK
+	 * <li>Format: K%s
+	 * <li>Output: K<b>0AWE5HZP3SKTK</b>
+	 * </ul>
+	 * </li>
+	 * <li>A file name in hexadecimal with a prefix and an extension:
+	 * <ul>
+	 * <li>TSID: 0AXFXR5W7VBX0
+	 * <li>Format: DOC-%X.PDF
+	 * <li>Output: DOC-<b>0575FDC1786137D6</b>.PDF
+	 * </ul>
+	 * </li>
+	 * </ul>
+	 * <p>
+	 * The opposite operation can be done by {@link Tsid#unformat(String, String)}.
+	 * 
+	 * @param format a custom format
+	 * @return a string using a custom format
+	 * @since 5.2.0
+	 */
+	public String format(final String format) {
 		if (format != null) {
 			final int i = format.indexOf("%");
-			if (i >= 0) {
+			if (i >= 0 && i < format.length() - 1) {
 				final String head = format.substring(0, i);
-				final String tail = format.substring(i + 1);
-				return head + toString(alphabet) + tail;
+				final String tail = format.substring(i + 2);
+				switch (format.charAt(i + 1)) {
+				case 'S': // canonical string in upper case
+					return head + toString() + tail;
+				case 's': // canonical string in lower case
+					return head + toLowerCase() + tail;
+				case 'X': // hexadecimal in upper case
+					return head + BaseN.encode(this, 16) + tail;
+				case 'x': // hexadecimal in lower case
+					return head + BaseN.encode(this, 16).toLowerCase() + tail;
+				case 'd': // base-10
+					return head + BaseN.encode(this, 10) + tail;
+				case 'z': // base-62
+					return head + BaseN.encode(this, 62) + tail;
+				default:
+				}
 			}
 		}
+		throw new IllegalArgumentException(String.format("Invalid format string: \"%s\"", format));
+	}
 
-		throw new IllegalArgumentException(String.format("Invalid TSID custom format: \"%s\"", format));
+	/**
+	 * Converts string using a custom format to a TSID.
+	 * <p>
+	 * This method does the opposite operation of {@link Tsid#format(String)}.
+	 * <p>
+	 * Examples:
+	 * <ul>
+	 * <li>An key that starts with a letter:
+	 * <ul>
+	 * <li>String: K<b>0AWE5HZP3SKTK</b>
+	 * <li>Format: K%s
+	 * <li>Output: 0AWE5HZP3SKTK
+	 * </ul>
+	 * </li>
+	 * <li>A file name in hexadecimal with a prefix and an extension:
+	 * <ul>
+	 * <li>String: DOC-<b>0575FDC1786137D6</b>.PDF
+	 * <li>Format: DOC-%X.PDF
+	 * <li>Output: 0AXFXR5W7VBX0
+	 * </ul>
+	 * </li>
+	 * </ul>
+	 * 
+	 * @param formatted a string using a custom format
+	 * @param format    a custom format
+	 * @return a TSID
+	 * @since 5.2.0
+	 */
+	public static Tsid unformat(final String formatted, final String format) {
+		if (formatted != null && format != null) {
+			final int i = format.indexOf("%");
+			if (i >= 0 && i < format.length() - 1) {
+				final String head = format.substring(0, i);
+				final String tail = format.substring(i + 2);
+				final int length = formatted.length() - head.length() - tail.length();
+				if (formatted.startsWith(head) && formatted.endsWith(tail)) {
+					switch (format.charAt(i + 1)) {
+					case 'S': // canonical string in upper case
+						return Tsid.from(formatted.substring(i, i + length));
+					case 's': // canonical string in lower case
+						return Tsid.from(formatted.substring(i, i + length));
+					case 'X': // hexadecimal in upper case (case insensitive when decoding)
+						return BaseN.decode(formatted.substring(i, i + length).toUpperCase(), 16);
+					case 'x': // hexadecimal in lower case (case insensitive when decoding)
+						return BaseN.decode(formatted.substring(i, i + length).toUpperCase(), 16);
+					case 'd': // base-10
+						return BaseN.decode(formatted.substring(i, i + length), 10);
+					case 'z': // base-62
+						return BaseN.decode(formatted.substring(i, i + length), 62);
+					default:
+					}
+				}
+			}
+		}
+		throw new IllegalArgumentException(String.format("Invalid formatted string: \"%s\"", formatted));
 	}
 
 	static char[] toCharArray(final String string) {
 		char[] chars = string == null ? null : string.toCharArray();
 		if (!isValidCharArray(chars)) {
-			throw new IllegalArgumentException(String.format("Invalid TSID: \"%s\"", string));
+			throw new IllegalArgumentException(String.format("Invalid TSID string: \"%s\"", string));
 		}
 		return chars;
 	}
@@ -668,5 +657,48 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 
 	private static class LazyHolder {
 		private static final AtomicInteger counter = new AtomicInteger((new SplittableRandom()).nextInt());
+	}
+
+	static class BaseN {
+
+		private static final String alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+		static String encode(Tsid tsid, int base) {
+
+			BigInteger x = new BigInteger(1, tsid.toBytes());
+			final BigInteger radix = BigInteger.valueOf(base);
+			final int length = (int) Math.ceil(Long.SIZE / (Math.log(base) / Math.log(2)));
+
+			int b = length; // buffer index
+			char[] buffer = new char[length];
+
+			while (x.compareTo(BigInteger.ZERO) > 0) {
+				BigInteger[] result = x.divideAndRemainder(radix);
+				buffer[--b] = alphabet.charAt(result[1].intValue());
+				x = result[0];
+			}
+
+			while (b > 0) {
+				buffer[--b] = '0';
+			}
+
+			return new String(buffer);
+		}
+
+		static Tsid decode(String string, long base) {
+
+			BigInteger x = BigInteger.ZERO;
+			final BigInteger radix = BigInteger.valueOf(base);
+
+			for (int i = 0; i < string.length(); i++) {
+				final long plus = (int) alphabet.indexOf(string.charAt(i));
+				if (plus < 0 || plus >= base) {
+					throw new IllegalArgumentException(String.format("Invalid base-%d: %s", radix, string));
+				}
+				x = x.multiply(radix).add(BigInteger.valueOf(plus));
+			}
+
+			return new Tsid(x.longValue());
+		}
 	}
 }
