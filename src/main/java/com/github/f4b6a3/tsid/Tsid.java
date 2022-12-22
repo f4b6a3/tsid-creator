@@ -493,13 +493,59 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	}
 
 	/**
+	 * Converts a TSID to a base-n encoded string.
+	 * <p>
+	 * Example:
+	 * <ul>
+	 * <li>TSID: 0AXS751X00W7C
+	 * <li>Base: 62
+	 * <li>Output: 0T5jFDIkmmy
+	 * </ul>
+	 * <p>
+	 * The output string is left padded with zeros.
+	 * 
+	 * @param base a radix between 2 and 62
+	 * @return a base-n encoded string
+	 * @since 5.2.0
+	 */
+	public String encode(final int base) {
+		if (base < 2 || base > 62) {
+			throw new IllegalArgumentException(String.format("Invalid base: %s", base));
+		}
+		return BaseN.encode(this, base);
+	}
+
+	/**
+	 * Converts a base-n encoded string to a TSID.
+	 * <p>
+	 * Example:
+	 * <ul>
+	 * <li>String: 05772439BB9F9074
+	 * <li>Base: 16
+	 * <li>Output: 0AXS476XSZ43M
+	 * </ul>
+	 * <p>
+	 * The input string is left padded with zeros.
+	 * 
+	 * @param string a base-n encoded string
+	 * @param base   a radix between 2 and 62
+	 * @return a TSID
+	 * @since 5.2.0
+	 */
+	public static Tsid decode(final String string, final int base) {
+		if (base < 2 || base > 62) {
+			throw new IllegalArgumentException(String.format("Invalid base: %s", base));
+		}
+		return BaseN.decode(string, base);
+	}
+
+	/**
 	 * Converts the TSID to a string using a custom format.
 	 * <p>
-	 * The custom format uses a "format specifier" as a placeholder that will be
-	 * substituted by the TSID string. Only the first occurrence of a format
-	 * specifier will replaced.
+	 * The custom format uses a placeholder that will be substituted by the TSID
+	 * string. Only the first occurrence of a placeholder will replaced.
 	 * <p>
-	 * Format specifiers:
+	 * Placeholders:
 	 * <ul>
 	 * <li>%S: canonical string in upper case
 	 * <li>%s: canonical string in lower case
@@ -514,7 +560,7 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 * <li>An key that starts with a letter:
 	 * <ul>
 	 * <li>TSID: 0AWE5HZP3SKTK
-	 * <li>Format: K%s
+	 * <li>Format: K%S
 	 * <li>Output: K<b>0AWE5HZP3SKTK</b>
 	 * </ul>
 	 * </li>
@@ -569,7 +615,7 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 * <li>An key that starts with a letter:
 	 * <ul>
 	 * <li>String: K<b>0AWE5HZP3SKTK</b>
-	 * <li>Format: K%s
+	 * <li>Format: K%S
 	 * <li>Output: 0AWE5HZP3SKTK
 	 * </ul>
 	 * </li>
@@ -596,13 +642,13 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 				final int length = formatted.length() - head.length() - tail.length();
 				if (formatted.startsWith(head) && formatted.endsWith(tail)) {
 					switch (format.charAt(i + 1)) {
-					case 'S': // canonical string in upper case
+					case 'S': // canonical string (case insensitive here)
 						return Tsid.from(formatted.substring(i, i + length));
-					case 's': // canonical string in lower case
+					case 's': // canonical string (case insensitive here)
 						return Tsid.from(formatted.substring(i, i + length));
-					case 'X': // hexadecimal in upper case (case insensitive when decoding)
+					case 'X': // hexadecimal (case insensitive here)
 						return BaseN.decode(formatted.substring(i, i + length).toUpperCase(), 16);
-					case 'x': // hexadecimal in lower case (case insensitive when decoding)
+					case 'x': // hexadecimal (case insensitive here)
 						return BaseN.decode(formatted.substring(i, i + length).toUpperCase(), 16);
 					case 'd': // base-10
 						return BaseN.decode(formatted.substring(i, i + length), 10);
@@ -655,15 +701,12 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 		return true; // It seems to be OK.
 	}
 
-	private static class LazyHolder {
-		private static final AtomicInteger counter = new AtomicInteger((new SplittableRandom()).nextInt());
-	}
-
 	static class BaseN {
 
-		private static final String alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+		private static final BigInteger MAX = BigInteger.TWO.pow(64);
+		private static final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"; // base-62
 
-		static String encode(Tsid tsid, int base) {
+		static String encode(final Tsid tsid, final int base) {
 
 			BigInteger x = new BigInteger(1, tsid.toBytes());
 			final BigInteger radix = BigInteger.valueOf(base);
@@ -674,7 +717,7 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 
 			while (x.compareTo(BigInteger.ZERO) > 0) {
 				BigInteger[] result = x.divideAndRemainder(radix);
-				buffer[--b] = alphabet.charAt(result[1].intValue());
+				buffer[--b] = ALPHABET.charAt(result[1].intValue());
 				x = result[0];
 			}
 
@@ -685,20 +728,33 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 			return new String(buffer);
 		}
 
-		static Tsid decode(String string, long base) {
+		static Tsid decode(final String string, final int base) {
 
 			BigInteger x = BigInteger.ZERO;
 			final BigInteger radix = BigInteger.valueOf(base);
+			final int length = (int) Math.ceil(Long.SIZE / (Math.log(base) / Math.log(2)));
+
+			if (string.length() != length) {
+				throw new IllegalArgumentException(String.format("Invalid base-%d length: %s", base, string.length()));
+			}
 
 			for (int i = 0; i < string.length(); i++) {
-				final long plus = (int) alphabet.indexOf(string.charAt(i));
+				final long plus = (int) ALPHABET.indexOf(string.charAt(i));
 				if (plus < 0 || plus >= base) {
-					throw new IllegalArgumentException(String.format("Invalid base-%d: %s", radix, string));
+					throw new IllegalArgumentException(String.format("Invalid base-%d string: %s", base, string));
 				}
 				x = x.multiply(radix).add(BigInteger.valueOf(plus));
 			}
 
+			if (x.compareTo(MAX) > 0) {
+				throw new IllegalArgumentException(String.format("Invalid base-%d value (overflow): %s", base, x));
+			}
+
 			return new Tsid(x.longValue());
 		}
+	}
+
+	private static class LazyHolder {
+		private static final AtomicInteger counter = new AtomicInteger((new SplittableRandom()).nextInt());
 	}
 }

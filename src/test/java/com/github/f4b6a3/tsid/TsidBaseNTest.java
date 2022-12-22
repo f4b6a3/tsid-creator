@@ -6,20 +6,18 @@ import java.math.BigInteger;
 
 import org.junit.Test;
 
-import static com.github.f4b6a3.tsid.Tsid.BaseN.encode;
-import static com.github.f4b6a3.tsid.Tsid.BaseN.decode;
-
 public class TsidBaseNTest {
 
 	@Test
 	public void testBase10() {
 		final int radix = 10;
 		final String[][] list = BASE10;
+
 		for (int i = 0; i < list.length; i++) {
 			BigInteger o = new BigInteger(list[i][0], 16);
 			Tsid tsid = new Tsid(o.longValue());
-			assertEquals(list[i][1], encode(tsid, radix));
-			assertEquals(tsid, decode(list[i][1], radix));
+			assertEquals(list[i][1], tsid.encode(radix));
+			assertEquals(tsid, Tsid.decode(list[i][1], radix));
 		}
 	}
 
@@ -30,8 +28,8 @@ public class TsidBaseNTest {
 		for (int i = 0; i < list.length; i++) {
 			BigInteger o = new BigInteger(list[i][0], 16);
 			Tsid tsid = new Tsid(o.longValue());
-			assertEquals(list[i][1], encode(tsid, radix));
-			assertEquals(tsid, decode(list[i][1], radix));
+			assertEquals(list[i][1], tsid.encode(radix));
+			assertEquals(tsid, Tsid.decode(list[i][1], radix));
 		}
 	}
 
@@ -42,8 +40,8 @@ public class TsidBaseNTest {
 		for (int i = 0; i < list.length; i++) {
 			BigInteger o = new BigInteger(list[i][0], 16);
 			Tsid tsid = new Tsid(o.longValue());
-			assertEquals(list[i][1], encode(tsid, radix));
-			assertEquals(tsid, decode(list[i][1], radix));
+			assertEquals(list[i][1], tsid.encode(radix));
+			assertEquals(tsid, Tsid.decode(list[i][1], radix));
 		}
 	}
 
@@ -3059,44 +3057,47 @@ public class TsidBaseNTest {
 			{ "d6b95814279b72fd", "IQyBoK8vi0L" }, //
 			{ "f834e7672858ab5c", "LJCHtsgMjDI" }, //
 			{ "1c6e0a3220674695", "2RKXqwJ0yLV" }, //
-			{ "4a1cbac7d969bc90", "6MUquKBgQLo" }  //
+			{ "4a1cbac7d969bc90", "6MUquKBgQLo" } //
 	};
 
-/**
- * #!/bin/env python3
- * 
- * import math
- * import string
- * import random
- * 
- * def basen(number, alphabet):
- * 	output = ""
- * 	base = len(alphabet)
- * 	while number:
- * 		output += alphabet[number % base]
- * 		number //= base
- * 	return output[::-1]
- * 
- * def encode(number, alphabet):
- * 	
- * 	pad = alphabet[0]
- * 	base = len(alphabet)
- * 	length = int(math.ceil(64 / (math.log(base) / math.log(2))))
- * 	
- * 	encoded = basen(number, alphabet)
- * 	return encoded.rjust(length, pad)
- * 
- * def generate(base, amount):
- * 
- *     alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_"[:base]
- *     for i in range(amount):
- *         number = random.randrange((1<<64));
- *         print('{ "%016x", "%s" }, //' % (number, encode(number, alphabet)))
- * 
- * #generate(10, 1000)
- * #generate(16, 1000)
- * #generate(43, 1000)
- * #generate(62, 1000)
- * 
- */
+	/**
+	 * Python3 code used to generate the test matrixes.
+	 * 
+	 * <pre>
+	 * #!/bin/env python3
+	 * 
+	 * import math
+	 * import string
+	 * import random
+	 * 
+	 * def basen(number, alphabet):
+	 * 	output = ""
+	 * 	base = len(alphabet)
+	 * 	while number:
+	 * 		output += alphabet[number % base]
+	 * 		number //= base
+	 * 	return output[::-1]
+	 * 
+	 * def encode(number, alphabet):
+	 * 	
+	 * 	pad = alphabet[0]
+	 * 	base = len(alphabet)
+	 * 	length = int(math.ceil(64 / (math.log(base) / math.log(2))))
+	 * 	
+	 * 	encoded = basen(number, alphabet)
+	 * 	return encoded.rjust(length, pad)
+	 * 
+	 * def generate(base, amount):
+	 * 
+	 *     alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_"[:base]
+	 *     for i in range(amount):
+	 *         number = random.randrange((1<<64));
+	 *         print('{ "%016x", "%s" }, //' % (number, encode(number, alphabet)))
+	 * 
+	 * #generate(10, 1000)
+	 * #generate(16, 1000)
+	 * #generate(43, 1000)
+	 * #generate(62, 1000)
+	 * </pre>
+	 */
 }

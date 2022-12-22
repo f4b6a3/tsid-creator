@@ -6,7 +6,9 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	TsidTest.class,
+	TsidBaseNTest.class,
 	TsidFactoryTest.class,
+	TsidFormatTest.class,
 	TsidFactory00001Test.class,
 	TsidFactory00064Test.class,
 	TsidFactory00256Test.class,
