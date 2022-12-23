@@ -471,29 +471,8 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 		return 0;
 	}
 
-	String toString(final char[] alphabet) {
-
-		final char[] chars = new char[TSID_CHARS];
-
-		chars[0x00] = alphabet[(int) ((number >>> 60) & 0b11111)];
-		chars[0x01] = alphabet[(int) ((number >>> 55) & 0b11111)];
-		chars[0x02] = alphabet[(int) ((number >>> 50) & 0b11111)];
-		chars[0x03] = alphabet[(int) ((number >>> 45) & 0b11111)];
-		chars[0x04] = alphabet[(int) ((number >>> 40) & 0b11111)];
-		chars[0x05] = alphabet[(int) ((number >>> 35) & 0b11111)];
-		chars[0x06] = alphabet[(int) ((number >>> 30) & 0b11111)];
-		chars[0x07] = alphabet[(int) ((number >>> 25) & 0b11111)];
-		chars[0x08] = alphabet[(int) ((number >>> 20) & 0b11111)];
-		chars[0x09] = alphabet[(int) ((number >>> 15) & 0b11111)];
-		chars[0x0a] = alphabet[(int) ((number >>> 10) & 0b11111)];
-		chars[0x0b] = alphabet[(int) ((number >>> 5) & 0b11111)];
-		chars[0x0c] = alphabet[(int) (number & 0b11111)];
-
-		return new String(chars);
-	}
-
 	/**
-	 * Converts a TSID to a base-n encoded string.
+	 * Converts the TSID to a base-n encoded string.
 	 * <p>
 	 * Example:
 	 * <ul>
@@ -582,31 +561,34 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	public String format(final String format) {
 		if (format != null) {
 			final int i = format.indexOf("%");
-			if (i >= 0 && i < format.length() - 1) {
-				final String head = format.substring(0, i);
-				final String tail = format.substring(i + 2);
-				switch (format.charAt(i + 1)) {
-				case 'S': // canonical string in upper case
-					return head + toString() + tail;
-				case 's': // canonical string in lower case
-					return head + toLowerCase() + tail;
-				case 'X': // hexadecimal in upper case
-					return head + BaseN.encode(this, 16) + tail;
-				case 'x': // hexadecimal in lower case
-					return head + BaseN.encode(this, 16).toLowerCase() + tail;
-				case 'd': // base-10
-					return head + BaseN.encode(this, 10) + tail;
-				case 'z': // base-62
-					return head + BaseN.encode(this, 62) + tail;
-				default:
-				}
+			if (i < 0 || i == format.length() - 1) {
+				throw new IllegalArgumentException(String.format("Invalid format string: \"%s\"", format));
+			}
+			final String head = format.substring(0, i);
+			final String tail = format.substring(i + 2);
+			final char placeholder = format.charAt(i + 1);
+			switch (placeholder) {
+			case 'S': // canonical string in upper case
+				return head + toString() + tail;
+			case 's': // canonical string in lower case
+				return head + toLowerCase() + tail;
+			case 'X': // hexadecimal in upper case
+				return head + BaseN.encode(this, 16) + tail;
+			case 'x': // hexadecimal in lower case
+				return head + BaseN.encode(this, 16).toLowerCase() + tail;
+			case 'd': // base-10
+				return head + BaseN.encode(this, 10) + tail;
+			case 'z': // base-62
+				return head + BaseN.encode(this, 62) + tail;
+			default:
+				throw new IllegalArgumentException(String.format("Invalid placeholder: \"%%%s\"", placeholder));
 			}
 		}
 		throw new IllegalArgumentException(String.format("Invalid format string: \"%s\"", format));
 	}
 
 	/**
-	 * Converts string using a custom format to a TSID.
+	 * Converts a string using a custom format to a TSID.
 	 * <p>
 	 * This method does the opposite operation of {@link Tsid#format(String)}.
 	 * <p>
@@ -636,30 +618,54 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	public static Tsid unformat(final String formatted, final String format) {
 		if (formatted != null && format != null) {
 			final int i = format.indexOf("%");
-			if (i >= 0 && i < format.length() - 1) {
-				final String head = format.substring(0, i);
-				final String tail = format.substring(i + 2);
-				final int length = formatted.length() - head.length() - tail.length();
-				if (formatted.startsWith(head) && formatted.endsWith(tail)) {
-					switch (format.charAt(i + 1)) {
-					case 'S': // canonical string (case insensitive here)
-						return Tsid.from(formatted.substring(i, i + length));
-					case 's': // canonical string (case insensitive here)
-						return Tsid.from(formatted.substring(i, i + length));
-					case 'X': // hexadecimal (case insensitive here)
-						return BaseN.decode(formatted.substring(i, i + length).toUpperCase(), 16);
-					case 'x': // hexadecimal (case insensitive here)
-						return BaseN.decode(formatted.substring(i, i + length).toUpperCase(), 16);
-					case 'd': // base-10
-						return BaseN.decode(formatted.substring(i, i + length), 10);
-					case 'z': // base-62
-						return BaseN.decode(formatted.substring(i, i + length), 62);
-					default:
-					}
+			if (i < 0 || i == format.length() - 1) {
+				throw new IllegalArgumentException(String.format("Invalid format string: \"%s\"", format));
+			}
+			final String head = format.substring(0, i);
+			final String tail = format.substring(i + 2);
+			final char placeholder = format.charAt(i + 1);
+			final int length = formatted.length() - head.length() - tail.length();
+			if (formatted.startsWith(head) && formatted.endsWith(tail)) {
+				switch (placeholder) {
+				case 'S': // canonical string (case insensitive)
+					return Tsid.from(formatted.substring(i, i + length));
+				case 's': // canonical string (case insensitive)
+					return Tsid.from(formatted.substring(i, i + length));
+				case 'X': // hexadecimal (case insensitive)
+					return BaseN.decode(formatted.substring(i, i + length).toUpperCase(), 16);
+				case 'x': // hexadecimal (case insensitive)
+					return BaseN.decode(formatted.substring(i, i + length).toUpperCase(), 16);
+				case 'd': // base-10
+					return BaseN.decode(formatted.substring(i, i + length), 10);
+				case 'z': // base-62
+					return BaseN.decode(formatted.substring(i, i + length), 62);
+				default:
+					throw new IllegalArgumentException(String.format("Invalid placeholder: \"%%%s\"", placeholder));
 				}
 			}
 		}
 		throw new IllegalArgumentException(String.format("Invalid formatted string: \"%s\"", formatted));
+	}
+
+	String toString(final char[] alphabet) {
+
+		final char[] chars = new char[TSID_CHARS];
+
+		chars[0x00] = alphabet[(int) ((number >>> 60) & 0b11111)];
+		chars[0x01] = alphabet[(int) ((number >>> 55) & 0b11111)];
+		chars[0x02] = alphabet[(int) ((number >>> 50) & 0b11111)];
+		chars[0x03] = alphabet[(int) ((number >>> 45) & 0b11111)];
+		chars[0x04] = alphabet[(int) ((number >>> 40) & 0b11111)];
+		chars[0x05] = alphabet[(int) ((number >>> 35) & 0b11111)];
+		chars[0x06] = alphabet[(int) ((number >>> 30) & 0b11111)];
+		chars[0x07] = alphabet[(int) ((number >>> 25) & 0b11111)];
+		chars[0x08] = alphabet[(int) ((number >>> 20) & 0b11111)];
+		chars[0x09] = alphabet[(int) ((number >>> 15) & 0b11111)];
+		chars[0x0a] = alphabet[(int) ((number >>> 10) & 0b11111)];
+		chars[0x0b] = alphabet[(int) ((number >>> 5) & 0b11111)];
+		chars[0x0c] = alphabet[(int) (number & 0b11111)];
+
+		return new String(chars);
 	}
 
 	static char[] toCharArray(final String string) {
@@ -707,49 +713,43 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 		private static final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"; // base-62
 
 		static String encode(final Tsid tsid, final int base) {
-
 			BigInteger x = new BigInteger(1, tsid.toBytes());
 			final BigInteger radix = BigInteger.valueOf(base);
 			final int length = (int) Math.ceil(Long.SIZE / (Math.log(base) / Math.log(2)));
-
 			int b = length; // buffer index
 			char[] buffer = new char[length];
-
 			while (x.compareTo(BigInteger.ZERO) > 0) {
 				BigInteger[] result = x.divideAndRemainder(radix);
 				buffer[--b] = ALPHABET.charAt(result[1].intValue());
 				x = result[0];
 			}
-
 			while (b > 0) {
 				buffer[--b] = '0';
 			}
-
 			return new String(buffer);
 		}
 
 		static Tsid decode(final String string, final int base) {
-
 			BigInteger x = BigInteger.ZERO;
 			final BigInteger radix = BigInteger.valueOf(base);
 			final int length = (int) Math.ceil(Long.SIZE / (Math.log(base) / Math.log(2)));
-
+			if (string == null) {
+				throw new IllegalArgumentException(String.format("Invalid base-%d string: null", base));
+			}
 			if (string.length() != length) {
 				throw new IllegalArgumentException(String.format("Invalid base-%d length: %s", base, string.length()));
 			}
-
 			for (int i = 0; i < string.length(); i++) {
 				final long plus = (int) ALPHABET.indexOf(string.charAt(i));
 				if (plus < 0 || plus >= base) {
-					throw new IllegalArgumentException(String.format("Invalid base-%d string: %s", base, string));
+					throw new IllegalArgumentException(
+							String.format("Invalid base-%d character: %s", base, string.charAt(i)));
 				}
 				x = x.multiply(radix).add(BigInteger.valueOf(plus));
 			}
-
 			if (x.compareTo(MAX) > 0) {
 				throw new IllegalArgumentException(String.format("Invalid base-%d value (overflow): %s", base, x));
 			}
-
 			return new Tsid(x.longValue());
 		}
 	}

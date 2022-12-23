@@ -45,6 +45,78 @@ public class TsidBaseNTest {
 		}
 	}
 
+	@Test
+	public void testIllegalArgumentException() {
+
+		{
+			try {
+				String string = Tsid.fast().encode(62);
+				Tsid.decode(string, 62);
+				// success
+			} catch (IllegalArgumentException e) {
+				fail();
+			}
+		}
+
+		{
+			try {
+				Tsid.fast().encode(1);
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
+			try {
+				Tsid.fast().encode(63);
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
+
+			try {
+				Tsid.decode(null, 62);
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
+			try {
+				Tsid.decode("", 1);
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
+			try {
+				Tsid.decode("", 63);
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
+			try {
+				Tsid.decode("", 62);
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
+			try {
+				Tsid.decode("0000000000+", 62);
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
+			try {
+				Tsid.decode("0000000000z", 61);
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
+			try {
+				Tsid.decode("zzzzzzzzzzz", 62);
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
+		}
+	}
+
 	private static final String[][] BASE10 = { //
 			{ "0000000000000000", "00000000000000000000" }, //
 			{ "ffffffffffffffff", "18446744073709551615" }, //

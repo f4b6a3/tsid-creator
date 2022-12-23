@@ -55,7 +55,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>tsid-creator</artifactId>
-  <version>5.1.1</version>
+  <version>5.2.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator).
@@ -249,6 +249,22 @@ Get the creation instant of a TSID:
 
 ```java
 Instant instant = tsid.getInstant(); // 2020-04-15T22:31:02.458Z
+```
+
+---
+
+Encode a TSID to base-62:
+
+```java
+String string = tsid.encode(62); // 0T5jFDIkmmy
+```
+
+---
+
+Format a TSID to a string starting with a letter, where "K" is the letter and "%S" is a placeholder:
+
+```java
+String string = tsid.format("K%S"); // K0AWE5HZP3SKTK
 ```
 
 ---

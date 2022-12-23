@@ -58,48 +58,6 @@ public class TsidFormatTest {
 			formatted = head + encode(tsid, 62) + tail;
 			assertEquals(formatted, tsid.format(format));
 		}
-
-		try {
-			tsid.format((String) null);
-			fail();
-		} catch (IllegalArgumentException e) {
-			// success
-		}
-
-		try {
-			tsid.format("");
-			fail();
-		} catch (IllegalArgumentException e) {
-			// success
-		}
-
-		try {
-			tsid.format("INVALID");
-			fail();
-		} catch (IllegalArgumentException e) {
-			// success
-		}
-
-		try {
-			tsid.format((String) null);
-			fail();
-		} catch (IllegalArgumentException e) {
-			// success
-		}
-
-		try {
-			tsid.format("");
-			fail();
-		} catch (IllegalArgumentException e) {
-			// success
-		}
-
-		try {
-			tsid.format("INVALID");
-			fail();
-		} catch (IllegalArgumentException e) {
-			// success
-		}
 	}
 
 	@Test
@@ -151,40 +109,142 @@ public class TsidFormatTest {
 			formatted = head + encode(tsid, 62) + tail;
 			assertEquals(tsid, Tsid.unformat(formatted, format));
 		}
+	}
 
-		try {
-			Tsid.unformat(null, "%s");
-			fail();
-		} catch (IllegalArgumentException e) {
-			// success
+	@Test
+	public void testIllegalArgumentException() {
+
+		{
+			try {
+				String string = Tsid.fast().format("%z");
+				Tsid.unformat(string, "%z");
+				// success
+			} catch (IllegalArgumentException e) {
+				fail();
+			}
 		}
 
-		try {
-			Tsid.unformat("", null);
-			fail();
-		} catch (IllegalArgumentException e) {
-			// success
+		{
+			try {
+				Tsid.fast().format((String) null);
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
+
+			try {
+				Tsid.fast().format("");
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
+
+			try {
+				Tsid.fast().format("%");
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
+
+			try {
+				Tsid.fast().format("%a");
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
+
+			try {
+				Tsid.fast().format("INVALID");
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
+
+			try {
+				Tsid.fast().format("INVALID%");
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
 		}
 
-		try {
-			Tsid.unformat("", "");
-			fail();
-		} catch (IllegalArgumentException e) {
-			// success
-		}
+		{
+			try {
+				Tsid.unformat(null, "%s");
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
 
-		try {
-			Tsid.unformat("", "%s");
-			fail();
-		} catch (IllegalArgumentException e) {
-			// success
-		}
+			try {
+				Tsid.unformat("", null);
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
 
-		try {
-			Tsid.unformat("INVALID", "%s");
-			fail();
-		} catch (IllegalArgumentException e) {
-			// success
+			try {
+				Tsid.unformat("", "");
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
+
+			try {
+				Tsid.unformat("", "%s");
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
+
+			try {
+				Tsid.unformat("INVALID", "%s");
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
+		}
+		{
+			try {
+				Tsid.unformat("HEAD" + Tsid.fast() + "TAIL", "HEAD%STOES");
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
+			try {
+				Tsid.unformat("HEAD" + Tsid.fast() + "TAIL", "BANG%STAIL");
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
+
+			try {
+				Tsid.unformat("" + Tsid.fast(), "%a");
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
+
+			try {
+				Tsid.unformat("INVALID" + Tsid.fast(), "INVALID%");
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
+
+			try {
+				Tsid.unformat("HEADzzzTAIL", "HEAD%STAIL");
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
+
+			try {
+				Tsid.unformat("HEADTAIL", "HEAD%STAIL");
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
 		}
 	}
 
