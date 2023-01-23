@@ -252,7 +252,7 @@ public final class TsidFactory {
 		// Check if the current time is the same as the previous time or has moved
 		// backwards after a small system clock adjustment or after a leap second.
 		// Drift tolerance = (previous_time - 10s) < current_time <= previous_time
-		if ((time > this.lastTime - CLOCK_DRIFT_TOLERANCE) && (time <= this.lastTime)) {
+		if (time <= this.lastTime) {
 			this.counter++;
 			// Carry is 1 if an overflow occurs after ++.
 			int carry = this.counter >>> this.counterBits;
