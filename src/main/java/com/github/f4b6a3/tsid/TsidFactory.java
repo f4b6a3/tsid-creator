@@ -1,18 +1,18 @@
 /*
  * MIT License
- * 
+ *
  * Copyright (c) 2020-2022 Fabio Lima
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,15 +24,14 @@
 
 package com.github.f4b6a3.tsid;
 
+import static com.github.f4b6a3.tsid.Tsid.RANDOM_BITS;
+import static com.github.f4b6a3.tsid.Tsid.RANDOM_MASK;
 import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Random;
 import java.util.function.IntFunction;
 import java.util.function.IntSupplier;
-
-import static com.github.f4b6a3.tsid.Tsid.RANDOM_BITS;
-import static com.github.f4b6a3.tsid.Tsid.RANDOM_MASK;
 
 /**
  * A factory that actually generates Time-Sorted Unique Identifiers (TSID).
@@ -119,7 +118,7 @@ public final class TsidFactory {
 	 * If a system property "tsidcreator.node.count" or environment variable
 	 * "TSIDCREATOR_NODE_COUNT" is defined, its value is used to adjust the node
 	 * bits amount.
-	 * 
+	 *
 	 * @param node the node identifier
 	 */
 	public TsidFactory(int node) {
@@ -128,7 +127,7 @@ public final class TsidFactory {
 
 	/**
 	 * It builds a generator with the given builder.
-	 * 
+	 *
 	 * @param builder a builder instance
 	 */
 	private TsidFactory(Builder builder) {
@@ -157,7 +156,7 @@ public final class TsidFactory {
 
 	/**
 	 * Returns a new factory for up to 256 nodes and 16384 ID/ms.
-	 * 
+	 *
 	 * @return {@link TsidFactory}
 	 */
 	public static TsidFactory newInstance256() {
@@ -166,7 +165,7 @@ public final class TsidFactory {
 
 	/**
 	 * Returns a new factory for up to 256 nodes and 16384 ID/ms.
-	 * 
+	 *
 	 * @param node the node identifier
 	 * @return {@link TsidFactory}
 	 */
@@ -176,9 +175,9 @@ public final class TsidFactory {
 
 	/**
 	 * Returns a new factory for up to 1024 nodes and 4096 ID/ms.
-	 * 
+	 *
 	 * It is equivalent to {@code new TsidFactory()}.
-	 * 
+	 *
 	 * @return {@link TsidFactory}
 	 */
 	public static TsidFactory newInstance1024() {
@@ -187,9 +186,9 @@ public final class TsidFactory {
 
 	/**
 	 * Returns a new factory for up to 1024 nodes and 4096 ID/ms.
-	 * 
+	 *
 	 * It is equivalent to {@code new TsidFactory(int)}.
-	 * 
+	 *
 	 * @param node the node identifier
 	 * @return {@link TsidFactory}
 	 */
@@ -199,7 +198,7 @@ public final class TsidFactory {
 
 	/**
 	 * Returns a new factory for up to 4096 nodes and 1024 ID/ms.
-	 * 
+	 *
 	 * @return {@link TsidFactory}
 	 */
 	public static TsidFactory newInstance4096() {
@@ -208,7 +207,7 @@ public final class TsidFactory {
 
 	/**
 	 * Returns a new factory for up to 4096 nodes and 1024 ID/ms.
-	 * 
+	 *
 	 * @param node the node identifier
 	 * @return {@link TsidFactory}
 	 */
@@ -222,7 +221,7 @@ public final class TsidFactory {
 
 	/**
 	 * Returns a TSID.
-	 * 
+	 *
 	 * @return a TSID.
 	 */
 	public synchronized Tsid create() {
@@ -243,17 +242,17 @@ public final class TsidFactory {
 	 * The maximum number of increment operations depend on the counter bits. For
 	 * example, if the counter bits is 12, the maximum number of increment
 	 * operations is 2^12 = 4096.
-	 * 
+	 *
 	 * @return the current time
 	 */
-	private synchronized long getTime() {
+	private long getTime() {
 
 		long time = clock.millis();
 
 		// Check if the current time is the same as the previous time or has moved
 		// backwards after a small system clock adjustment or after a leap second.
 		// Drift tolerance = (previous_time - 10s) < current_time <= previous_time
-		if ((time > this.lastTime - CLOCK_DRIFT_TOLERANCE) && (time <= this.lastTime)) {
+		if (time <= this.lastTime) {
 			this.counter++;
 			// Carry is 1 if an overflow occurs after ++.
 			int carry = this.counter >>> this.counterBits;
@@ -277,7 +276,7 @@ public final class TsidFactory {
 	 * <p>
 	 * The counter maximum value depends on the node identifier bits. For example,
 	 * if the node identifier has 10 bits, the counter has 12 bits.
-	 * 
+	 *
 	 * @return a number
 	 */
 	private synchronized int getRandomCounter() {
@@ -330,7 +329,7 @@ public final class TsidFactory {
 		 * Set the node identifier.
 		 * <p>
 		 * The range is 0 to 2^nodeBits-1.
-		 * 
+		 *
 		 * @param node a number between 0 and 2^nodeBits-1.
 		 * @return {@link Builder}
 		 */
@@ -341,7 +340,7 @@ public final class TsidFactory {
 
 		/**
 		 * Set the node identifier bits length within the range 0 to 20.
-		 * 
+		 *
 		 * @param nodeBits a number between 0 and 20.
 		 * @return {@link Builder}
 		 */
@@ -355,7 +354,7 @@ public final class TsidFactory {
 
 		/**
 		 * Set the custom epoch.
-		 * 
+		 *
 		 * @param customEpoch an instant that represents the custom epoch.
 		 * @return {@link Builder}
 		 */
@@ -369,7 +368,7 @@ public final class TsidFactory {
 		 * <p>
 		 * The random generator is used to create a random function that is used to
 		 * reset the counter when the millisecond changes.
-		 * 
+		 *
 		 * @param random a {@link Random} generator
 		 * @return {@link Builder}
 		 */
@@ -389,7 +388,7 @@ public final class TsidFactory {
 		 * <p>
 		 * The random function is used to reset the counter when the millisecond
 		 * changes.
-		 * 
+		 *
 		 * @param randomFunction a random function that returns a integer value
 		 * @return {@link Builder}
 		 */
@@ -415,7 +414,7 @@ public final class TsidFactory {
 		 * increments the counter when the millisecond changes, for example, when your
 		 * app requires the counter to always be incremented, no matter if the
 		 * millisecond has changed or not, like Discord Snowflakes.
-		 * 
+		 *
 		 * @param randomFunction a random function that returns a byte array
 		 * @return {@link Builder}
 		 */
@@ -426,7 +425,7 @@ public final class TsidFactory {
 
 		/**
 		 * Set the clock to be used in tests.
-		 * 
+		 *
 		 * @param clock a clock
 		 * @return {@link Builder}
 		 */
@@ -437,7 +436,7 @@ public final class TsidFactory {
 
 		/**
 		 * Get the node identifier.
-		 * 
+		 *
 		 * @return a number
 		 */
 		protected Integer getNode() {
@@ -460,7 +459,7 @@ public final class TsidFactory {
 
 		/**
 		 * Get the node identifier bits length within the range 0 to 20.
-		 * 
+		 *
 		 * @return a number
 		 */
 		protected Integer getNodeBits() {
@@ -487,7 +486,7 @@ public final class TsidFactory {
 
 		/**
 		 * Gets the custom epoch.
-		 * 
+		 *
 		 * @return a number
 		 */
 		protected Long getCustomEpoch() {
@@ -499,7 +498,7 @@ public final class TsidFactory {
 
 		/**
 		 * Gets the random generator.
-		 * 
+		 *
 		 * @return a random generator
 		 */
 		protected IRandom getRandom() {
@@ -511,7 +510,7 @@ public final class TsidFactory {
 
 		/**
 		 * Gets the clock to be used in tests.
-		 * 
+		 *
 		 * @return a clock
 		 */
 		protected Clock getClock() {
@@ -523,7 +522,7 @@ public final class TsidFactory {
 
 		/**
 		 * Returns a build TSID factory.
-		 * 
+		 *
 		 * @return {@link TsidFactory}
 		 */
 		public TsidFactory build() {
