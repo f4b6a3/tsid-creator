@@ -9,6 +9,8 @@ public class TsidFactory00001Test extends TsidFactory00000Test {
 
 	private static final int NODE_BITS = 0;
 	private static final int COUNTER_BITS = 22;
+	
+	private static final int NODE_MAX = (int) Math.pow(2, NODE_BITS);
 	private static final int COUNTER_MAX = (int) Math.pow(2, COUNTER_BITS);
 
 	@Test
@@ -37,7 +39,7 @@ public class TsidFactory00001Test extends TsidFactory00000Test {
 
 		long startTime = System.currentTimeMillis();
 
-		int node = random.nextInt();
+		int node = random.nextInt(NODE_MAX);
 		TsidFactory factory = TsidFactory.builder().withNode(node).withNodeBits(NODE_BITS).withRandom(random).build();
 
 		long[] list = new long[LOOP_MAX];
@@ -80,7 +82,7 @@ public class TsidFactory00001Test extends TsidFactory00000Test {
 
 		long startTime = System.currentTimeMillis();
 
-		int node = random.nextInt();
+		int node = random.nextInt(NODE_MAX);
 		TsidFactory factory = TsidFactory.builder().withNode(node).withNodeBits(NODE_BITS).withRandom(random).build();
 
 		String[] list = new String[LOOP_MAX];

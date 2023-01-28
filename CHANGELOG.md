@@ -6,9 +6,10 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased.
 
-## [5.2.1] - 2022-12-28
+## [5.2.1] - 2023-01-28
 
 Fix incremental generation (by Francesco Illuminati) #24
+Validate the node ID passed to the builder #23
 
 ## [5.2.0] - 2022-12-23
 

@@ -319,11 +319,12 @@ public final class TsidFactory {
 
 		/**
 		 * Set the node identifier.
-		 * <p>
-		 * The range is 0 to 2^nodeBits-1.
-		 *
-		 * @param node a number between 0 and 2^nodeBits-1.
+		 * 
+		 * @param node a number that must be between 0 and 2^nodeBits-1.
 		 * @return {@link Builder}
+		 * @throws IllegalArgumentException if the node identifier is out of the range
+		 *                                  [0, 2^nodeBits-1] when {@code build()} is
+		 *                                  invoked
 		 */
 		public Builder withNode(Integer node) {
 			this.node = node;
@@ -331,15 +332,14 @@ public final class TsidFactory {
 		}
 
 		/**
-		 * Set the node identifier bits length within the range 0 to 20.
+		 * Set the node identifier bits length.
 		 *
-		 * @param nodeBits a number between 0 and 20.
+		 * @param nodeBits a number that must be between 0 and 20.
 		 * @return {@link Builder}
+		 * @throws IllegalArgumentException if the node bits are out of the range [0,
+		 *                                  20] when {@code build()} is invoked
 		 */
 		public Builder withNodeBits(Integer nodeBits) {
-			if (nodeBits < 0 || nodeBits > 20) {
-				throw new IllegalArgumentException("Node bits out of range: [0, 20]");
-			}
 			this.nodeBits = nodeBits;
 			return this;
 		}
@@ -430,11 +430,11 @@ public final class TsidFactory {
 		 * Get the node identifier.
 		 *
 		 * @return a number
+		 * @throws IllegalArgumentException if the node is out of range
 		 */
 		protected Integer getNode() {
 
-			// 2^22 - 1 = 4,194,303
-			final int mask = 0x3fffff;
+			final int max = (1 << nodeBits) - 1;
 
 			if (this.node == null) {
 				if (Settings.getNode() != null) {
@@ -442,17 +442,22 @@ public final class TsidFactory {
 					this.node = Settings.getNode();
 				} else {
 					// use random node identifier
-					this.node = this.random.nextInt();
+					this.node = this.random.nextInt() & max;
 				}
 			}
 
-			return this.node & mask;
+			if (node < 0 || node > max) {
+				throw new IllegalArgumentException(String.format("Node ID out of range [0, %s]: %s", max, node));
+			}
+
+			return this.node;
 		}
 
 		/**
 		 * Get the node identifier bits length within the range 0 to 20.
 		 *
 		 * @return a number
+		 * @throws IllegalArgumentException if the node bits are out of range
 		 */
 		protected Integer getNodeBits() {
 
@@ -466,11 +471,8 @@ public final class TsidFactory {
 				}
 			}
 
-			if (this.nodeBits < 0) {
-				this.nodeBits = 0;
-			}
-			if (this.nodeBits > 20) {
-				this.nodeBits = 20;
+			if (nodeBits < 0 || nodeBits > 20) {
+				throw new IllegalArgumentException(String.format("Node bits out of range [0, 20]: %s", nodeBits));
 			}
 
 			return this.nodeBits;
@@ -516,6 +518,8 @@ public final class TsidFactory {
 		 * Returns a build TSID factory.
 		 *
 		 * @return {@link TsidFactory}
+		 * @throws IllegalArgumentException if the node is out of range
+		 * @throws IllegalArgumentException if the node bits are out of range
 		 */
 		public TsidFactory build() {
 			return new TsidFactory(this);
