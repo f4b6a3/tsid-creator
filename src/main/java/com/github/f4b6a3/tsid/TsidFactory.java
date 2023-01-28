@@ -84,11 +84,6 @@ public final class TsidFactory {
 	static final int NODE_BITS_1024 = 10;
 	static final int NODE_BITS_4096 = 12;
 
-	// Used to preserve monotonicity when the system clock is
-	// adjusted by NTP after a small clock drift or when the
-	// system clock jumps back by 1 second due to leap second.
-	static final int CLOCK_DRIFT_TOLERANCE = 10_000;
-
 	// ******************************
 	// Constructors
 	// ******************************
@@ -249,9 +244,6 @@ public final class TsidFactory {
 
 		long time = clock.millis();
 
-		// Check if the current time is the same as the previous time or has moved
-		// backwards after a small system clock adjustment or after a leap second.
-		// Drift tolerance = (previous_time - 10s) < current_time <= previous_time
 		if (time <= this.lastTime) {
 			this.counter++;
 			// Carry is 1 if an overflow occurs after ++.

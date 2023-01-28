@@ -7,25 +7,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Test;
 
-/**
- * TSID must be generated incrementally as per specification but there is a
- * case where this condition is not met. When the factory generates more than the
- * {@code CLOCK_DRIFT_TOLERANCE * 2^(counterBits)} values per millisecond the condition:
- * <br>
- * {@code if ((time > this.lastTime - CLOCK_DRIFT_TOLERANCE) && (time <= this.lastTime)) }
- * <br>
- * is not met and the time is not incremented but only the counter. This will cause
- * the generated TSID value to be less than the previous one.
- * <p>
- * The <b>CLOCK_DRIFT_TOLERANCE</b> adjustment is not really needed: if a time glitch should accour
- * the bigger between the actual system time and the incremented internal value will automatically
- * prevail by simply using the line:
- * <br>
- * {@code if (time <= this.lastTime) }
- *
- */
 public class IncrementalTest {
 
+	private static final int TEN_SECONDS = 10_000;
+	
     private static class ClockMock extends Clock {
 
         private Instant instant = Instant.ofEpochSecond(0);
@@ -66,8 +51,7 @@ public class IncrementalTest {
 
         Tsid prev = factory.create();
 
-        // simulates a drift back of CLOCK_DRIFT_TOLERANCE
-        clock.decrementMillis(TsidFactory.CLOCK_DRIFT_TOLERANCE - 1);
+        clock.decrementMillis(TEN_SECONDS - 1);
 
         Tsid next = factory.create();
 
@@ -86,8 +70,7 @@ public class IncrementalTest {
 
         Tsid prev = factory.create();
 
-        // simulates a drift back of CLOCK_DRIFT_TOLERANCE
-        clock.incrementMillis(TsidFactory.CLOCK_DRIFT_TOLERANCE - 1);
+        clock.incrementMillis(TEN_SECONDS - 1);
 
         Tsid next = factory.create();
 
@@ -96,16 +79,15 @@ public class IncrementalTest {
 
     @Test
     public void shouldManageAGlitch() {
-
-        ClockMock clock = new ClockMock();
-
+    	
         TsidFactory factory = TsidFactory.builder()
+                .withRandomFunction(() -> 0)
+                .withClock(new ClockMock())
                 .withNodeBits(20)
                 .withNode(0)
-                .withClock(clock)
                 .build();
 
-        final int advanceTimeUpTODriftTolerance = TsidFactory.CLOCK_DRIFT_TOLERANCE * 4 - 1;
+        final int advanceTimeUpTODriftTolerance = TEN_SECONDS * 4 - 1;
 
         long last = Long.MIN_VALUE;
         for (int i=0; i < advanceTimeUpTODriftTolerance; i++) {
@@ -113,13 +95,10 @@ public class IncrementalTest {
             assertTrue(last < tsid);
             last = tsid;
         }
-
-        // this is the last TSID generated incrementally
+        
         Tsid prev = factory.create();
         assertTrue(last < prev.toLong());
-
-        // this TSID will be out of the time-CLOCK_DRIFT_TOLERANCE window and will not
-        // be incremented but only its counter will be incremented (error!)
+        
         Tsid next = factory.create();
         assertIncremental(prev, next);
     }
@@ -135,11 +114,10 @@ public class IncrementalTest {
         for (int i=0; i<1_000_000; i++) {
             long tsid = factory.create().toLong();
             if (last != 0 && tsid < last) {
-                fail(("generated TSID value is less that the previous one:\n" +
+                fail(String.format("generated TSID value is less that the previous one:\n" +
                      "   iteration: %d\n" +
                      "   previous: %s  long= %d\n" +
-                     "   actual  : %s  long= %d\n")
-                             .formatted(i,
+                     "   actual  : %s  long= %d\n", i,
                                      Tsid.from(last).toString(), last,
                                      Tsid.from(tsid).toString(), tsid));
             }
@@ -149,10 +127,10 @@ public class IncrementalTest {
 
     private void assertIncremental(Tsid prev, Tsid next) {
         assertTrue(
-                ("generated TSID value is less that the previous one:\n" +
+                String.format("generated TSID value is less that the previous one:\n" +
                 "   previous: %s  long= %d\n" +
-                "   actual  : %s  long= %d\n")
-                    .formatted(prev, prev.toLong(),next, next.toLong()),
+                "   actual  : %s  long= %d\n",
+                prev, prev.toLong(),next, next.toLong()),
                 prev.toLong() < next.toLong());
 
     }

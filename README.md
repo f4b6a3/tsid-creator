@@ -19,9 +19,12 @@ This project contains a [micro benchmark](https://github.com/f4b6a3/tsid-creator
 
 The jar file can be downloaded directly from [maven.org](https://repo1.maven.org/maven2/com/github/f4b6a3/tsid-creator/).
 
-If you have questions, read the [FAQ wiki page](https://github.com/f4b6a3/tsid-creator/wiki).
+Recommended readings:
 
-Also read the [Javadocs](https://javadoc.io/doc/com.github.f4b6a3/tsid-creator).
+* [Javadocs](https://javadoc.io/doc/com.github.f4b6a3/tsid-creator)
+* [FAQ wiki page](https://github.com/f4b6a3/tsid-creator/wiki)
+* [The best UUID type for a database Primary Key](https://vladmihalcea.com/uuid-database-primary-key/)
+* [How to not use TSID factories](https://fillumina.wordpress.com/2023/01/19/how-to-not-use-tsid-factories/)
 
 Usage
 ------------------------------------------------------
@@ -340,21 +343,6 @@ Tsid tsid = factory.create();
 
 ---
 
-A `TsidFactory` with `SplittableRandom`:
-
-```java
-// use a random function that returns an int value
-SplittableRandom random = new SplittableRandom();
-TsidFactory factory = TsidFactory.builder()
-    .withRandomFunction(() -> random.nextInt())
-    .build();
-
-// use the factory
-Tsid tsid = factory.create();
-```
-
----
-
 A `TsidFactory` with `RandomGenerator` (JDK 17+):
 
 ```java
@@ -373,13 +361,10 @@ Tsid tsid = factory.create();
 A `TsidFactory` with `ThreadLocalRandom`:
 
 ```java
-// use a random function that returns an array of bytes with a given length
+// use a random function that returns an int value
 TsidFactory factory = TsidFactory.builder()
-    .withRandomFunction(length -> {
-        final byte[] bytes = new byte[length];
-        ThreadLocalRandom.current().nextBytes(bytes);
-        return bytes;
-    }).build();
+    .withRandomFunction(() -> ThreadLocalRandom.current().nextInt())
+    .build();
 
 // use the factory
 Tsid tsid = factory.create();

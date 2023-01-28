@@ -136,7 +136,7 @@ public class TsidTest {
 		long end = System.currentTimeMillis();
 
 		assertTrue(start <= middle);
-		assertTrue(middle <= end + TsidFactory.CLOCK_DRIFT_TOLERANCE);
+		assertTrue(middle <= end);
 	}
 
 	@Test
@@ -178,7 +178,7 @@ public class TsidTest {
 		Instant end = Instant.now();
 
 		assertTrue(start.toEpochMilli() <= middle.toEpochMilli());
-		assertTrue(middle.toEpochMilli() <= end.toEpochMilli() + TsidFactory.CLOCK_DRIFT_TOLERANCE);
+		assertTrue(middle.toEpochMilli() <= end.toEpochMilli());
 	}
 
 	@Test

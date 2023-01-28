@@ -15,6 +15,7 @@ import org.junit.runners.Suite;
 	TsidFactory01024Test.class,
 	TsidFactory04096Test.class,
 	TsidFactory16384Test.class,
+	IncrementalTest.class,
 })
 
 /**

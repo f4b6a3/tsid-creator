@@ -154,7 +154,7 @@ public abstract class TsidFactory00000Test {
 		for (Long tsid : list) {
 			long creationTime = Tsid.from(tsid).getInstant().toEpochMilli();
 			assertTrue("Creation time was before start time", creationTime >= startTime);
-			assertTrue("Creation time was after end time", creationTime <= endTime + TsidFactory.CLOCK_DRIFT_TOLERANCE);
+			assertTrue("Creation time was after end time", creationTime <= endTime + LOOP_MAX);
 		}
 		return true; // success
 	}
@@ -166,7 +166,7 @@ public abstract class TsidFactory00000Test {
 		for (String tsid : list) {
 			long creationTime = Tsid.from(tsid).getInstant().toEpochMilli();
 			assertTrue("Creation time was before start time ", creationTime >= startTime);
-			assertTrue("Creation time was after end time", creationTime <= endTime + TsidFactory.CLOCK_DRIFT_TOLERANCE);
+			assertTrue("Creation time was after end time", creationTime <= endTime + LOOP_MAX);
 		}
 		return true; // success
 	}
