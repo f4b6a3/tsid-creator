@@ -401,11 +401,6 @@ public final class TsidFactory {
 		 * if your app requires the counter to be reset to ZERO whenever the millisecond
 		 * changes, like Twitter Snowflakes, this function should return an array filled
 		 * with ZEROS.
-		 * <p>
-		 * If the returned value is NULL or EMPTY, the factory ignores it and just
-		 * increments the counter when the millisecond changes, for example, when your
-		 * app requires the counter to always be incremented, no matter if the
-		 * millisecond has changed or not, like Discord Snowflakes.
 		 *
 		 * @param randomFunction a random function that returns a byte array
 		 * @return {@link Builder}
