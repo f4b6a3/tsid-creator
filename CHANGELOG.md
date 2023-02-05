@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased.
 
+## [5.2.2] - 2023-02-04
+
+Reduce synchronization scope when generating the TSID #25
+
 ## [5.2.1] - 2023-01-28
 
 Fix incremental generation (by Francesco Illuminati) #24
@@ -376,7 +380,8 @@ Project created as an alternative Java implementation for Twitter's Snowflake.
 -   Added `LICENSE`
 -   Added test cases
 
-[unreleased]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.2.1...HEAD
+[unreleased]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.2.2...HEAD
+[5.2.2]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.2.1...tsid-creator-5.2.2
 [5.2.1]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.2.0...tsid-creator-5.2.1
 [5.2.0]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.1.1...tsid-creator-5.2.0
 [5.1.1]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.1.0...tsid-creator-5.1.1
