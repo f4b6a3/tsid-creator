@@ -16,6 +16,7 @@ import org.junit.runners.Suite;
 	TsidFactory04096Test.class,
 	TsidFactory16384Test.class,
 	IncrementalTest.class,
+	CollisionTest.class,
 })
 
 /**

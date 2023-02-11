@@ -219,7 +219,7 @@ public final class TsidFactory {
 	 *
 	 * @return a TSID.
 	 */
-	public Tsid create() {
+	public synchronized Tsid create() {
 
 		final long _time = getTime() << RANDOM_BITS;
 		final long _node = (long) this.node << this.counterBits;
