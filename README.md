@@ -23,8 +23,9 @@ Recommended readings:
 
 * [Javadocs](https://javadoc.io/doc/com.github.f4b6a3/tsid-creator)
 * [FAQ wiki page](https://github.com/f4b6a3/tsid-creator/wiki)
-* [The best UUID type for a database Primary Key](https://vladmihalcea.com/uuid-database-primary-key/)
 * [How to not use TSID factories](https://fillumina.wordpress.com/2023/01/19/how-to-not-use-tsid-factories/)
+* [The best UUID type for a database Primary Key](https://vladmihalcea.com/uuid-database-primary-key/)
+* [The primary key dilemma: ID vs UUID and some practical solutions](https://fillumina.wordpress.com/2023/02/06/the-primary-key-dilemma-id-vs-uuid-and-some-practical-solutions/)
 
 Usage
 ------------------------------------------------------
@@ -58,7 +59,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>tsid-creator</artifactId>
-  <version>5.2.2</version>
+  <version>5.2.3</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator).
@@ -136,6 +137,8 @@ Sequence of TSID strings:
    time random
 ```
 
+The string format can be useful for languages that store numbers in [double-precision 64-bit binary format IEEE 754](https://en.wikipedia.org/wiki/Double-precision_floating-point_format), such as [Javascript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number).
+
 ### TSID Structure
 
 The term TSID stands for (roughly) Time-Sorted ID. A TSID is a number that is formed by the creation time along with random bits.
@@ -206,7 +209,7 @@ Using system properties:
 ```bash
 // append to VM arguments
 -Dtsidcreator.node="42" \
--Dtsidcreator.node.count=100"
+-Dtsidcreator.node.count="100"
 ```
 
 Using environment variables:
@@ -457,14 +460,21 @@ System: CPU i7-8565U, 16G RAM, Ubuntu 22.04, JVM 11, rng-tools installed.
 
 To execute the benchmark, run `./benchmark/run.sh`.
 
-Other identifier generators
+Known ports and other OSS
 ------------------------------------------------------
 
-Check out the other ID generators from the same family:
+Known ports:
 
-* [UUID Creator](https://github.com/f4b6a3/uuid-creator): Universally Unique Identifiers
-* [ULID Creator](https://github.com/f4b6a3/ulid-creator): Universally Unique Lexicographically Sortable Identifiers
-* [KSUID Creator](https://github.com/f4b6a3/ksuid-creator): K-Sortable Globally Unique Identifiers
+| Language | Name |
+| -------- | ---- |
+| .NET     | [kgkoutis/TSID.Creator.NET](https://github.com/kgkoutis/TSID.Creator.NET) |
+| PHP      | [odan/tsid](https://github.com/odan/tsid) |
+
+Other OSS:
+
+| Language | Name |
+| -------- | ---- |
+| Java     | [fillumina/id-encryptor](https://github.com/fillumina/id-encryptor) |
 
 License
 ------------------------------------------------------
