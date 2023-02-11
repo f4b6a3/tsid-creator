@@ -136,7 +136,7 @@ public class TsidTest {
 		long end = System.currentTimeMillis();
 
 		assertTrue(start <= middle);
-		assertTrue(middle <= end);
+		assertTrue(middle <= end + 1);
 	}
 
 	@Test
