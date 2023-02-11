@@ -460,10 +460,10 @@ System: CPU i7-8565U, 16G RAM, Ubuntu 22.04, JVM 11, rng-tools installed.
 
 To execute the benchmark, run `./benchmark/run.sh`.
 
-Known ports and other OSS
+Ports and other OSS
 ------------------------------------------------------
 
-Known ports:
+Ports:
 
 | Language | Name |
 | -------- | ---- |
