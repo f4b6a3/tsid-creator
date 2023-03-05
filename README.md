@@ -26,6 +26,7 @@ Recommended readings:
 * [How to not use TSID factories](https://fillumina.wordpress.com/2023/01/19/how-to-not-use-tsid-factories/)
 * [The best UUID type for a database Primary Key](https://vladmihalcea.com/uuid-database-primary-key/)
 * [The primary key dilemma: ID vs UUID and some practical solutions](https://fillumina.wordpress.com/2023/02/06/the-primary-key-dilemma-id-vs-uuid-and-some-practical-solutions/)
+* [Primary keys in the DB - what to use? ID vs UUID or is there something else?](https://www.linkedin.com/pulse/primary-keys-db-what-use-id-vs-uuid-something-else-lucas-persson)
 
 Usage
 ------------------------------------------------------
@@ -475,6 +476,7 @@ Other OSS:
 | Language | Name |
 | -------- | ---- |
 | Java     | [fillumina/id-encryptor](https://github.com/fillumina/id-encryptor) |
+| .NET     | [ullmark/hashids.net](https://github.com/ullmark/hashids.net) |
 
 License
 ------------------------------------------------------
