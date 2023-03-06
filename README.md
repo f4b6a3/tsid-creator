@@ -462,7 +462,7 @@ System: CPU i7-8565U, 16G RAM, Ubuntu 22.04, JVM 11, rng-tools installed.
 
 To execute the benchmark, run `./benchmark/run.sh`.
 
-Ports, forks and other OSS
+Ports, forks and encryption
 ------------------------------------------------------
 
 Ports and forks:
@@ -473,7 +473,7 @@ Ports and forks:
 | .NET     | [kgkoutis/TSID.Creator.NET](https://github.com/kgkoutis/TSID.Creator.NET) |
 | PHP      | [odan/tsid](https://github.com/odan/tsid) |
 
-Other OSS:
+Encryption:
 
 | Language | Name |
 | -------- | ---- |
