@@ -26,6 +26,7 @@ Recommended readings:
 * [How to not use TSID factories](https://fillumina.wordpress.com/2023/01/19/how-to-not-use-tsid-factories/)
 * [The best UUID type for a database Primary Key](https://vladmihalcea.com/uuid-database-primary-key/)
 * [The primary key dilemma: ID vs UUID and some practical solutions](https://fillumina.wordpress.com/2023/02/06/the-primary-key-dilemma-id-vs-uuid-and-some-practical-solutions/)
+* [The best way to generate a TSID entity identifier with JPA and Hibernate](https://vladmihalcea.com/tsid-identifier-jpa-hibernate/)
 * [Primary keys in the DB - what to use? ID vs UUID or is there something else?](https://www.linkedin.com/pulse/primary-keys-db-what-use-id-vs-uuid-something-else-lucas-persson)
 
 Usage
@@ -461,13 +462,14 @@ System: CPU i7-8565U, 16G RAM, Ubuntu 22.04, JVM 11, rng-tools installed.
 
 To execute the benchmark, run `./benchmark/run.sh`.
 
-Ports and other OSS
+Ports, forks and other OSS
 ------------------------------------------------------
 
-Ports:
+Ports and forks:
 
 | Language | Name |
 | -------- | ---- |
+| Java     | [vladmihalcea/hypersistence-tsid](https://github.com/vladmihalcea/hypersistence-tsid) |
 | .NET     | [kgkoutis/TSID.Creator.NET](https://github.com/kgkoutis/TSID.Creator.NET) |
 | PHP      | [odan/tsid](https://github.com/odan/tsid) |
 
