@@ -472,6 +472,7 @@ Ports and forks:
 | Java     | [vladmihalcea/hypersistence-tsid](https://github.com/vladmihalcea/hypersistence-tsid) |
 | .NET     | [kgkoutis/TSID.Creator.NET](https://github.com/kgkoutis/TSID.Creator.NET) |
 | PHP      | [odan/tsid](https://github.com/odan/tsid) |
+| Python.  | [luismedel/tsid-python](https://github.com/luismedel/tsid-python) |
 
 Other OSS:
 
