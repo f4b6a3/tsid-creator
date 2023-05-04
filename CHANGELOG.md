@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased.
 
+## [5.2.4] - 2023-05-04
+
+Using the Tsid.encode method in the JDK 8 environment #28
+
 ## [5.2.3] - 2023-02-11
 
 Fix sync #26
@@ -384,7 +388,8 @@ Project created as an alternative Java implementation for Twitter's Snowflake.
 -   Added `LICENSE`
 -   Added test cases
 
-[unreleased]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.2.3...HEAD
+[unreleased]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.2.4...HEAD
+[5.2.4]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.2.3...tsid-creator-5.2.4
 [5.2.3]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.2.2...tsid-creator-5.2.3
 [5.2.2]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.2.1...tsid-creator-5.2.2
 [5.2.1]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.2.0...tsid-creator-5.2.1

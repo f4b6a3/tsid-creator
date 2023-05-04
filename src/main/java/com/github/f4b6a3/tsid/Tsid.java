@@ -709,7 +709,7 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 
 	static class BaseN {
 
-		private static final BigInteger MAX = BigInteger.TWO.pow(64);
+		private static final BigInteger MAX = BigInteger.valueOf(2).pow(64);
 		private static final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"; // base-62
 
 		static String encode(final Tsid tsid, final int base) {
