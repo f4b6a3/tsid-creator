@@ -205,26 +205,48 @@ Using system properties:
 
 ```bash
 // append to VM arguments
--Dtsidcreator.node="755"
+// node identifier: 1 of 1024
+-Dtsidcreator.node="1"
 ```
 
 ```bash
 // append to VM arguments
--Dtsidcreator.node="42" \
--Dtsidcreator.node.count="100"
+// node identifier: 1 of 64
+-Dtsidcreator.node="1" \
+-Dtsidcreator.node.count="64"
 ```
 
 Using environment variables:
 
 ```bash
 # append to ~/.profile
-export TSIDCREATOR_NODE="492"
+# node identifier: 1 of 1024
+export TSIDCREATOR_NODE="1"
 ```
 
 ```bash
 # append to ~/.profile
-export TSIDCREATOR_NODE="123"
-export TSIDCREATOR_NODE_COUNT="200"
+# node identifier: 1 of 64
+export TSIDCREATOR_NODE="1"
+export TSIDCREATOR_NODE_COUNT="64"
+```
+
+```bash
+# append to ~/.profile
+# node identifier: x of 256
+# where x is the last part of the host's IPv4 (if it can be resolved)
+# for example, if the host address is 192.168.0.42, the value of x is 42
+export TSIDCREATOR_NODE="`hostname --ip-address | awk -F. '{print $NF}'`"
+export TSIDCREATOR_NODE_COUNT="256"
+```
+
+```bash
+# append to ~/.profile
+# node identifier: x of 256
+# where x is the last part of the first host's IPv4 (if there's 1 or more addresses)
+# for example, if the first address of the host is 192.168.0.42, the value of x is 42
+TSIDCREATOR_NODE=`hostname --all-ip-addresses | awk '{print $1}' | awk -F. '{print $NF}'`
+export TSIDCREATOR_NODE_COUNT="256"
 ```
 
 ### More Examples
