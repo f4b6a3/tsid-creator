@@ -245,7 +245,7 @@ export TSIDCREATOR_NODE_COUNT="256"
 # node identifier: x of 256
 # where x is the last part of the first host's IPv4 (if there's 1 or more addresses)
 # for example, if the first address of the host is 192.168.0.42, the value of x is 42
-export TSIDCREATOR_NODE=`hostname --all-ip-addresses | awk '{print $1}' | awk -F. '{print $NF}'`
+export TSIDCREATOR_NODE="`hostname --all-ip-addresses | awk '{print $1}' | awk -F. '{print $NF}'`"
 export TSIDCREATOR_NODE_COUNT="256"
 ```
 
