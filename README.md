@@ -206,6 +206,7 @@ Using system properties:
 ```bash
 // append to VM arguments
 // node identifier: 1 of 1024
+// default node count is 1024
 -Dtsidcreator.node="1"
 ```
 
@@ -221,6 +222,7 @@ Using environment variables:
 ```bash
 # append to ~/.profile
 # node identifier: 1 of 1024
+# default node count is 1024
 export TSIDCREATOR_NODE="1"
 ```
 
@@ -236,7 +238,7 @@ export TSIDCREATOR_NODE_COUNT="64"
 # node identifier: x of 256
 # where x is the last part of the host's IPv4 (if it can be resolved)
 # for example, if the host address is 192.168.0.42, the value of x is 42
-export TSIDCREATOR_NODE="`hostname --ip-address | awk -F. '{print $NF}'`"
+export TSIDCREATOR_NODE="`hostname --ip-address | awk -F. '{print $4}'`"
 export TSIDCREATOR_NODE_COUNT="256"
 ```
 
@@ -245,8 +247,17 @@ export TSIDCREATOR_NODE_COUNT="256"
 # node identifier: x of 256
 # where x is the last part of the first host's IPv4 (if there's 1 or more addresses)
 # for example, if the first address of the host is 192.168.0.42, the value of x is 42
-export TSIDCREATOR_NODE="`hostname --all-ip-addresses | awk '{print $1}' | awk -F. '{print $NF}'`"
+export TSIDCREATOR_NODE="`hostname --all-ip-addresses | awk '{print $1}' | awk -F. '{print $4}'`"
 export TSIDCREATOR_NODE_COUNT="256"
+```
+
+```bash
+# append to ~/.profile
+# node identifier: x of 1024
+# remember that the default node count is 1024
+# where x is the MODULO 1024 of the first host's IPv4 (if there's 1 or more addresses)
+# for example, if the first address of the host is 192.168.1.2, the value of x is 258 (1 * 256 + 2)
+export TSIDCREATOR_NODE="`hostname -I | awk '{print $1}' | awk -F. '{print ($3*256 + $4) % 1024}'`"
 ```
 
 ### More Examples
