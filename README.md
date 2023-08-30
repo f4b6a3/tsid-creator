@@ -254,10 +254,20 @@ export TSIDCREATOR_NODE_COUNT="256"
 ```bash
 # append to ~/.profile
 # node identifier: x of 1024
-# remember that the default node count is 1024
-# where x is the MODULO 1024 of the first host's IPv4 (if there's 1 or more addresses)
-# for example, if the first address of the host is 192.168.1.2, the value of x is 258 (1 * 256 + 2)
+# remember that the default node count is 1024 and the maximum number of IDs is 4096K/second/node
+# where x is the MODULO 1024 (2^10) of the first host's IPv4 (if there's 1 or more addresses)
+# for example, if the first address of the host is 192.168.1.1, the value of x is 257 (1*256 + 1)
 export TSIDCREATOR_NODE="`hostname -I | awk '{print $1}' | awk -F. '{print ($3*256 + $4) % 1024}'`"
+```
+
+```bash
+# append to ~/.profile
+# node identifier: x of 65536
+# note that the maximum number of IDs per ms per node is reduced to 64, i.e., 64K/second/node
+# where x is the MODULO 65536 (2^16) of the first host's IPv4 (if there's 1 or more addresses)
+# for example, if the first address of the host is 192.168.10.1, the value of x is 2561 (10*256 + 1)
+export TSIDCREATOR_NODE="`hostname -I | awk '{print $1}' | awk -F. '{print ($3*256 + $4) % 65536}'`"
+export TSIDCREATOR_NODE_COUNT="65536"
 ```
 
 ### More Examples
