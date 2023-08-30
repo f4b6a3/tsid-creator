@@ -244,15 +244,6 @@ export TSIDCREATOR_NODE_COUNT="256"
 
 ```bash
 # append to ~/.profile
-# node identifier: x of 256
-# where x is the last part of the first host's IPv4 (if there's 1 or more addresses)
-# for example, if the first address of the host is 192.168.0.42, the value of x is 42
-export TSIDCREATOR_NODE="`hostname --all-ip-addresses | awk '{print $1}' | awk -F. '{print $4}'`"
-export TSIDCREATOR_NODE_COUNT="256"
-```
-
-```bash
-# append to ~/.profile
 # node identifier: x of 1024
 # remember that the default node count is 1024 and the maximum number of IDs is 4096K/second/node
 # where x is the MODULO 1024 (2^10) of the first host's IPv4 (if there's 1 or more addresses)
@@ -265,10 +256,14 @@ export TSIDCREATOR_NODE="`hostname -I | awk '{print $1}' | awk -F. '{print ($3*2
 # node identifier: x of 65536
 # note that the maximum number of IDs per ms per node is reduced to 64, i.e., 64K/second/node
 # where x is the MODULO 65536 (2^16) of the first host's IPv4 (if there's 1 or more addresses)
-# for example, if the first address of the host is 192.168.10.1, the value of x is 2561 (10*256 + 1)
+# for example, if the host address is 10.42.10.1 (e.g. k8s pod), the value of x is 2561 (10*256 + 1)
 export TSIDCREATOR_NODE="`hostname -I | awk '{print $1}' | awk -F. '{print ($3*256 + $4) % 65536}'`"
 export TSIDCREATOR_NODE_COUNT="65536"
 ```
+
+**Note:** According to `hostname` manual:
+* `--ip-address` or `-i` (lowercase): _Display the network address(es) of the host name. Note that this works only if the host name can be resolved. Avoid using this option; use hostname --all-ip-addresses instead_.
+* `--all-ip-addresses` or `-I` (uppercase): _Display all network addresses of the host. This option enumerates all configured addresses on all network interfaces. The loopback interface and IPv6 link-local addresses are omitted. Contrary to option -i, this option does not depend on name resolution. Do not make any assumptions about the order of the output._
 
 ### More Examples
 
