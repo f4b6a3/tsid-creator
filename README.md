@@ -261,9 +261,11 @@ export TSIDCREATOR_NODE="`hostname -I | awk '{print $1}' | awk -F. '{print ($3*2
 export TSIDCREATOR_NODE_COUNT="65536"
 ```
 
-**Note:** According to `hostname` manual:
-* `--ip-address` or `-i` (lowercase): _Display the network address(es) of the host name. Note that this works only if the host name can be resolved. Avoid using this option; use hostname --all-ip-addresses instead_.
-* `--all-ip-addresses` or `-I` (uppercase): _Display all network addresses of the host. This option enumerates all configured addresses on all network interfaces. The loopback interface and IPv6 link-local addresses are omitted. Contrary to option -i, this option does not depend on name resolution. Do not make any assumptions about the order of the output._
+**Notes:** 
+1. As a reference, [6,000 tweets are posted on Twitter every second as of 2022](https://www.demandsage.com/twitter-statistics/);
+1. According to the `hostname` manual:
+    * `--ip-address` or `-i` (lowercase): _Display the network address(es) of the host name. Note that this works only if the host name can be resolved. Avoid using this option; use hostname --all-ip-addresses instead_.
+    * `--all-ip-addresses` or `-I` (uppercase): _Display all network addresses of the host. This option enumerates all configured addresses on all network interfaces. The loopback interface and IPv6 link-local addresses are omitted. Contrary to option -i, this option does not depend on name resolution. Do not make any assumptions about the order of the output._
 
 ### More Examples
 
