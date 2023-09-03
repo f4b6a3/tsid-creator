@@ -32,6 +32,7 @@ import java.time.Instant;
 import java.util.Random;
 import java.util.function.IntFunction;
 import java.util.function.IntSupplier;
+import java.util.function.LongSupplier;
 
 /**
  * A factory that actually generates Time-Sorted Unique Identifiers (TSID).
@@ -57,6 +58,9 @@ import java.util.function.IntSupplier;
  * If no property or variable is defined, the number of bits reserved for node
  * ID is set to 10, which can accommodate 1024 nodes.
  * <p>
+ * A "node" as we call it in this library can be a physical machine, a virtual
+ * machine, a container, a k8s pod, a running process, etc.
+ * <p>
  * This class <b>should</b> be used as a singleton. Make sure that you create
  * and reuse a single instance of {@link TsidFactory} per node in your
  * distributed system.
@@ -74,8 +78,8 @@ public final class TsidFactory {
 	private final int nodeMask;
 	private final int counterMask;
 
-	private final Clock clock;
 	private final long customEpoch;
+	private final LongSupplier timeFunction;
 
 	private final IRandom random;
 	private final int randomBytes;
@@ -127,11 +131,11 @@ public final class TsidFactory {
 	 */
 	private TsidFactory(Builder builder) {
 
-		// setup node bits, custom epoch and random function
+		// setup the custom epoch, the node bits, etc
 		this.customEpoch = builder.getCustomEpoch();
 		this.nodeBits = builder.getNodeBits();
 		this.random = builder.getRandom();
-		this.clock = builder.getClock();
+		this.timeFunction = builder.getTimeFunction();
 
 		// setup constants that depend on node bits
 		this.counterBits = RANDOM_BITS - nodeBits;
@@ -144,8 +148,8 @@ public final class TsidFactory {
 		// setup the node identifier
 		this.node = builder.getNode() & nodeMask;
 
-		// finally, initialize internal state
-		this.lastTime = clock.millis();
+		// finally initialize inner state
+		this.lastTime = 0L; // 1970-01-01
 		this.counter = getRandomCounter();
 	}
 
@@ -242,7 +246,7 @@ public final class TsidFactory {
 	 */
 	private synchronized long getTime() {
 
-		long time = clock.millis();
+		long time = timeFunction.getAsLong();
 
 		if (time <= this.lastTime) {
 			this.counter++;
@@ -315,7 +319,7 @@ public final class TsidFactory {
 		private Integer nodeBits;
 		private Long customEpoch;
 		private IRandom random;
-		private Clock clock;
+		private LongSupplier timeFunction;
 
 		/**
 		 * Set the node identifier.
@@ -412,12 +416,27 @@ public final class TsidFactory {
 
 		/**
 		 * Set the clock to be used in tests.
-		 *
+		 * <p>
+		 * {@link Clock} is too complicated. Use {@link #withTimeFunction(LongSupplier)}
+		 * instead.
+		 * 
 		 * @param clock a clock
 		 * @return {@link Builder}
 		 */
 		public Builder withClock(Clock clock) {
-			this.clock = clock;
+			this.timeFunction = () -> clock.millis();
+			return this;
+		}
+
+		/**
+		 * Set the time function to be used in tests.
+		 *
+		 * @param timeFunction a function that returns the current time in milliseconds,
+		 *                     measured from the UNIX epoch of 1970-01-01T00:00Z (UTC)
+		 * @return {@link Builder}
+		 */
+		public Builder withTimeFunction(LongSupplier timeFunction) {
+			this.timeFunction = timeFunction;
 			return this;
 		}
 
@@ -498,15 +517,15 @@ public final class TsidFactory {
 		}
 
 		/**
-		 * Gets the clock to be used in tests.
+		 * Gets the time function to be used in tests.
 		 *
-		 * @return a clock
+		 * @return a time function
 		 */
-		protected Clock getClock() {
-			if (this.clock == null) {
-				this.withClock(Clock.systemUTC());
+		protected LongSupplier getTimeFunction() {
+			if (this.timeFunction == null) {
+				this.withTimeFunction(System::currentTimeMillis);
 			}
-			return this.clock;
+			return this.timeFunction;
 		}
 
 		/**

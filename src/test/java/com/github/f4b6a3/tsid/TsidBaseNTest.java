@@ -3,8 +3,11 @@ package com.github.f4b6a3.tsid;
 import static org.junit.Assert.*;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 
 import org.junit.Test;
+
+import com.github.f4b6a3.tsid.Tsid.BaseN;
 
 public class TsidBaseNTest {
 
@@ -48,7 +51,7 @@ public class TsidBaseNTest {
 	@Test
 	public void testIllegalArgumentException() {
 
-		{
+		for (int i = 2; i < 62; i++) {
 			try {
 				String string = Tsid.fast().encode(62);
 				Tsid.decode(string, 62);
@@ -59,6 +62,12 @@ public class TsidBaseNTest {
 		}
 
 		{
+			try {
+				Tsid.fast().encode(0);
+				fail();
+			} catch (IllegalArgumentException e) {
+				// success
+			}
 			try {
 				Tsid.fast().encode(1);
 				fail();
@@ -71,49 +80,68 @@ public class TsidBaseNTest {
 			} catch (IllegalArgumentException e) {
 				// success
 			}
+		}
 
-			try {
-				Tsid.decode(null, 62);
-				fail();
-			} catch (IllegalArgumentException e) {
-				// success
+		{
+			capture("", 43);
+			capture(null, 43);
+			capture("0000000000000000000", 10);
+			capture("000000000++000000000", 10);
+			capture("000000000000000000000", 10);
+			capture("99999999999999999999", 10);
+			capture("18446744073709551616", 10); // 2^64
+
+			capture("", 43);
+			capture(null, 43);
+			capture("00000000000", 43);
+			capture("00000**00000", 43);
+			capture("0000000000000", 43);
+			capture("gggggggggggg", 43);
+			capture("JaO7KT4W5fAf", 43); // 2^64
+
+			capture("", 62);
+			capture(null, 62);
+			capture("0000000000", 62);
+			capture("00000=00000", 62);
+			capture("000000000000", 62);
+			capture("zzzzzzzzzzz", 62);
+			capture("LygHa16AHYH", 62); // 2^64
+
+			for (int i = 2; i <= 62; i++) {
+				overflow(i);
 			}
-			try {
-				Tsid.decode("", 1);
-				fail();
-			} catch (IllegalArgumentException e) {
-				// success
-			}
-			try {
-				Tsid.decode("", 63);
-				fail();
-			} catch (IllegalArgumentException e) {
-				// success
-			}
-			try {
-				Tsid.decode("", 62);
-				fail();
-			} catch (IllegalArgumentException e) {
-				// success
-			}
-			try {
-				Tsid.decode("0000000000+", 62);
-				fail();
-			} catch (IllegalArgumentException e) {
-				// success
-			}
-			try {
-				Tsid.decode("0000000000z", 61);
-				fail();
-			} catch (IllegalArgumentException e) {
-				// success
-			}
-			try {
-				Tsid.decode("zzzzzzzzzzz", 62);
-				fail();
-			} catch (IllegalArgumentException e) {
-				// success
-			}
+		}
+	}
+
+	private static void capture(String string, int base) {
+		try {
+			Tsid.decode(string, base);
+			fail(String.format("Should throw exception for base-%d: %s", base, string));
+		} catch (IllegalArgumentException e) {
+			// success
+		}
+	}
+
+	private static void overflow(int base) {
+
+		if (Arrays.asList(2, 4, 8, 16, 32).contains(base)) {
+			return;
+		}
+
+		boolean caught = false;
+		String max = new Tsid(-1L).encode(base);
+		char last = max.charAt(max.length() - 1);
+		int index = BaseN.ALPHABET.indexOf(last);
+		String overflowed = max.substring(0, max.length() - 1) + BaseN.ALPHABET.charAt(index + 1);
+
+		try {
+			Tsid.decode(overflowed, base);
+		} catch (IllegalArgumentException e) {
+			caught = e.toString().contains("overflow");
+		}
+
+		if (!caught) {
+			fail(String.format("Should throw overflow exception for base-%d: %s", base, overflowed));
 		}
 	}
 
@@ -3136,40 +3164,40 @@ public class TsidBaseNTest {
 	 * Python3 code used to generate the test matrixes.
 	 * 
 	 * <pre>
-	 * #!/bin/env python3
-	 * 
-	 * import math
-	 * import string
-	 * import random
-	 * 
-	 * def basen(number, alphabet):
-	 * 	output = ""
-	 * 	base = len(alphabet)
-	 * 	while number:
-	 * 		output += alphabet[number % base]
-	 * 		number //= base
-	 * 	return output[::-1]
-	 * 
-	 * def encode(number, alphabet):
-	 * 	
-	 * 	pad = alphabet[0]
-	 * 	base = len(alphabet)
-	 * 	length = int(math.ceil(64 / (math.log(base) / math.log(2))))
-	 * 	
-	 * 	encoded = basen(number, alphabet)
-	 * 	return encoded.rjust(length, pad)
-	 * 
-	 * def generate(base, amount):
-	 * 
-	 *     alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_"[:base]
-	 *     for i in range(amount):
-	 *         number = random.randrange((1<<64));
-	 *         print('{ "%016x", "%s" }, //' % (number, encode(number, alphabet)))
-	 * 
-	 * #generate(10, 1000)
-	 * #generate(16, 1000)
-	 * #generate(43, 1000)
-	 * #generate(62, 1000)
+		#!/bin/env python3
+		
+		import math
+		import string
+		import random
+		
+		def basen(number, alphabet):
+		    output = ""
+		    base = len(alphabet)
+		    while number:
+			    output += alphabet[number % base]
+			    number //= base
+		    return output[::-1]
+		
+		def encode(number, alphabet):
+		    
+		    pad = alphabet[0]
+		    base = len(alphabet)
+		    length = int(math.ceil(64 / (math.log(base) / math.log(2))))
+		    
+		    encoded = basen(number, alphabet)
+		    return encoded.rjust(length, pad)
+		
+		def generate(base, amount):
+		
+		    alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_"[:base]
+		    for i in range(amount):
+		        number = random.randrange((1<<64));
+		        print('{ "%016x", "%s" }, //' % (number, encode(number, alphabet)))
+		
+		#generate(10, 1000)
+		#generate(16, 1000)
+		#generate(43, 1000)
+		#generate(62, 1000)
 	 * </pre>
 	 */
 }

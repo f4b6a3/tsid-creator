@@ -31,6 +31,9 @@ package com.github.f4b6a3.tsid;
  * "tsidcreator.node" system property or the "TSIDCREATOR_NODE" environment
  * variable. This is a simple way to avoid collisions between identifiers
  * produced by more than one machine or application instance.
+ * <p>
+ * A "node" as we call it in this library can be a physical machine, a virtual
+ * machine, a container, a k8s pod, a running process, etc.
  */
 public final class TsidCreator {
 

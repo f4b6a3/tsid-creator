@@ -26,6 +26,7 @@ package com.github.f4b6a3.tsid;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.util.SplittableRandom;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -485,12 +486,10 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 * 
 	 * @param base a radix between 2 and 62
 	 * @return a base-n encoded string
+	 * @throws IllegalArgumentException if the base is invalid
 	 * @since 5.2.0
 	 */
 	public String encode(final int base) {
-		if (base < 2 || base > 62) {
-			throw new IllegalArgumentException(String.format("Invalid base: %s", base));
-		}
 		return BaseN.encode(this, base);
 	}
 
@@ -504,17 +503,17 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 * <li>Output: 0AXS476XSZ43M
 	 * </ul>
 	 * <p>
-	 * The input string is left padded with zeros.
+	 * The input string must be left padded with zeros.
+	 * <p>
+	 * <b>Note</b>: this method is CASE-SENSITIVE.
 	 * 
 	 * @param string a base-n encoded string
 	 * @param base   a radix between 2 and 62
 	 * @return a TSID
+	 * @throws IllegalArgumentException if the string or base is invalid
 	 * @since 5.2.0
 	 */
 	public static Tsid decode(final String string, final int base) {
-		if (base < 2 || base > 62) {
-			throw new IllegalArgumentException(String.format("Invalid base: %s", base));
-		}
 		return BaseN.decode(string, base);
 	}
 
@@ -556,6 +555,7 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 * 
 	 * @param format a custom format
 	 * @return a string using a custom format
+	 * @throws IllegalArgumentException if the format string is invalid
 	 * @since 5.2.0
 	 */
 	public String format(final String format) {
@@ -613,6 +613,8 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 * @param formatted a string using a custom format
 	 * @param format    a custom format
 	 * @return a TSID
+	 * @throws IllegalArgumentException if the formatted string or the format string
+	 *                                  is invalid
 	 * @since 5.2.0
 	 */
 	public static Tsid unformat(final String formatted, final String format) {
@@ -709,20 +711,26 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 
 	static class BaseN {
 
-		private static final BigInteger MAX = BigInteger.valueOf(2).pow(64);
-		private static final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"; // base-62
+		static final BigInteger MAX = BigInteger.valueOf(2).pow(64).subtract(BigInteger.ONE);
+		static final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"; // base-62
 
 		static String encode(final Tsid tsid, final int base) {
-			BigInteger x = new BigInteger(1, tsid.toBytes());
-			final BigInteger radix = BigInteger.valueOf(base);
-			final int length = (int) Math.ceil(Long.SIZE / (Math.log(base) / Math.log(2)));
-			int b = length; // buffer index
-			char[] buffer = new char[length];
-			while (x.compareTo(BigInteger.ZERO) > 0) {
-				BigInteger[] result = x.divideAndRemainder(radix);
-				buffer[--b] = ALPHABET.charAt(result[1].intValue());
-				x = result[0];
+
+			if (base < 2 || base > 62) {
+				exception(String.format("Invalid base: %s", base));
 			}
+
+			long x = tsid.number;
+			int b = length(base);
+			char[] buffer = new char[b];
+
+			while (Long.compareUnsigned(x, 0) > 0) {
+				final long div = Long.divideUnsigned(x, base);
+				final long rem = Long.remainderUnsigned(x, base);
+				buffer[--b] = ALPHABET.charAt((int) rem);
+				x = div;
+			}
+
 			while (b > 0) {
 				buffer[--b] = '0';
 			}
@@ -730,27 +738,53 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 		}
 
 		static Tsid decode(final String string, final int base) {
-			BigInteger x = BigInteger.ZERO;
-			final BigInteger radix = BigInteger.valueOf(base);
-			final int length = (int) Math.ceil(Long.SIZE / (Math.log(base) / Math.log(2)));
+
 			if (string == null) {
-				throw new IllegalArgumentException(String.format("Invalid base-%d string: null", base));
+				exception(String.format("Invalid base-%d string: null", base));
 			}
+			if (base < 2 || base > 62) {
+				exception(String.format("Invalid base: %s", base));
+			}
+
+			long x = 0L;
+			long last = 0;
+			long plus = 0;
+
+			final int length = length(base);
 			if (string.length() != length) {
-				throw new IllegalArgumentException(String.format("Invalid base-%d length: %s", base, string.length()));
+				exception(String.format("Invalid base-%d length: %s", base, string.length()));
 			}
-			for (int i = 0; i < string.length(); i++) {
-				final long plus = (int) ALPHABET.indexOf(string.charAt(i));
-				if (plus < 0 || plus >= base) {
-					throw new IllegalArgumentException(
-							String.format("Invalid base-%d character: %s", base, string.charAt(i)));
+
+			for (int i = 0; i < length; i++) {
+
+				plus = (int) ALPHABET.indexOf(string.charAt(i));
+				if (plus == -1) {
+					exception(String.format("Invalid base-%d character: %s", base, string.charAt(i)));
 				}
-				x = x.multiply(radix).add(BigInteger.valueOf(plus));
+
+				last = x;
+				x = (x * base) + plus;
 			}
-			if (x.compareTo(MAX) > 0) {
-				throw new IllegalArgumentException(String.format("Invalid base-%d value (overflow): %s", base, x));
+
+			// finally, check if happened an overflow
+			ByteBuffer buff = ByteBuffer.allocate(8);
+			byte[] bytes = buff.putLong(last).array();
+			BigInteger lazt = new BigInteger(1, bytes);
+			BigInteger baze = BigInteger.valueOf(base);
+			BigInteger pluz = BigInteger.valueOf(plus);
+			if (lazt.multiply(baze).add(pluz).compareTo(MAX) > 0) {
+				throw new IllegalArgumentException(String.format("Invalid base-%d value (overflow): %s", base, lazt));
 			}
-			return new Tsid(x.longValue());
+
+			return new Tsid(x);
+		}
+
+		private static int length(int base) {
+			return (int) Math.ceil(Long.SIZE / (Math.log(base) / Math.log(2)));
+		}
+
+		private static void exception(String string) {
+			throw new IllegalArgumentException(string);
 		}
 	}
 

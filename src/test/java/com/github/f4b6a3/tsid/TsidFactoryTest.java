@@ -313,7 +313,7 @@ public class TsidFactoryTest {
 
 		long diff = 10_000;
 		long time = Instant.parse("2021-12-31T23:59:59.000Z").toEpochMilli();
-		long times[] = { -1, time, time + 0, time + 1, time + 2, time + 3 - diff, time + 4 - diff, time + 5 };
+		long times[] = { time, time + 0, time + 1, time + 2, time + 3 - diff, time + 4 - diff, time + 5 };
 
 		Clock clock = new Clock() {
 			private int i;

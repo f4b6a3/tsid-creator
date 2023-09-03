@@ -61,7 +61,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>tsid-creator</artifactId>
-  <version>5.2.4</version>
+  <version>5.2.5</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/tsid-creator).
@@ -185,7 +185,7 @@ The time component can be 1 ms or more ahead of the system time when necessary t
 
 ### Node identifier
 
-The simplest way to avoid collisions is to make sure that each generator has its exclusive node ID.
+A simple way to avoid collisions is to make sure that each generator has its exclusive node ID. A "node" as we call it in this library can be a physical machine, a virtual machine, a container, a k8s pod, a running process, etc.
 
 The node ID can be given to `TsidFactory` by defining the `tsidcreator.node` system property or the `TSIDCREATOR_NODE` environment variable. Otherwise, the node identifier will be chosen randomly.
 
@@ -193,12 +193,12 @@ The total number of nodes can be given to `TsidFactory` by defining the `tsidcre
 
 System properties:
 
-*   `tsidcreator.node`: the node identifier.
+*   `tsidcreator.node`: the node identifier (machine-id).
 *   `tsidcreator.node.count`: the total number of nodes.
 
 Environment variables:
 
-*   `TSIDCREATOR_NODE`: the node identifier.
+*   `TSIDCREATOR_NODE`: the node identifier (machine-id).
 *   `TSIDCREATOR_NODE_COUNT`: the total number of nodes.
 
 Using system properties:
