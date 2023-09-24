@@ -24,6 +24,7 @@ Recommended readings:
 * [Javadocs](https://javadoc.io/doc/com.github.f4b6a3/tsid-creator)
 * [FAQ wiki page](https://github.com/f4b6a3/tsid-creator/wiki)
 * [How to not use TSID factories](https://fillumina.wordpress.com/2023/01/19/how-to-not-use-tsid-factories/)
+* [Time Sorted IDs: Oracle implementation](https://connor-mcdonald.com/2023/07/11/time-sorted-ids/)
 * [The best UUID type for a database Primary Key](https://vladmihalcea.com/uuid-database-primary-key/)
 * [The primary key dilemma: ID vs UUID and some practical solutions](https://fillumina.wordpress.com/2023/02/06/the-primary-key-dilemma-id-vs-uuid-and-some-practical-solutions/)
 * [The best way to generate a TSID entity identifier with JPA and Hibernate](https://vladmihalcea.com/tsid-identifier-jpa-hibernate/)
@@ -185,7 +186,7 @@ The time component can be 1 ms or more ahead of the system time when necessary t
 
 ### Node identifier
 
-A simple way to avoid collisions is to make sure that each generator has its exclusive node ID. A "node" as we call it in this library can be a physical machine, a virtual machine, a container, a k8s pod, a running process, etc.
+A simple way to avoid collisions is to make sure that each generator has its exclusive node ID. A "node" as we call it in this library can be a physical machine, a virtual machine, a container, a k8s pod, a running process, a database instance number, etc.
 
 The node ID can be given to `TsidFactory` by defining the `tsidcreator.node` system property or the `TSIDCREATOR_NODE` environment variable. Otherwise, the node identifier will be chosen randomly.
 
