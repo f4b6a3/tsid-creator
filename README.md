@@ -2,7 +2,7 @@
 TSID Creator
 ======================================================
 
-<p align='right'><i>In television, nothing is created, everything is copied.</i><br/>&ndash; Abelardo Barbosa</p>
+<p align='right'><i>On television nothing is created, everything is copied.</i><br/>&ndash; Abelardo Barbosa</p>
 
 A Java library for generating Time-Sorted Unique Identifiers (TSID).
 
