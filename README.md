@@ -2,8 +2,6 @@
 TSID Creator
 ======================================================
 
-<p align='right'><i>On television nothing is created, everything is copied.</i><br/>&ndash; Abelardo Barbosa</p>
-
 A Java library for generating Time-Sorted Unique Identifiers (TSID).
 
 It brings together ideas from [Twitter's Snowflake](https://github.com/twitter-archive/snowflake/tree/snowflake-2010) and [ULID Spec](https://github.com/ulid/spec).
