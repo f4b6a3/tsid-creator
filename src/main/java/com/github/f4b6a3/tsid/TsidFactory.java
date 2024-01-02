@@ -30,6 +30,7 @@ import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Random;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.IntFunction;
 import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
@@ -83,6 +84,8 @@ public final class TsidFactory {
 
 	private final IRandom random;
 	private final int randomBytes;
+
+	private final ReentrantLock lock = new ReentrantLock();
 
 	static final int NODE_BITS_256 = 8;
 	static final int NODE_BITS_1024 = 10;
@@ -223,13 +226,17 @@ public final class TsidFactory {
 	 *
 	 * @return a TSID.
 	 */
-	public synchronized Tsid create() {
+	public Tsid create() {
+		lock.lock();
+		try {
+			final long _time = getTime() << RANDOM_BITS;
+			final long _node = (long) this.node << this.counterBits;
+			final long _counter = (long) this.counter & this.counterMask;
 
-		final long _time = getTime() << RANDOM_BITS;
-		final long _node = (long) this.node << this.counterBits;
-		final long _counter = (long) this.counter & this.counterMask;
-
-		return new Tsid(_time | _node | _counter);
+			return new Tsid(_time | _node | _counter);
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	/**
@@ -244,7 +251,7 @@ public final class TsidFactory {
 	 *
 	 * @return the current time
 	 */
-	private synchronized long getTime() {
+	private long getTime() {
 
 		long time = timeFunction.getAsLong();
 
@@ -275,7 +282,7 @@ public final class TsidFactory {
 	 *
 	 * @return a number
 	 */
-	private synchronized int getRandomCounter() {
+	private int getRandomCounter() {
 
 		if (random instanceof ByteRandom) {
 
