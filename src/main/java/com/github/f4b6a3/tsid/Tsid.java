@@ -695,17 +695,22 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 			return false; // null or wrong size!
 		}
 
+		for (int i = 0; i < chars.length; i++) {
+			try {
+				if (ALPHABET_VALUES[chars[i]] == -1) {
+					return false; // invalid character!
+				}
+			} catch (ArrayIndexOutOfBoundsException e) {
+				return false; // multibyte character!
+			}
+		}
+
 		// The extra bit added by base-32 encoding must be zero
 		// As a consequence, the 1st char of the input string must be between 0 and F.
 		if ((ALPHABET_VALUES[chars[0]] & 0b10000) != 0) {
 			return false; // overflow!
 		}
 
-		for (int i = 0; i < chars.length; i++) {
-			if (ALPHABET_VALUES[chars[i]] == -1) {
-				return false; // invalid character!
-			}
-		}
 		return true; // It seems to be OK.
 	}
 

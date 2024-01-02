@@ -299,7 +299,10 @@ public class TsidTest {
 
 		tsid = "0123456789AB#"; // Special char
 		assertFalse("tsid with special chars should be invalid.", Tsid.isValid(tsid));
-
+		
+		tsid = "0123456789AB\u3617"; // Special char U+3617 (㘗: whisper; to whistle)
+		assertFalse("tsid with multibyte chars should be invalid.", Tsid.isValid(tsid));
+		
 		try {
 			tsid = null;
 			Tsid.from(tsid);
