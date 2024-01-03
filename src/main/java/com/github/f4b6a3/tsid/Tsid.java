@@ -64,6 +64,9 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 
 	private static final long serialVersionUID = -5446820982139116297L;
 
+	/**
+	 * The internal value.
+	 */
 	private final long number;
 
 	/**
@@ -247,7 +250,6 @@ public final class Tsid implements Serializable, Comparable<Tsid> {
 	 * with that property or variable.
 	 * 
 	 * @return a TSID
-	 * @see {@link AtomicInteger}
 	 * @since 5.1.0
 	 */
 	public static Tsid fast() {

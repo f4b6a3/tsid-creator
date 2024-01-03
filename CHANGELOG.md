@@ -6,10 +6,17 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased.
 
+## [5.2.6] - 2024-01-02
+
+- Optimized format method.
+- Refactored optimize the character map.
+- Replace `synchronized` keyword with `ReentrantLock`.
+- Fixed `ArrayIndexOutOfBoundsException` with multiple bytes for a character. #31
+
 ## [5.2.5] - 2023-09-03
 
-Optimized base-n encode and decode methods.
-Refactored to use a `LongSupplier` instead of a `Clock` for getting the current time.
+- Optimized base-n encode and decode methods.
+- Refactored to use a `LongSupplier` instead of a `Clock` for getting the current time.
 
 ## [5.2.4] - 2023-05-04
 
@@ -393,7 +400,8 @@ Project created as an alternative Java implementation for Twitter's Snowflake.
 -   Added `LICENSE`
 -   Added test cases
 
-[unreleased]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.2.5...HEAD
+[unreleased]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.2.6...HEAD
+[5.2.6]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.2.5...tsid-creator-5.2.6
 [5.2.5]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.2.4...tsid-creator-5.2.5
 [5.2.4]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.2.3...tsid-creator-5.2.4
 [5.2.3]: https://github.com/f4b6a3/tsid-creator/compare/tsid-creator-5.2.2...tsid-creator-5.2.3

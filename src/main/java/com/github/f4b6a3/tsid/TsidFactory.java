@@ -306,6 +306,8 @@ public final class TsidFactory {
 	 * Returns a builder object.
 	 * <p>
 	 * It is used to build a custom {@link TsidFactory}.
+	 * 
+	 * @return a builder
 	 */
 	public static Builder builder() {
 		return new Builder();
