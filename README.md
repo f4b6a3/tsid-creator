@@ -514,6 +514,7 @@ Ports and forks:
 | .NET     | [kgkoutis/TSID.Creator.NET](https://github.com/kgkoutis/TSID.Creator.NET) |
 | PHP      | [odan/tsid](https://github.com/odan/tsid) |
 | Python.  | [luismedel/tsid-python](https://github.com/luismedel/tsid-python) |
+| TypeScript  | [yubintw/tsid-ts](https://github.com/yubinTW/tsid-ts) |
 
 Other OSS:
 
