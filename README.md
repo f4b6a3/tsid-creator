@@ -29,6 +29,7 @@ Recommended readings:
 * [The primary key dilemma: ID vs UUID and some practical solutions](https://fillumina.wordpress.com/2023/02/06/the-primary-key-dilemma-id-vs-uuid-and-some-practical-solutions/)
 * [The best way to generate a TSID entity identifier with JPA and Hibernate](https://vladmihalcea.com/tsid-identifier-jpa-hibernate/)
 * [Primary keys in the DB - what to use? ID vs UUID or is there something else?](https://www.linkedin.com/pulse/primary-keys-db-what-use-id-vs-uuid-something-else-lucas-persson)
+* [TSIDs strike the perfect balance between integers and UUIDs for most databases](https://www.foxhound.systems/blog/time-sorted-unique-identifiers/)
 
 Usage
 ------------------------------------------------------
@@ -503,17 +504,20 @@ System: CPU i7-8565U, 16G RAM, Ubuntu 22.04, JVM 11, rng-tools installed.
 
 To execute the benchmark, run `./benchmark/run.sh`.
 
-Ports, forks and other OSS
+Ports, forks, implementations and other OSS
 ------------------------------------------------------
 
-Ports and forks:
+Ports, forks and implementations:
 
 | Language | Name |
 | -------- | ---- |
+| Go       | [vishal-bihani/go-tsid](https://github.com/vishal-bihani/go-tsid) |
 | Java     | [vladmihalcea/hypersistence-tsid](https://github.com/vladmihalcea/hypersistence-tsid) |
+| Java     | [vincentdaogithub/tsid](https://github.com/vincentdaogithub/tsid) |
 | .NET     | [kgkoutis/TSID.Creator.NET](https://github.com/kgkoutis/TSID.Creator.NET) |
 | PHP      | [odan/tsid](https://github.com/odan/tsid) |
-| Python.  | [luismedel/tsid-python](https://github.com/luismedel/tsid-python) |
+| Python   | [luismedel/tsid-python](https://github.com/luismedel/tsid-python) |
+| Rust     | [jakudlaty/tsid](https://github.com/jakudlaty/tsid)
 | TypeScript  | [yubintw/tsid-ts](https://github.com/yubinTW/tsid-ts) |
 
 Other OSS:
