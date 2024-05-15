@@ -31,6 +31,9 @@ Recommended readings:
 * [Primary keys in the DB - what to use? ID vs UUID or is there something else?](https://www.linkedin.com/pulse/primary-keys-db-what-use-id-vs-uuid-something-else-lucas-persson)
 * [TSIDs strike the perfect balance between integers and UUIDs for most databases](https://www.foxhound.systems/blog/time-sorted-unique-identifiers/)
 
+> **NOTE:**
+> This software is currently in [maintenance mode](https://en.wikipedia.org/wiki/Maintenance_mode) because its maintainer believes there is nothing left to change or add, but this does not mean that maintenance will end soon.
+
 Usage
 ------------------------------------------------------
 
