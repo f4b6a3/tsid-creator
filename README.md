@@ -32,7 +32,7 @@ Recommended readings:
 * [TSIDs strike the perfect balance between integers and UUIDs for most databases](https://www.foxhound.systems/blog/time-sorted-unique-identifiers/)
 
 > **NOTE:**
-> This software is currently in [maintenance mode](https://en.wikipedia.org/wiki/Maintenance_mode) because its maintainer believes there is nothing left to change or add, but this does not mean that maintenance will end.
+> This software is currently in [maintenance mode](https://en.wikipedia.org/wiki/Maintenance_mode) because its maintainer believes there is nothing left to change or add, but it does not mean that maintenance will end soon.
 
 Usage
 ------------------------------------------------------
@@ -528,6 +528,7 @@ Other OSS:
 | Language | Name |
 | -------- | ---- |
 | Java     | [fillumina/id-encryptor](https://github.com/fillumina/id-encryptor) |
+| Java     | [jchambers/id-obfuscator](https://github.com/jchambers/id-obfuscator) |
 | .NET     | [ullmark/hashids.net](https://github.com/ullmark/hashids.net) |
 
 License
