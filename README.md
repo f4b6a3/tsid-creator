@@ -31,8 +31,8 @@ Recommended readings:
 * [Primary keys in the DB - what to use? ID vs UUID or is there something else?](https://www.linkedin.com/pulse/primary-keys-db-what-use-id-vs-uuid-something-else-lucas-persson)
 * [TSIDs strike the perfect balance between integers and UUIDs for most databases](https://www.foxhound.systems/blog/time-sorted-unique-identifiers/)
 
-> **NOTE:**
-> This software is currently in [maintenance mode](https://en.wikipedia.org/wiki/Maintenance_mode) because its maintainer believes there is nothing left to change or add, but it does not mean that maintenance will end soon.
+> **NOTE:**<br>
+> This software is currently in [maintenance mode](https://en.wikipedia.org/wiki/Maintenance_mode) because its maintainer believes there is nothing left to change or add.
 
 Usage
 ------------------------------------------------------
@@ -249,15 +249,6 @@ export TSIDCREATOR_NODE_COUNT="256"
 
 ```bash
 # append to ~/.profile
-# node identifier: x of 1024
-# remember that the default node count is 1024 and the maximum number of IDs is 4096K/second/node
-# where x is the MODULO 1024 (2^10) of the first host's IPv4 (if there's 1 or more addresses)
-# for example, if the first address of the host is 192.168.1.1, the value of x is 257 (1*256 + 1)
-export TSIDCREATOR_NODE="`hostname -I | awk '{print $1}' | awk -F. '{print ($3*256 + $4) % 1024}'`"
-```
-
-```bash
-# append to ~/.profile
 # node identifier: x of 65536
 # note that the maximum number of IDs per ms per node is reduced to 64, i.e., 64K/second/node
 # where x is the MODULO 65536 (2^16) of the first host's IPv4 (if there's 1 or more addresses)
@@ -266,11 +257,8 @@ export TSIDCREATOR_NODE="`hostname -I | awk '{print $1}' | awk -F. '{print ($3*2
 export TSIDCREATOR_NODE_COUNT="65536"
 ```
 
-**Notes:** 
-1. As a reference, [6,000 tweets are posted on Twitter every second as of 2022](https://www.demandsage.com/twitter-statistics/);
-1. According to the `hostname` manual:
-    * `--ip-address` or `-i` (lowercase): _Display the network address(es) of the host name. Note that this works only if the host name can be resolved. Avoid using this option; use hostname --all-ip-addresses instead_.
-    * `--all-ip-addresses` or `-I` (uppercase): _Display all network addresses of the host. This option enumerates all configured addresses on all network interfaces. The loopback interface and IPv6 link-local addresses are omitted. Contrary to option -i, this option does not depend on name resolution. Do not make any assumptions about the order of the output._
+> **NOTE:**<br>
+> As a reference, [6,000 tweets are posted on Twitter every second as of 2022](https://www.demandsage.com/twitter-statistics/).
 
 ### More Examples
 
@@ -381,18 +369,6 @@ Tsid tsid = factory.create();
 
 ---
 
-A `TsidFactory` with `java.util.Random`:
-
-```java
-// use a `java.util.Random` instance for fast generation
-TsidFactory factory = TsidFactory.builder().withRandom(new Random()).build();
-
-// use the factory
-Tsid tsid = factory.create();
-```
-
----
-
 A `TsidFactory` with `RandomGenerator` (JDK 17+):
 
 ```java
@@ -400,20 +376,6 @@ A `TsidFactory` with `RandomGenerator` (JDK 17+):
 RandomGenerator random = RandomGenerator.getDefault();
 TsidFactory factory = TsidFactory.builder()
     .withRandomFunction(() -> random.nextInt())
-    .build();
-
-// use the factory
-Tsid tsid = factory.create();
-```
-
----
-
-A `TsidFactory` with `ThreadLocalRandom`:
-
-```java
-// use a random function that returns an int value
-TsidFactory factory = TsidFactory.builder()
-    .withRandomFunction(() -> ThreadLocalRandom.current().nextInt())
     .build();
 
 // use the factory
