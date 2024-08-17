@@ -31,8 +31,8 @@ Recommended readings:
 * [Primary keys in the DB - what to use? ID vs UUID or is there something else?](https://www.linkedin.com/pulse/primary-keys-db-what-use-id-vs-uuid-something-else-lucas-persson)
 * [TSIDs strike the perfect balance between integers and UUIDs for most databases](https://www.foxhound.systems/blog/time-sorted-unique-identifiers/)
 
-> **NOTE:**<br>
-> This software is currently in [maintenance mode](https://en.wikipedia.org/wiki/Maintenance_mode) because its maintainer believes there is nothing left to change or add.
+> **NOTE**<br>
+> This software is in [maintenance mode](https://en.wikipedia.org/wiki/Maintenance_mode) because its maintainer believes there's nothing to change or add.
 
 Usage
 ------------------------------------------------------
@@ -56,6 +56,9 @@ String string = TsidCreator.getTsid().toString(); // 01226N0640J7Q
 ```
 
 The TSID generator is [thread-safe](https://en.wikipedia.org/wiki/Thread_safety).
+
+> **HINT**<br>
+> If you don't like the design of the API, take a look at [hypersistence-tsid](https://github.com/vladmihalcea/hypersistence-tsid).
 
 ### Dependency
 
@@ -257,7 +260,7 @@ export TSIDCREATOR_NODE="`hostname -I | awk '{print $1}' | awk -F. '{print ($3*2
 export TSIDCREATOR_NODE_COUNT="65536"
 ```
 
-> **NOTE:**<br>
+> **NOTE**<br>
 > As a reference, [6,000 tweets are posted on Twitter every second as of 2022](https://www.demandsage.com/twitter-statistics/).
 
 ### More Examples
